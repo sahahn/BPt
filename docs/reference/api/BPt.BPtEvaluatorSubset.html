@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.BPtEvaluatorSubset &#8212; BPt 2.1.6 documentation</title>
+    <title>BPt.BPtEvaluatorSubset &#8212; BPt 2.2.0 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -40,7 +40,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="BPt.BPtEvaluatorSubset.all_train_subjects" href="BPt.BPtEvaluatorSubset.all_train_subjects.html" />
-    <link rel="prev" title="BPt.BPtEvaluator.subset_by" href="BPt.BPtEvaluator.subset_by.html" />
+    <link rel="prev" title="BPt.BPtEvaluator.to_pickle" href="BPt.BPtEvaluator.to_pickle.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
   </head>
@@ -277,7 +277,7 @@
 <h1>BPt.BPtEvaluatorSubset<a class="headerlink" href="#bpt-bptevaluatorsubset" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="BPt.BPtEvaluatorSubset">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">BPt.</span></span><span class="sig-name descname"><span class="pre">BPtEvaluatorSubset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evaluator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/BPtEvaluator.py#L1670-L1778"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.BPtEvaluatorSubset" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">BPt.</span></span><span class="sig-name descname"><span class="pre">BPtEvaluatorSubset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evaluator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/BPtEvaluator.py#L1772-L1880"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.BPtEvaluatorSubset" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class represents a subset of <a class="reference internal" href="BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a> and
 is returned as a result of calling <a class="reference internal" href="BPt.BPtEvaluator.subset_by.html#BPt.BPtEvaluator.subset_by" title="BPt.BPtEvaluator.subset_by"><code class="xref py py-func docutils literal notranslate"><span class="pre">BPtEvaluator.subset_by()</span></code></a>.</p>
 <p>This class specifically updates values for a subset of val_subjects,
@@ -341,7 +341,7 @@ different from the source <a class="reference internal" href="BPt.BPtEvaluator.h
 <td><p>A quicker helper property to get the number of CV folds this object was evaluated with.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.n_subjects.html#BPt.BPtEvaluatorSubset.n_subjects" title="BPt.BPtEvaluatorSubset.n_subjects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_subjects</span></code></a></p></td>
-<td><p>A quicker helper property to get the sum of the length of <a class="reference internal" href="BPt.BPtEvaluator.train_subjects.html#BPt.BPtEvaluator.train_subjects" title="BPt.BPtEvaluator.train_subjects"><code class="xref py py-data docutils literal notranslate"><span class="pre">train_subjects</span></code></a> and <a class="reference internal" href="BPt.BPtEvaluator.val_subjects.html#BPt.BPtEvaluator.val_subjects" title="BPt.BPtEvaluator.val_subjects"><code class="xref py py-data docutils literal notranslate"><span class="pre">val_subjects</span></code></a> from the 1st fold.</p></td>
+<td><p>A quicker helper property to get the sum of the length of <a class="reference internal" href="BPt.BPtEvaluator.train_subjects.html#BPt.BPtEvaluator.train_subjects" title="BPt.BPtEvaluator.train_subjects"><code class="xref py py-data docutils literal notranslate"><span class="pre">train_subjects</span></code></a> and <a class="reference internal" href="BPt.BPtEvaluator.val_subjects.html#BPt.BPtEvaluator.val_subjects" title="BPt.BPtEvaluator.val_subjects"><code class="xref py py-data docutils literal notranslate"><span class="pre">val_subjects</span></code></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.preds.html#BPt.BPtEvaluatorSubset.preds" title="BPt.BPtEvaluatorSubset.preds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preds</span></code></a></p></td>
 <td><p>If the parameter <cite>store_preds</cite> is set to True when calling <a class="reference internal" href="BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>, then this parameter will store the predictions from every evaluate fold.</p></td>
@@ -388,7 +388,7 @@ different from the source <a class="reference internal" href="BPt.BPtEvaluator.h
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.compare.html#BPt.BPtEvaluatorSubset.compare" title="BPt.BPtEvaluatorSubset.compare"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compare</span></code></a>(other[, rope_interval])</p></td>
 <td><p>This method is designed to perform a statistical comparison between the results from the evaluation stored in this object and another instance of <a class="reference internal" href="BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.get_X_transform_df.html#BPt.BPtEvaluatorSubset.get_X_transform_df" title="BPt.BPtEvaluatorSubset.get_X_transform_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_X_transform_df</span></code></a>(dataset[, fold, subjects])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.get_X_transform_df.html#BPt.BPtEvaluatorSubset.get_X_transform_df" title="BPt.BPtEvaluatorSubset.get_X_transform_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_X_transform_df</span></code></a>(dataset[, fold, ...])</p></td>
 <td><p>This method is used as a helper for getting the transformed input data for one of the saved models run during evaluate.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.get_coefs.html#BPt.BPtEvaluatorSubset.get_coefs" title="BPt.BPtEvaluatorSubset.get_coefs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_coefs</span></code></a>()</p></td>
@@ -400,7 +400,7 @@ different from the source <a class="reference internal" href="BPt.BPtEvaluator.h
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.get_fis.html#BPt.BPtEvaluatorSubset.get_fis" title="BPt.BPtEvaluatorSubset.get_fis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_fis</span></code></a>([mean, abs])</p></td>
 <td><p>This method will return a pandas DataFrame with each row a fold, and each column a feature if the underlying model supported either the <cite>coef_</cite> or <cite>feature_importance_</cite> parameters.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.get_inverse_fis.html#BPt.BPtEvaluatorSubset.get_inverse_fis" title="BPt.BPtEvaluatorSubset.get_inverse_fis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_inverse_fis</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.get_inverse_fis.html#BPt.BPtEvaluatorSubset.get_inverse_fis" title="BPt.BPtEvaluatorSubset.get_inverse_fis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_inverse_fis</span></code></a>([fis])</p></td>
 <td><p>Try to inverse transform stored feature importances (either beta weights or automatically calculated feature importances) to their original space.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.get_preds_dfs.html#BPt.BPtEvaluatorSubset.get_preds_dfs" title="BPt.BPtEvaluatorSubset.get_preds_dfs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_preds_dfs</span></code></a>([drop_nan_targets])</p></td>
@@ -412,16 +412,8 @@ different from the source <a class="reference internal" href="BPt.BPtEvaluator.h
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.subset_by.html#BPt.BPtEvaluatorSubset.subset_by" title="BPt.BPtEvaluatorSubset.subset_by"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subset_by</span></code></a>(group, dataset[, decode_values])</p></td>
 <td><p>Generate instances of <a class="reference internal" href="#BPt.BPtEvaluatorSubset" title="BPt.BPtEvaluatorSubset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluatorSubset</span></code></a> based on subsets of subjects based on different unique groups.</p></td>
 </tr>
-</tbody>
-</table>
-<table class="table">
-<colgroup>
-<col style="width: 57%" />
-<col style="width: 43%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>to_pickle</strong></p></td>
-<td></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.to_pickle.html#BPt.BPtEvaluatorSubset.to_pickle" title="BPt.BPtEvaluatorSubset.to_pickle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_pickle</span></code></a>(loc)</p></td>
+<td><p>Quick helper to save as pickle.</p></td>
 </tr>
 </tbody>
 </table>
@@ -435,7 +427,7 @@ different from the source <a class="reference internal" href="BPt.BPtEvaluator.h
               
               <div class='prev-next-bottom'>
                 
-    <a class='left-prev' id="prev-link" href="BPt.BPtEvaluator.subset_by.html" title="previous page">BPt.BPtEvaluator.subset_by</a>
+    <a class='left-prev' id="prev-link" href="BPt.BPtEvaluator.to_pickle.html" title="previous page">BPt.BPtEvaluator.to_pickle</a>
     <a class='right-next' id="next-link" href="BPt.BPtEvaluatorSubset.all_train_subjects.html" title="next page">BPt.BPtEvaluatorSubset.all_train_subjects</a>
 
               </div>
@@ -453,7 +445,7 @@ different from the source <a class="reference internal" href="BPt.BPtEvaluator.h
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
     <p>
-          &copy; Copyright 2020-2021.<br/>
+          &copy; Copyright 2020-2022.<br/>
         Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>

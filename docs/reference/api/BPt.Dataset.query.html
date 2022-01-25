@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.query &#8212; BPt 2.1.6 documentation</title>
+    <title>BPt.Dataset.query &#8212; BPt 2.2.0 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -497,7 +497,7 @@ multidimensional key (e.g., a DataFrame) then the result will be passed
 to <code class="xref py py-meth docutils literal notranslate"><span class="pre">DataFrame.__getitem__()</span></code>.</p>
 <p>This method uses the top-level <a class="reference internal" href="BPt.Dataset.eval.html#BPt.Dataset.eval" title="BPt.Dataset.eval"><code class="xref py py-func docutils literal notranslate"><span class="pre">eval()</span></code></a> function to
 evaluate the passed query.</p>
-<p>The <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html#pandas.DataFrame.query" title="(in pandas v1.3.5)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">query()</span></code></a> method uses a slightly
+<p>The <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html#pandas.DataFrame.query" title="(in pandas v1.4.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">query()</span></code></a> method uses a slightly
 modified Python syntax by default. For example, the <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> and <code class="docutils literal notranslate"><span class="pre">|</span></code>
 (bitwise) operators have the precedence of their boolean cousins,
 <a class="reference external" href="https://docs.python.org/3/reference/expressions.html#and" title="(in Python v3.10)"><code class="xref std std-keyword docutils literal notranslate"><span class="pre">and</span></code></a> and <a class="reference external" href="https://docs.python.org/3/reference/expressions.html#or" title="(in Python v3.10)"><code class="xref std std-keyword docutils literal notranslate"><span class="pre">or</span></code></a>. This <em>is</em> syntactically valid Python,
@@ -510,14 +510,14 @@ recommended as it is inefficient compared to using <code class="docutils literal
 engine.</p>
 <p>The <code class="xref py py-attr docutils literal notranslate"><span class="pre">DataFrame.index</span></code> and
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">DataFrame.columns</span></code> attributes of the
-<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.3.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></a> instance are placed in the query namespace
+<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.4.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></a> instance are placed in the query namespace
 by default, which allows you to treat both the index and columns of the
 frame as a column in the frame.
 The identifier <code class="docutils literal notranslate"><span class="pre">index</span></code> is used for the frame index; you can also
 use the name of the index to identify it in a query. Please note that
 Python keywords may not be used as identifiers.</p>
 <p>For further details and examples see the <code class="docutils literal notranslate"><span class="pre">query</span></code> documentation in
-<a class="reference external" href="https://pandas.pydata.org/docs/user_guide/indexing.html#indexing-query" title="(in pandas v1.3.5)"><span class="xref std std-ref">indexing</span></a>.</p>
+<a class="reference external" href="https://pandas.pydata.org/docs/user_guide/indexing.html#indexing-query" title="(in pandas v1.4.0)"><span class="xref std std-ref">indexing</span></a>.</p>
 <p><em>Backtick quoted variables</em></p>
 <p>Backtick quoted variables are parsed as literal Python code and
 are converted internally to a Python valid identifier.
@@ -601,7 +601,7 @@ in combination with the source code in <code class="xref py py-mod docutils lite
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
     <p>
-          &copy; Copyright 2020-2021.<br/>
+          &copy; Copyright 2020-2022.<br/>
         Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>

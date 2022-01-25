@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from .datasets import (get_fake_dataset, get_fake_dataset7,
-                       get_fake_multi_index_dataset)
+                       get_fake_multi_index_dataset, get_example1_dataset)
 from ..Dataset import Dataset
 
 
@@ -389,3 +389,11 @@ def test_copy_as_non_input_not_inplace():
     assert '1_copy' in df_copy
     assert 'bleh' in df_copy.scopes['1_copy']
     assert '1_copy' not in df.scopes
+
+def test_add_unique_overlap2():
+
+    data = get_example1_dataset()
+    data.add_unique_overlap(cols=['animals', 'numbers'],
+                            new_col='combo', inplace=True)
+
+    assert len(data['combo'].unique()) ==  5

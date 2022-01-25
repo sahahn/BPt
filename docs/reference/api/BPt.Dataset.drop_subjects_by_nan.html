@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.drop_subjects_by_nan &#8212; BPt 2.1.6 documentation</title>
+    <title>BPt.Dataset.drop_subjects_by_nan &#8212; BPt 2.2.0 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -441,7 +441,7 @@
 <h1>BPt.Dataset.drop_subjects_by_nan<a class="headerlink" href="#bpt-dataset-drop-subjects-by-nan" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="BPt.Dataset.drop_subjects_by_nan">
-<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">drop_subjects_by_nan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L117-L168"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.drop_subjects_by_nan" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">drop_subjects_by_nan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L117-L189"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.drop_subjects_by_nan" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is used for dropping subjects based on
 the amount of missing values found across a subset of
 columns as selected by scope. Each subject is dropped
@@ -460,13 +460,16 @@ can be applied.</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>threshold</strong><span class="classifier">float or int, optional</span></dt><dd><p>Passed as a float between 0 and 1, or
-as an int. If greater than 0 or less than 1,
-this threshold represents the percent of columns
-a subject needs to have missing for it to be dropped.
-If 1 or over, then it represents an absolute number of
+<dt><strong>threshold</strong><span class="classifier">float, int, ‘all’ or ‘any’, optional</span></dt><dd><p>Can pass input as either a float greater than 0
+and less than 1, which refers to calculating 
+a percent of columns to drop, or as an absolute passed
+as an int, then it represents an absolute number of
 columns that a subject needs to have greater than or equal
 to that value in order to drop.</p>
+<p>There are also special keywords ‘all’ and ‘any’ to
+drop if any missing in scope, or all in scope respectively.</p>
+<p>So for example, pass either threshold=1, or threshold=’any’,
+to drop the subject if there are any NaN’s at all in scope.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="o">.</span><span class="mi">5</span>
 </pre></div>
 </div>
@@ -507,7 +510,7 @@ to that value in order to drop.</p>
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
     <p>
-          &copy; Copyright 2020-2021.<br/>
+          &copy; Copyright 2020-2022.<br/>
         Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>

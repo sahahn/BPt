@@ -6,6 +6,7 @@ from .helpers import verbose_print
 from pandas.util._decorators import doc
 import pandas.core.common as com
 from pandas.core.dtypes.generic import ABCMultiIndex
+from distutils.version import LooseVersion
 
 
 _shared_docs = {}
@@ -1808,6 +1809,9 @@ class Dataset(pd.DataFrame):
                              drop_cols_by_nan)
 
 def cat_to_equiv_check(values):
+
+    if LooseVersion(pd.__version__) < LooseVersion('1.4.0'):
+        return values
 
     # Check if categorical, if not return as isCheck for categorical case:
     if not values.dtype == 'category':

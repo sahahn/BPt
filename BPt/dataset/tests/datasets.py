@@ -145,3 +145,11 @@ def get_fake_multi_index_dataset():
     fake.set_index(['subj', 'event'], inplace=True)
 
     return fake
+
+def get_example1_dataset():
+    
+    df = Dataset()
+    df['animals'] = ['cat', 'cat', 'dog', 'dog', 'elk']
+    df['numbers'] = [1, 2, 1, 2, np.nan]
+
+    return df

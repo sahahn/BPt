@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.BPtEvaluatorSubset.get_X_transform_df &#8212; BPt 2.1.6 documentation</title>
+    <title>BPt.BPtEvaluatorSubset.get_X_transform_df &#8212; BPt 2.2.0 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -277,7 +277,7 @@
 <h1>BPt.BPtEvaluatorSubset.get_X_transform_df<a class="headerlink" href="#bpt-bptevaluatorsubset-get-x-transform-df" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="BPt.BPtEvaluatorSubset.get_X_transform_df">
-<span class="sig-prename descclassname"><span class="pre">BPtEvaluatorSubset.</span></span><span class="sig-name descname"><span class="pre">get_X_transform_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tr'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/BPtEvaluator.py#L1359-L1415"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.BPtEvaluatorSubset.get_X_transform_df" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">BPtEvaluatorSubset.</span></span><span class="sig-name descname"><span class="pre">get_X_transform_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nested_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/BPtEvaluator.py#L1418-L1504"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.BPtEvaluatorSubset.get_X_transform_df" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is used as a helper for getting the transformed
 input data for one of the saved models run during evaluate.</p>
 <dl class="field-list">
@@ -300,6 +300,21 @@ in the corresponding fold. Special str
 ‘val’ for the validation subjects in the
 selected for or lastly any valid
 <a class="reference internal" href="../../user_guide/subjects.html#subjects"><span class="std std-ref">Subjects</span></a> style input.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;tr&#39;</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>nested_model</strong><span class="classifier">bool, optional</span></dt><dd><p>In the case where the final estimator is itself
+a nested pipeline, the user may want to apply any of
+those transformations too. If passed as True, then these
+transformed features will apply to the fitted estimators
+<cite>self._nested_final_estimator</cite>, which may not be the same
+a the base <cite>self._final_estimator</cite>.</p>
+<p>Note: In the case of some complex nested ensemble, this method
+may break.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </dd>
@@ -344,7 +359,7 @@ of the pipeline.</p>
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
     <p>
-          &copy; Copyright 2020-2021.<br/>
+          &copy; Copyright 2020-2022.<br/>
         Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>

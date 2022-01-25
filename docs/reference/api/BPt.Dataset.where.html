@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.where &#8212; BPt 2.1.6 documentation</title>
+    <title>BPt.Dataset.where &#8212; BPt 2.2.0 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -497,10 +497,10 @@ element in the calling DataFrame, if <code class="docutils literal notranslate">
 element is used; otherwise the corresponding element from the DataFrame
 <code class="docutils literal notranslate"><span class="pre">other</span></code> is used.</p>
 <p>The signature for <code class="xref py py-func docutils literal notranslate"><span class="pre">DataFrame.where()</span></code> differs from
-<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.where.html#numpy.where" title="(in NumPy v1.21)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.where()</span></code></a>. Roughly <code class="docutils literal notranslate"><span class="pre">df1.where(m,</span> <span class="pre">df2)</span></code> is equivalent to
+<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.where.html#numpy.where" title="(in NumPy v1.22)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.where()</span></code></a>. Roughly <code class="docutils literal notranslate"><span class="pre">df1.where(m,</span> <span class="pre">df2)</span></code> is equivalent to
 <code class="docutils literal notranslate"><span class="pre">np.where(m,</span> <span class="pre">df1,</span> <span class="pre">df2)</span></code>.</p>
 <p>For further details and examples see the <code class="docutils literal notranslate"><span class="pre">where</span></code> documentation in
-<a class="reference external" href="https://pandas.pydata.org/docs/user_guide/indexing.html#indexing-where-mask" title="(in pandas v1.3.5)"><span class="xref std std-ref">indexing</span></a>.</p>
+<a class="reference external" href="https://pandas.pydata.org/docs/user_guide/indexing.html#indexing-where-mask" title="(in pandas v1.4.0)"><span class="xref std std-ref">indexing</span></a>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">s</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
@@ -595,7 +595,7 @@ element is used; otherwise the corresponding element from the DataFrame
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
     <p>
-          &copy; Copyright 2020-2021.<br/>
+          &copy; Copyright 2020-2022.<br/>
         Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>

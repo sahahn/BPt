@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Subjects &#8212; BPt 2.1.6 documentation</title>
+    <title>Subjects &#8212; BPt 2.2.0 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -272,6 +272,26 @@
     <ul class="nav section-nav flex-column">
     
         <li class="nav-item toc-entry toc-h2">
+            <a href="#array-like" class="nav-link">1. array-like</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#location" class="nav-link">2. location</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#reserved-keyword" class="nav-link">3. reserved keyword</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#value-subset-case" class="nav-link">4. value subset case</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#multi-index-array-like" class="nav-link">6. multi-index array-like</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
             <a href="#examples" class="nav-link">Examples</a>
         </li>
     
@@ -292,14 +312,19 @@
 <span id="id1"></span><h1>Subjects<a class="headerlink" href="#subjects" title="Permalink to this headline">¶</a></h1>
 <p>Various functions within BPt, and <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> can accept subjects or some variation on this
 name as an argument. The parameter can accept a few different values. These are explained below:</p>
-<p>1. You may pass any array-like (e.g., list, set, pandas Index, etc…) of subjects directly.
+<div class="section" id="array-like">
+<h2>1. array-like<a class="headerlink" href="#array-like" title="Permalink to this headline">¶</a></h2>
+<p>You may pass any array-like (e.g., list, set, pandas Index, etc…) of subjects directly.
 Warning: Passing a python tuple is reserved for a special MultiIndex case!</p>
 <p>For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">subjects</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;subj1&#39;</span><span class="p">,</span> <span class="s1">&#39;subj2&#39;</span><span class="p">,</span> <span class="s1">&#39;subj3&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>Would select those three subjects.</p>
-<p>2. You may pass the location of a text file were subject’s names are stored as one subject’s
+<p>Would select those three subjects, where the list could also be a numpy array or pandas index for example.</p>
+</div>
+<div class="section" id="location">
+<h2>2. location<a class="headerlink" href="#location" title="Permalink to this headline">¶</a></h2>
+<p>You may pass the location of a text file were subject’s names are stored as one subject’s
 name per line. Names should be saved with python style types, e.g., quotes around str’s, but
 if they are not, it should in most cases still be able to figure out the correct type.
 For example if subjects.txt contained:</p>
@@ -313,9 +338,10 @@ For example if subjects.txt contained:</p>
 </pre></div>
 </div>
 <p>To select those three subjects.</p>
-<ol class="arabic simple" start="3">
-<li><p>A reserved key word may be passed. These include:</p></li>
-</ol>
+</div>
+<div class="section" id="reserved-keyword">
+<h2>3. reserved keyword<a class="headerlink" href="#reserved-keyword" title="Permalink to this headline">¶</a></h2>
+<p>A reserved key word may be passed. These include:</p>
 <ul class="simple">
 <li><p>‘all’
 Operate on all subjects</p></li>
@@ -334,11 +360,15 @@ it refers to special behavior where when evaluating if the passed dataset has
 a train/test split defined, and a cv value is passed that isn’t ‘test’, then
 subjects = ‘train’ will be used. Otherwise, subjects=’all’ will be used.</p></li>
 </ul>
-<p>4. You can pass the special input wrapper <a class="reference internal" href="../reference/api/BPt.ValueSubset.html#BPt.ValueSubset" title="BPt.ValueSubset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueSubset</span></code></a>. This can be
+</div>
+<div class="section" id="value-subset-case">
+<h2>4. value subset case<a class="headerlink" href="#value-subset-case" title="Permalink to this headline">¶</a></h2>
+<p>You can pass the special input wrapper <a class="reference internal" href="../reference/api/BPt.ValueSubset.html#BPt.ValueSubset" title="BPt.ValueSubset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueSubset</span></code></a>. This can be
 used to select subsets of subject by a column’s
 value or values. See <a class="reference internal" href="../reference/api/BPt.ValueSubset.html#BPt.ValueSubset" title="BPt.ValueSubset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueSubset</span></code></a> for more
 information on how this input class is used.</p>
-<p>There also exists the case where you may wish for the underlying index of subjects to be a MultiIndex.
+<p>5. multi-index case
+There also exists the case where you may wish for the underlying index of subjects to be a MultiIndex.
 In this case, there is some extra functionality to discuss.
 Say for example we have a Dataset multi-indexed
 by subject and eventname, e.g.,</p>
@@ -360,9 +390,10 @@ and likewise with loading from a text file which just specified ‘subj1’ and 
 <p>Note that if we pass arguments in this manner, BPt will assume they refer to whatever
 index is first, in this case ‘subject’, and not ‘eventname’. If we wish to also select
 explicitly by eventname, we have two options.</p>
-<ol class="arabic simple">
-<li><p>Pass fully indexed tuples in an array-like manner, the same as 1. from before, e.g.:</p></li>
-</ol>
+</div>
+<div class="section" id="multi-index-array-like">
+<h2>6. multi-index array-like<a class="headerlink" href="#multi-index-array-like" title="Permalink to this headline">¶</a></h2>
+<p>You may pass fully indexed tuples in an array-like manner, the same as 1. from before, e.g.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">subjects</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;subj1&#39;</span><span class="p">,</span> <span class="s1">&#39;e1&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;subj2&#39;</span><span class="p">,</span> <span class="s1">&#39;e2&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -372,7 +403,7 @@ could select this same subset if subjects.txt was formatted as:</p>
 <span class="p">(</span><span class="s1">&#39;subj2&#39;</span><span class="p">,</span> <span class="s1">&#39;e2&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>2. Our second option is to use the special tuple reserved input. In this case,
+<p>Our second option is to use the special tuple reserved input. In this case,
 we must pass a python tuple with the same length at the number of levels in the
 underlying MultiIndex, e.g., in the example before, of length two. Each index in the
 tuple will then be used to specify the BPt subjects compatible argument for just that
@@ -389,6 +420,7 @@ pairs with an eventname of ‘e1’. Consider another example:</p>
 <p>In this case, the subjects to select would be loaded from
 ‘subjects.txt’ and the corresponding eventnames from
 ‘events.txt’.</p>
+</div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>First let’s define an example dataset to show some examples with.</p>
@@ -464,7 +496,7 @@ Let’s try using <a class="reference internal" href="../reference/api/BPt.Value
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
     <p>
-          &copy; Copyright 2020-2021.<br/>
+          &copy; Copyright 2020-2022.<br/>
         Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>

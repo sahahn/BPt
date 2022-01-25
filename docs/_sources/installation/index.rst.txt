@@ -132,3 +132,8 @@ Required in order to use :class:`BPt.extensions.ThresholdNetworkMeasures`.
                     
 sweetviz
 ~~~~~~~~~
+
+
+neurotools
+~~~~~~~~~~~
+https://github.com/sahahn/neurotools

@@ -21,6 +21,9 @@ Version 2.2.0
 - :class:`Loader` bug fix
   Call `fit_transform` on first data point instead of just `fit`.
 
+- Updated compatibility with pandas 1.4
+  The update to pandas 1.4 was causing some issues with data types, these have been fixed.
+
 - Removed RandomParcellation, SurfLabels and SurfMaps
   Newer implementations, with more tests are available for these objects through the neurotools package.
 

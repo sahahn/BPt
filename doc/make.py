@@ -22,7 +22,8 @@ import webbrowser
 
 import docutils
 import docutils.parsers.rst
-from sqlalchemy import exists
+
+from prep_docs_data import prep_data
 
 DOC_PATH = os.path.dirname(os.path.abspath(__file__))
 SOURCE_PATH = os.path.join(DOC_PATH, "source")
@@ -308,6 +309,9 @@ def main():
         joined = ", ".join(cmds)
         raise ValueError(
             f"Unknown command {args.command}. Available options: {joined}")
+
+    # Make sure docs data is generated / up to date
+    prep_data()
 
     # Below we update both os.environ and sys.path. The former is used by
     # external libraries (namely Sphinx) to compile this module and resolve

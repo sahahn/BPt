@@ -26,4 +26,5 @@ jobs:
         pip install nbsphinx
         pip install pydata_sphinx_theme
         cd doc
+        python make.py clean
         python make.py html

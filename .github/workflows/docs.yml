@@ -1,23 +1,38 @@
 name: Generate Docs
 
-on: pull_request
+# Run this action on pushes to master branch
+on:
+  push:
+    branches: ['master']
+    paths:
+     - 'doc/**'
+     - 'BPt/**'
 
+# Run jobs
 jobs:
   build:  
     runs-on: ubuntu-latest
 
     steps:
+    
+    # Checks-out your repository under $GITHUB_WORKSPACE
     - uses: actions/checkout@v2
+    
+    # Setup python for the runner
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
+        
+    # Install needed dependencies
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install pytest
         pip install pytest-cov
         pip install .[extra]
+        
+    # Generate the docs
     - name: Generate docs
       run: |
         sudo apt install pandoc
@@ -28,3 +43,18 @@ jobs:
         cd doc
         python make.py clean
         python make.py html
+        cd ../
+    
+    # Next, we need to commit the new files into the repository
+    - name: Commit files
+      run: |
+        git config --local user.name "sahahn"
+        git add ./docs
+        git commit -m "Update HTML docs"
+
+    # Push the change
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        force: true

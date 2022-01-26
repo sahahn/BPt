@@ -288,27 +288,36 @@
                 
   <section id="version-2-2-0">
 <span id="whatsnew-220"></span><h1>Version 2.2.0<a class="headerlink" href="#version-2-2-0" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
+<ul>
 <li><p>Initial support for Datasets concat
-New <code class="xref py py-func docutils literal notranslate"><span class="pre">concat()</span></code> simmilar to <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.concat.html#pandas.concat" title="(in pandas v1.4.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.concat()</span></code></a> for
-concatenating with respect to <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> attributes.</p></li>
+- New <code class="xref py py-func docutils literal notranslate"><span class="pre">concat()</span></code> simmilar to <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.concat.html#pandas.concat" title="(in pandas v1.4.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.concat()</span></code></a> for</p>
+<blockquote>
+<div><p>concatenating with respect to <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> attributes.</p>
+</div></blockquote>
+</li>
 <li><p>Improved inverse_transform_fis support
-Added extra support for <cite>inverse_transform_fis</cite> method in <a class="reference internal" href="../reference/api/BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a>. Now
-supports some complex inverse transformations from nested <a class="reference internal" href="../reference/api/BPt.Loader.html#BPt.Loader" title="BPt.Loader"><code class="xref py py-class docutils literal notranslate"><span class="pre">Loader</span></code></a>, as well
-as some other bug fixes / new support.</p></li>
+- Added extra support for <cite>inverse_transform_fis</cite> method in <a class="reference internal" href="../reference/api/BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a>.
+- Now supports some complex inverse transformations from nested <a class="reference internal" href="../reference/api/BPt.Loader.html#BPt.Loader" title="BPt.Loader"><code class="xref py py-class docutils literal notranslate"><span class="pre">Loader</span></code></a>, as well</p>
+<blockquote>
+<div><p>as some other bug fixes / new support.</p>
+</div></blockquote>
+</li>
 <li><p>New support for <cite>nested_model</cite> in <a class="reference internal" href="../reference/api/BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a>
-Methods <cite>get_X_transform_df</cite> and <cite>permutation_importance</cite> have a new parameter
-called <cite>nested_model</cite> which allows for transforming in nested pipelines</p></li>
+- Methods <cite>get_X_transform_df</cite> and <cite>permutation_importance</cite> have a new parameter</p>
+<blockquote>
+<div><p>called <cite>nested_model</cite> which allows for transforming in nested pipelines</p>
+</div></blockquote>
+</li>
 <li><p><a class="reference internal" href="../reference/api/BPt.Loader.html#BPt.Loader" title="BPt.Loader"><code class="xref py py-class docutils literal notranslate"><span class="pre">Loader</span></code></a> bug fix
-Call <cite>fit_transform</cite> on first data point instead of just <cite>fit</cite>.</p></li>
+- Call <cite>fit_transform</cite> on first data point instead of just <cite>fit</cite>.</p></li>
 <li><p>Updated compatibility with pandas 1.4
-The update to pandas 1.4 was causing some issues with data types, these have been fixed.</p></li>
+- The update to pandas 1.4 was causing some issues with data types, these have been fixed.</p></li>
 <li><p>Removed RandomParcellation, SurfLabels and SurfMaps
-Newer implementations, with more tests are available for these objects through the neurotools package.</p></li>
+- Newer implementations, with more tests are available for these objects through the neurotools package.</p></li>
 <li><p>Add / changed some default pipelines
-Changed name of svm pipe, and some new other default pipes</p></li>
+- Changed name of svm pipe, and some new other default pipes</p></li>
 <li><p>Improving Test coverage
-Added more misc tests, filling in gaps related to test coverage.</p></li>
+- Added more misc tests, filling in gaps related to test coverage.</p></li>
 </ul>
 </section>
 

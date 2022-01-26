@@ -290,36 +290,46 @@
 <span id="whatsnew-210"></span><h1>Version 2.1.0<a class="headerlink" href="#version-2-1-0" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><dl class="simple">
-<dt>Bug Fix cv=’test’</dt><dd><p>Fixed important bug with <a class="reference internal" href="../reference/api/BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a> and passing
+<dt>Bug Fix cv=’test’</dt><dd><ul>
+<li><p>Fixed important bug with <a class="reference internal" href="../reference/api/BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a> and passing
 cv = ‘test’, had errors with named index. Also added
-new extra tests for cv=’test’.</p>
+new extra tests for cv=’test’.</p></li>
+</ul>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>Modified <a class="reference internal" href="../reference/api/BPt.get_estimator.html#BPt.get_estimator" title="BPt.get_estimator"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_estimator()</span></code></a> for default pipeline</dt><dd><p><a class="reference internal" href="../reference/api/BPt.get_estimator.html#BPt.get_estimator" title="BPt.get_estimator"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_estimator()</span></code></a> and the associated <a class="reference internal" href="../reference/api/BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>
+<dt>Modified <a class="reference internal" href="../reference/api/BPt.get_estimator.html#BPt.get_estimator" title="BPt.get_estimator"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_estimator()</span></code></a> for default pipeline</dt><dd><ul>
+<li><p><a class="reference internal" href="../reference/api/BPt.get_estimator.html#BPt.get_estimator" title="BPt.get_estimator"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_estimator()</span></code></a> and the associated <a class="reference internal" href="../reference/api/BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>
 build function have been updated to allow default
-dataset w/ warnings.</p>
+dataset w/ warnings.</p></li>
+</ul>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>Modified <code class="xref py py-func docutils literal notranslate"><span class="pre">Piece.build()</span></code> function for <a class="reference internal" href="../reference/api/BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a> pieces.</dt><dd><p>Now allows for dataset of ‘default’ to be passed, and will trigger
-warnings in cases where specific scopes have been passed.</p>
+<dt>Modified <code class="xref py py-func docutils literal notranslate"><span class="pre">Piece.build()</span></code> function for <a class="reference internal" href="../reference/api/BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a> pieces.</dt><dd><ul>
+<li><p>Now allows for dataset of ‘default’ to be passed, and will trigger
+warnings in cases where specific scopes have been passed.</p></li>
+</ul>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>Added more verbosity to <a class="reference internal" href="../reference/api/BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a> and <a class="reference internal" href="../reference/api/BPt.ParamSearch.html#BPt.ParamSearch" title="BPt.ParamSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSearch</span></code></a></dt><dd><p>In both cases, the verbosity options have been updated with more useful information.
-Pipeline was switched to a boolean verbosity flag to match the sklearn Pipeline,
-and the SearchCV is left more flexible, but now more output will appear.</p>
+<dt>Added more verbosity to <a class="reference internal" href="../reference/api/BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a> and <a class="reference internal" href="../reference/api/BPt.ParamSearch.html#BPt.ParamSearch" title="BPt.ParamSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSearch</span></code></a></dt><dd><ul>
+<li><p>In both cases, the verbosity options have been updated with more useful information.</p></li>
+<li><p>Pipeline was switched to a boolean verbosity flag to match the sklearn Pipeline,
+and the SearchCV is left more flexible, but now more output will appear.</p></li>
+</ul>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>Update Nevergrad Version</dt><dd><p>Update to a later version of nevergrad, which fixes some
-pickling issues for ‘ChoiceTag’, code and tests are changed accordingly.
-Bumps hard version requiriment from nevergrad==0.4.3 to nevergrad==0.4.3.post4.</p>
+<dt>Update Nevergrad Version</dt><dd><ul>
+<li><p>Update to a later version of nevergrad, which fixes some
+pickling issues for ‘ChoiceTag’, code and tests are changed accordingly.</p></li>
+<li><p>Bumps hard version requirement from nevergrad==0.4.3 to nevergrad==0.4.3.post4.</p></li>
+</ul>
 </dd>
 </dl>
 </li>

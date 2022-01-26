@@ -6,28 +6,28 @@ Version 2.0.1
 ---------------
 
 - New: :func:`Pipeline.build`
-    This function just essentially calls :func:`get_estimator`, but may be more intuitive
-    to some to have it be accessible via the :class:`Pipeline` classes.
+    - This function just essentially calls :func:`get_estimator`, but may be more intuitive
+      to some to have it be accessible via the :class:`Pipeline` classes.
 
 - New: :func:`Evaluator.subset_by`
-    Post stratifying / splitting results by different subsets of subjects, i.e., by sex,
-    can be a useful tool in performing post-hoc diagnostic tests on models. This new
-    method and outputted classes tries to make this process easier.
+    - Post stratifying / splitting results by different subsets of subjects, i.e., by sex,
+      can be a useful tool in performing post-hoc diagnostic tests on models. This new
+      method and outputted classes tries to make this process easier.
 
 - Changed: train_indices and val_indices in :class:`BPtEvaluator` to train_subjects and val_subjects
-    This change was made so that parameter names can be more consistent with the :ref:`Subjects` style input
-    and other naming schemes.
+    - This change was made so that parameter names can be more consistent with the :ref:`Subjects` style input
+      and other naming schemes.
 
 - Minor Improvement: Added warning when invalid extra_params passed
-    Now when extra params are passed to functions like :func:`evaluate` if the
-    keys don't line up with any valid parameters, a warning will be issued.
+    - Now when extra params are passed to functions like :func:`evaluate` if the
+      keys don't line up with any valid parameters, a warning will be issued.
 
 - Minor Improvement: Can now pass single model to :class:`Pipeline`
-    Before you had to pass steps as a list, but now :class:`Pipeline` will
-    accept a single model-like step as input.
+    - Before you had to pass steps as a list, but now :class:`Pipeline` will
+      accept a single model-like step as input.
 
 - Updated: Predicting Sex Example
-    Added some more examples of using different more advanced features.
+    - Added some more examples of using different more advanced features.
 
 - Fixed Tests so Windows Compatible
-    Had hard code file paths that were not compatible with windows before
+    - Had hard code file paths that were not compatible with windows before

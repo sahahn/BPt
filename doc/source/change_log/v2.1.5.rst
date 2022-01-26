@@ -6,8 +6,8 @@ Version 2.1.5
 ---------------
 
 - Updated :class:`CompareDict`
-  Adding better summaries for cases when for now problem type
-  varies across different comparisons
+  - Adding better summaries for cases when for now problem type
+    varies across different comparisons
 
 - Fix is user doesn't have extra libraries
-  Imports were breaking when user's didn't have extra libraries installed.
+  - Imports were breaking when user's didn't have extra libraries installed.

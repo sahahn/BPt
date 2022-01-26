@@ -9,7 +9,7 @@ API reference
 This is the API reference
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    dataset
    pipeline

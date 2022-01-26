@@ -1,12 +1,16 @@
 name: Code Coverage
 
 on:
+
+  # Push requests to master, but just content changes
   push:
     branches:
       - master
     paths:
      - 'doc/**'
      - 'BPt/**'
+     
+  # Or any pull request
   pull_request:
     branches:
       - '*'

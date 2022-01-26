@@ -1,6 +1,6 @@
 name: Generate Docs
 
-# Run this action on pushes to master branch
+# This action should just run on content based pushed to the master branch
 on:
   push:
     branches: ['master']

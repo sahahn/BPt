@@ -4,119 +4,138 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Predict Stop Signal Response Time (SSRT) &#8212; BPt 2.2.0 documentation</title>
-    
-  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
+    <title>Predict Stop Signal Response Time (SSRT) &#8212; BPt 2.2.1 documentation</title>
     
-  <link rel="stylesheet"
-    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-
+    <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  
+    
+    <link rel="stylesheet"
+      href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
     
       
-  <link rel="stylesheet"
-    href="../_static/vendor/open-sans_all/1.44.1/index.css">
-  <link rel="stylesheet"
-    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
-
+  
     
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/pydata-sphinx-theme.css" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css/getting_started.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css/pandas.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
-
+    <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Predict Waist Circumference with Diffusion Weighted Imaging" href="waist_cm.html" />
     <link rel="prev" title="Predicting Substance Dependence from Multi-Site Data" href="dep_full_example.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
     
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
-<div class="container-xl">
+    <div class="container-fluid" id="banner"></div>
 
-    <a class="navbar-brand" href="../index.html">
     
-      <img src="../_static/red_logo.png" class="logo" alt="logo" />
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
     
-    </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+    
 
-    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
-      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
-        
-        
-        <li class="nav-item ">
-            <a class="nav-link" href="../installation/index.html">Installation</a>
-        </li>
-        
-        <li class="nav-item ">
-            <a class="nav-link" href=""></a>
-        </li>
-        
-        <li class="nav-item ">
-            <a class="nav-link" href=""></a>
-        </li>
-        
-        <li class="nav-item active">
-            <a class="nav-link" href="index.html">User Guide</a>
-        </li>
-        
-        <li class="nav-item ">
-            <a class="nav-link" href="../reference/index.html">API reference</a>
-        </li>
-        
-        <li class="nav-item ">
-            <a class="nav-link" href="../options/index.html">Default Options</a>
-        </li>
-        
-        <li class="nav-item ">
-            <a class="nav-link" href="../change_log/index.html">Change Log</a>
-        </li>
-        
-        <li class="nav-item ">
-            <a class="nav-link" href="../cite/index.html">Cite BPt</a>
-        </li>
-        
-        
-      </ul>
+<a class="navbar-brand" href="../index.html">
+  <img src="../_static/red_logo.png" class="logo" alt="logo">
+</a>
 
 
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
       
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../installation/index.html">
+  Installation
+ </a>
+</li>
 
-      <ul class="navbar-nav">
-        
-          <li class="nav-item">
-            <a class="nav-link" href="https://github.com/sahahn/BPt" target="_blank" rel="noopener">
-              <span><i class="fab fa-github-square"></i></span>
-            </a>
-          </li>
-        
-        
-          <li class="nav-item">
-            <a class="nav-link" href="https://twitter.com/SageHahn11" target="_blank" rel="noopener">
-              <span><i class="fab fa-twitter-square"></i></span>
-            </a>
-          </li>
-        
-      </ul>
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../reference/index.html">
+  API reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../options/index.html">
+  Default Options
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../change_log/index.html">
+  Change Log
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../cite/index.html">
+  Cite BPt
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
     </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/sahahn/BPt" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/SageHahn11" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
 </div>
     </nav>
     
@@ -124,189 +143,190 @@
     <div class="container-xl">
       <div class="row">
           
-          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form>
-<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-
-    <div class="bd-toc-item active">
-    
-  
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
     <ul class="nav bd-sidenav">
-        
-        
-        
-        
-        
-        
-        
-        
-          
+ <li class="toctree-l1">
+  <a class="reference internal" href="why_bpt.html">
+   Why BPt?
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="loading_data.html">
+   Loading Data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="saving_data.html">
+   Saving Data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="test_split.html">
+   Test Split
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="role.html">
+   Role
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="scope.html">
+   Scope
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="data_types.html">
+   Data Types
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="data_files.html">
+   Data Files
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="load_timeseries_example.html">
+     Loading Fake Timeseries Surface Data
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="subjects.html">
+   Subjects
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="pipeline_objects.html">
+   Pipeline Objects
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="params.html">
+   Params
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="extra_params.html">
+   Extra Params
+  </a>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bmi_full_example.html">
+   Predict BMI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="dep_full_example.html">
+   Predicting Substance Dependence from Multi-Site Data
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Predict Stop Signal Response Time (SSRT)
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="waist_cm.html">
+   Predict Waist Circumference with Diffusion Weighted Imaging
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="sex.html">
+   Predict Sex
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
             
-                <li class="">
-                    <a href="why_bpt.html">Why BPt?</a>
-                </li>
-            
-          
-            
-                <li class="">
-                    <a href="loading_data.html">Loading Data</a>
-                </li>
-            
-          
-            
-                <li class="">
-                    <a href="saving_data.html">Saving Data</a>
-                </li>
-            
-          
-            
-                <li class="">
-                    <a href="test_split.html">Test Split</a>
-                </li>
-            
-          
-            
-                <li class="">
-                    <a href="role.html">Role</a>
-                </li>
-            
-          
-            
-                <li class="">
-                    <a href="scope.html">Scope</a>
-                </li>
-            
-          
-            
-                <li class="">
-                    <a href="data_types.html">Data Types</a>
-                </li>
-            
-          
-            
-                <li class="">
-                    <a href="data_files.html">Data Files</a>
-                </li>
-            
-          
-            
-                <li class="">
-                    <a href="subjects.html">Subjects</a>
-                </li>
-            
-          
-            
-                <li class="">
-                    <a href="pipeline_objects.html">Pipeline Objects</a>
-                </li>
-            
-          
-            
-                <li class="">
-                    <a href="params.html">Params</a>
-                </li>
-            
-          
-            
-                <li class="">
-                    <a href="extra_params.html">Extra Params</a>
-                </li>
-            
-          
-            
-                <li class="">
-                    <a href="bmi_full_example.html">Predict BMI</a>
-                </li>
-            
-          
-            
-                <li class="">
-                    <a href="dep_full_example.html">Predicting Substance Dependence from Multi-Site Data</a>
-                </li>
-            
-          
-            
-                <li class="active">
-                    <a href="">Predict Stop Signal Response Time (SSRT)</a>
-                </li>
-            
-          
-            
-                <li class="">
-                    <a href="waist_cm.html">Predict Waist Circumference with Diffusion Weighted Imaging</a>
-                </li>
-            
-          
-            
-                <li class="">
-                    <a href="sex.html">Predict Sex</a>
-                </li>
-            
-          
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-      </ul>
-  
-  </nav>
-          </div>
           
 
           
           <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
               
+              <div class="toc-item">
+                
 <div class="tocsection onthispage pt-5 pb-3">
     <i class="fas fa-list"></i> On this page
 </div>
 
 <nav id="bd-toc-nav">
-    <ul class="nav section-nav flex-column">
-    
-        <li class="nav-item toc-entry toc-h2">
-            <a href="#Loading-Data" class="nav-link">Loading Data</a>
-        </li>
-    
-        <li class="nav-item toc-entry toc-h2">
-            <a href="#Define-a-train-test-split" class="nav-link">Define a train-test split</a>
-        </li>
-    
-        <li class="nav-item toc-entry toc-h2">
-            <a href="#Define-an-ML-Pipeline" class="nav-link">Define an ML Pipeline</a>
-        </li>
-    
-        <li class="nav-item toc-entry toc-h2">
-            <a href="#Evaluating-an-ML-Pipeline" class="nav-link">Evaluating an ML Pipeline</a>
-        </li>
-    
-        <li class="nav-item toc-entry toc-h2">
-            <a href="#Comparing-different-pipelines" class="nav-link">Comparing different pipelines</a>
-        </li>
-    
-        <li class="nav-item toc-entry toc-h2">
-            <a href="#Using-the-Test-Set" class="nav-link">Using the Test Set</a>
-        </li>
-    
-        <li class="nav-item toc-entry toc-h2">
-            <a href="#Plotting-results" class="nav-link">Plotting results</a>
-        </li>
-    
-    </ul>
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Loading-Data">
+   Loading Data
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Define-a-train-test-split">
+   Define a train-test split
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Define-an-ML-Pipeline">
+   Define an ML Pipeline
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Evaluating-an-ML-Pipeline">
+   Evaluating an ML Pipeline
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Comparing-different-pipelines">
+   Comparing different pipelines
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Using-the-Test-Set">
+   Using the Test Set
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Plotting-results">
+   Plotting results
+  </a>
+ </li>
+</ul>
+
 </nav>
-
-
+              </div>
               
+              <div class="toc-item">
+                
+              </div>
+              
+            
           </div>
           
 
+          
+          
+            
           
           <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
               
@@ -522,7 +542,7 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
-.prompt a.copybtn {
+.prompt .copybtn {
     display: none;
 }
 
@@ -560,18 +580,17 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<div class="section" id="Predict-Stop-Signal-Response-Time-(SSRT)">
+<section id="Predict-Stop-Signal-Response-Time-(SSRT)">
 <h1>Predict Stop Signal Response Time (SSRT)<a class="headerlink" href="#Predict-Stop-Signal-Response-Time-(SSRT)" title="Permalink to this headline">¶</a></h1>
 <p>This notebook uses stop signal task fMRI data derived contrasts from the ABCD study to predict stop signal response time (SSRT). This is an example of a regression type machine learning, and additionally includes an extra example of how to plot ROIs feature importance on brain surfaces from nilearn.</p>
-<div class="section" id="Loading-Data">
+<section id="Loading-Data">
 <h2>Loading Data<a class="headerlink" href="#Loading-Data" title="Permalink to this headline">¶</a></h2>
 <p>We will be loading data from is essentially a big csv file with all the different columns, some slightly processed, from the ABCD DEAP rds (saved r dataframe). The benefit of this approach is that while a little slow, we can just load any column of interest easily as a dataframe.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">BPt</span> <span class="k">as</span> <span class="nn">bp</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">BPt</span> <span class="k">as</span> <span class="nn">bp</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 </pre></div>
 </div>
@@ -580,8 +599,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">load_from_rds</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">eventname</span><span class="o">=</span><span class="s1">&#39;baseline_year_1_arm_1&#39;</span><span class="p">):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load_from_rds</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">eventname</span><span class="o">=</span><span class="s1">&#39;baseline_year_1_arm_1&#39;</span><span class="p">):</span>
 
     <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;data/nda_rds_201.csv&#39;</span><span class="p">,</span>
                        <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;src_subject_id&#39;</span><span class="p">,</span> <span class="s1">&#39;eventname&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">names</span><span class="p">,</span>
@@ -599,8 +617,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># This way we can look at all column avaliable</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This way we can look at all column avaliable</span>
 <span class="n">all_cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;data/nda_rds_201.csv&#39;</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
 <span class="n">all_cols</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
 </pre></div>
@@ -628,8 +645,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># Use python list comprehensions to get lists of the column names of interest</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use python list comprehensions to get lists of the column names of interest</span>
 <span class="n">contrasts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tfmri_sst_all_correct.go.vs.fixation_beta_&#39;</span><span class="p">,</span>
              <span class="s1">&#39;tfmri_sst_all_correct.stop.vs.correct.go_beta_&#39;</span><span class="p">,</span>
              <span class="s1">&#39;tfmri_sst_all_incorrect.stop.vs.correct.go_beta_&#39;</span><span class="p">]</span>
@@ -648,8 +664,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># Load the actual data from the saved csv</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the actual data from the saved csv</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">load_from_rds</span><span class="p">(</span><span class="n">data_cols</span> <span class="o">+</span> <span class="n">target_col</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -658,8 +673,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># Cast from a dataframe to BPt Dataset class</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Cast from a dataframe to BPt Dataset class</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
 <span class="c1"># Obsificate subject ID for public example</span>
@@ -674,8 +688,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">drop_cols</span><span class="p">(</span><span class="n">exclusions</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;.ventricle&#39;</span><span class="p">,</span> <span class="s1">&#39;_csf&#39;</span><span class="p">,</span> <span class="s1">&#39;.white.matter&#39;</span><span class="p">],</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;_subcort.aseg&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">drop_cols</span><span class="p">(</span><span class="n">exclusions</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;.ventricle&#39;</span><span class="p">,</span> <span class="s1">&#39;_csf&#39;</span><span class="p">,</span> <span class="s1">&#39;.white.matter&#39;</span><span class="p">],</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;_subcort.aseg&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -692,8 +705,7 @@ Dropped 27 Columns
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">set_role</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;non input&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">set_role</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;non input&#39;</span><span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">set_role</span><span class="p">(</span><span class="n">target_col</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">)</span>
 <span class="n">data</span>
 </pre></div>
@@ -1170,8 +1182,7 @@ Dropped 6 Rows
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># Cast sex as a binary variable</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Cast sex as a binary variable</span>
 <span class="n">data</span><span class="o">.</span><span class="n">to_binary</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">data</span><span class="p">[</span><span class="s1">&#39;sex&#39;</span><span class="p">]</span>
 </pre></div>
@@ -1202,8 +1213,7 @@ Categories (2, int64): [0 &lt; 1]
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># Let&#39;s drop all missing data</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let&#39;s drop all missing data</span>
 <span class="n">data</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
@@ -1223,8 +1233,7 @@ Categories (2, int64): [0 &lt; 1]
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filter_outliers_by_std</span><span class="p">(</span><span class="n">n_std</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filter_outliers_by_std</span><span class="p">(</span><span class="n">n_std</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1241,8 +1250,7 @@ Dropped 327 Rows
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">decode_values</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">decode_values</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1261,16 +1269,15 @@ sex: 8520 rows
 <img alt="../_images/user_guide_ssrt_15_1.png" src="../_images/user_guide_ssrt_15_1.png" />
 </div>
 </div>
-</div>
-<div class="section" id="Define-a-train-test-split">
+</section>
+<section id="Define-a-train-test-split">
 <h2>Define a train-test split<a class="headerlink" href="#Define-a-train-test-split" title="Permalink to this headline">¶</a></h2>
 <p>What if we wanted to define a train-test split? But also do it according to some criteria, say stratifying by sex?</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># First define a CVStrategy that says stratify by sex</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># First define a CVStrategy that says stratify by sex</span>
 <span class="n">sex_strat</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">CVStrategy</span><span class="p">(</span><span class="n">stratify</span><span class="o">=</span><span class="s1">&#39;sex&#39;</span><span class="p">)</span>
 <span class="n">sex_strat</span>
 </pre></div>
@@ -1289,9 +1296,8 @@ CVStrategy(stratify=&#39;sex&#39;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># Apply the test_split</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">set_test_split</span><span class="p">(</span><span class="n">size</span><span class="o">=.</span><span class="mi">2</span><span class="p">,</span> <span class="n">cv_strategy</span><span class="o">=</span><span class="n">sex_strat</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Apply the test_split</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">set_test_split</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mf">.2</span><span class="p">,</span> <span class="n">cv_strategy</span><span class="o">=</span><span class="n">sex_strat</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">data</span>
 </pre></div>
 </div>
@@ -1769,15 +1775,14 @@ Test size:  1704
 <p>8520 rows × 1 columns</p>
 <p style="margin-top: .35em"><span style="background: RGBA(176, 224, 230, .25)">6816 rows × 1 columns - Train Set </span></p><p style="margin-top: .35em"><span style="background: RGBA(249, 121, 93, .25)">1704 rows × 1 columns - Test Set </span></p></div></div></div>
 </div>
-</div>
-<div class="section" id="Define-an-ML-Pipeline">
+</section>
+<section id="Define-an-ML-Pipeline">
 <h2>Define an ML Pipeline<a class="headerlink" href="#Define-an-ML-Pipeline" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># Let&#39;s define a Pipeline, first by creating a series of based objects</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let&#39;s define a Pipeline, first by creating a series of based objects</span>
 
 <span class="c1"># Standard Scaling</span>
 <span class="n">scaler</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="s1">&#39;standard&#39;</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">)</span>
@@ -1790,7 +1795,7 @@ Test size:  1704
 <span class="c1"># CV strategy.</span>
 <span class="n">search</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">ParamSearch</span><span class="p">(</span><span class="n">search_type</span><span class="o">=</span><span class="s1">&#39;DE&#39;</span><span class="p">,</span>
                         <span class="n">n_iter</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
-                        <span class="n">cv</span><span class="o">=</span><span class="n">bp</span><span class="o">.</span><span class="n">CV</span><span class="p">(</span><span class="n">splits</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span>
+                        <span class="n">cv</span><span class="o">=</span><span class="n">bp</span><span class="o">.</span><span class="n">CV</span><span class="p">(</span><span class="n">splits</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span>
                                  <span class="n">n_repeats</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
 
 <span class="n">pipe</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">([</span><span class="n">scaler</span><span class="p">,</span> <span class="n">ridge</span><span class="p">],</span> <span class="n">param_search</span><span class="o">=</span><span class="n">search</span><span class="p">)</span>
@@ -1810,15 +1815,14 @@ Pipeline(param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(), n_repeats=5,
          steps=[Scaler(obj=&#39;standard&#39;), Model(obj=&#39;ridge&#39;, params=1)])
 </pre></div></div>
 </div>
-</div>
-<div class="section" id="Evaluating-an-ML-Pipeline">
+</section>
+<section id="Evaluating-an-ML-Pipeline">
 <h2>Evaluating an ML Pipeline<a class="headerlink" href="#Evaluating-an-ML-Pipeline" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># We can store some commonly used parameters in this</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We can store some commonly used parameters in this</span>
 <span class="c1"># ProblemSpec object. Though note, problem_type and scorer can both be automatically</span>
 <span class="c1"># detected and set.</span>
 <span class="n">spec</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">ProblemSpec</span><span class="p">(</span><span class="n">problem_type</span><span class="o">=</span><span class="s1">&#39;regression&#39;</span><span class="p">,</span>
@@ -1832,8 +1836,7 @@ Pipeline(param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(), n_repeats=5,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span>
                       <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
                       <span class="n">problem_spec</span><span class="o">=</span><span class="n">spec</span><span class="p">,</span>
                       <span class="n">subjects</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="c1"># This line is important! It says we only want to evaluate on the train set</span>
@@ -1875,8 +1878,7 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=51,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># Helper to get mean feature importances, in this case beta weights</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Helper to get mean feature importances, in this case beta weights</span>
 <span class="n">results</span><span class="o">.</span><span class="n">get_fis</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1906,8 +1908,7 @@ Length: 507, dtype: float32
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span>
                       <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
                       <span class="n">problem_spec</span><span class="o">=</span><span class="n">spec</span><span class="p">,</span>
                       <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;tfmri_sst_all_incorrect.stop.vs.correct.go_beta_&#39;</span><span class="p">,</span>
@@ -1952,8 +1953,7 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=51,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">sex_m</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">ValueSubset</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="n">decode_values</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sex_m</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">ValueSubset</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="n">decode_values</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">sex_f</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">ValueSubset</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="n">decode_values</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="n">sex_m_train</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Intersection</span><span class="p">([</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="n">sex_m</span><span class="p">])</span>
@@ -1977,8 +1977,7 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=51,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span>
                       <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
                       <span class="n">problem_spec</span><span class="o">=</span><span class="n">spec</span><span class="p">,</span>
                       <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;tfmri_sst_all_incorrect.stop.vs.correct.go_beta_&#39;</span><span class="p">,</span>
@@ -2019,16 +2018,15 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=51,
             target=&#39;tfmri_sst_all_beh_total_mean.rt&#39;)
 </pre></div></div>
 </div>
-</div>
-<div class="section" id="Comparing-different-pipelines">
+</section>
+<section id="Comparing-different-pipelines">
 <h2>Comparing different pipelines<a class="headerlink" href="#Comparing-different-pipelines" title="Permalink to this headline">¶</a></h2>
 <p>What if we wanted to explicitly compare results by sex? We have another special objects for that called Compare. Compare will run a seperate evaluate for each Option, where an Option represents a choice.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">compare_subjects</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Compare</span><span class="p">([</span><span class="n">bp</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">sex_m_train</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;M&#39;</span><span class="p">),</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">compare_subjects</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Compare</span><span class="p">([</span><span class="n">bp</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">sex_m_train</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;M&#39;</span><span class="p">),</span>
                                <span class="n">bp</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">sex_f_train</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)])</span>
 
 <span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span>
@@ -2126,16 +2124,15 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=51,
 </table>
 </div></div>
 </div>
-</div>
-<div class="section" id="Using-the-Test-Set">
+</section>
+<section id="Using-the-Test-Set">
 <h2>Using the Test Set<a class="headerlink" href="#Using-the-Test-Set" title="Permalink to this headline">¶</a></h2>
 <p>While in practice you might want to explore more options with the train set first, let’s just move on to showing how we could test a final pipeline on the testing set, while training on the full train set.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span>
                       <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
                       <span class="n">problem_spec</span><span class="o">=</span><span class="n">spec</span><span class="p">,</span>
                       <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="c1"># Use all three contrasts</span>
@@ -2179,8 +2176,7 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=51,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">fis</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">get_fis</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fis</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">get_fis</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">fis</span>
 </pre></div>
 </div>
@@ -2205,16 +2201,15 @@ tfmri_sst_all_incorrect.stop.vs.correct.go_beta_subcort.aseg_ventraldc.rh       
 Length: 507, dtype: float32
 </pre></div></div>
 </div>
-</div>
-<div class="section" id="Plotting-results">
+</section>
+<section id="Plotting-results">
 <h2>Plotting results<a class="headerlink" href="#Plotting-results" title="Permalink to this headline">¶</a></h2>
 <p>To plot feature importance results we are going to use a different library avaliable at <a class="reference external" href="https://github.com/sahahn/Neuro_Plotting">https://github.com/sahahn/Neuro_Plotting</a>, in addition to the library nilearn.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">nilearn.plotting</span> <span class="kn">import</span> <span class="n">plot_glass_brain</span><span class="p">,</span> <span class="n">plot_stat_map</span>
 
 <span class="c1"># We will use some extra loading functions</span>
@@ -2227,8 +2222,7 @@ Length: 507, dtype: float32
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># The directory where you install Neuro_Plotting</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The directory where you install Neuro_Plotting</span>
 <span class="n">data_dr</span> <span class="o">=</span> <span class="s1">&#39;/home/sage/Neuro_Plotting/data/&#39;</span>
 </pre></div>
 </div>
@@ -2237,8 +2231,7 @@ Length: 507, dtype: float32
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># Need as DataFrame not Series</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Need as DataFrame not Series</span>
 <span class="n">fis_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">fis</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
 <span class="n">fis_df</span>
 </pre></div>
@@ -2336,8 +2329,7 @@ Length: 507, dtype: float32
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">surf_ref</span> <span class="o">=</span> <span class="n">SurfRef</span><span class="p">(</span><span class="n">data_dr</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="s1">&#39;fsaverage5&#39;</span><span class="p">,</span> <span class="n">parc</span><span class="o">=</span><span class="s1">&#39;destr&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">surf_ref</span> <span class="o">=</span> <span class="n">SurfRef</span><span class="p">(</span><span class="n">data_dr</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="s1">&#39;fsaverage5&#39;</span><span class="p">,</span> <span class="n">parc</span><span class="o">=</span><span class="s1">&#39;destr&#39;</span><span class="p">)</span>
 
 <span class="c1"># Get beta weights seperate by contrast and hemisphere</span>
 <span class="n">betas</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2355,8 +2347,7 @@ Length: 507, dtype: float32
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">betas</span><span class="p">)):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">betas</span><span class="p">)):</span>
     <span class="n">figure</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">smf</span> <span class="o">=</span> <span class="n">Plot_Surf_Collage</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">betas</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
                                           <span class="n">ref</span> <span class="o">=</span> <span class="n">surf_ref</span><span class="p">,</span>
                                           <span class="n">surf_mesh</span> <span class="o">=</span> <span class="s1">&#39;pial&#39;</span><span class="p">,</span>
@@ -2405,8 +2396,7 @@ Length: 507, dtype: float32
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">vol_ref</span> <span class="o">=</span> <span class="n">VolRef</span><span class="p">(</span><span class="n">data_dr</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="s1">&#39;mni&#39;</span><span class="p">,</span> <span class="n">parc</span><span class="o">=</span><span class="s1">&#39;aseg_2mm&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vol_ref</span> <span class="o">=</span> <span class="n">VolRef</span><span class="p">(</span><span class="n">data_dr</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="s1">&#39;mni&#39;</span><span class="p">,</span> <span class="n">parc</span><span class="o">=</span><span class="s1">&#39;aseg_2mm&#39;</span><span class="p">)</span>
 
 <span class="n">vols</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">c_key</span> <span class="ow">in</span> <span class="n">contrasts</span><span class="p">:</span>
@@ -2431,8 +2421,7 @@ Length: 507, dtype: float32
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">contrasts</span><span class="p">)):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">contrasts</span><span class="p">)):</span>
     <span class="n">plot_glass_brain</span><span class="p">(</span><span class="n">vols</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">contrasts</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
     <span class="n">plot_stat_map</span><span class="p">(</span><span class="n">vols</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="n">contrasts</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 </pre></div>
@@ -2484,41 +2473,57 @@ Length: 507, dtype: float32
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
               </div>
               
               
-              <div class='prev-next-bottom'>
-                
-    <a class='left-prev' id="prev-link" href="dep_full_example.html" title="previous page">Predicting Substance Dependence from Multi-Site Data</a>
-    <a class='right-next' id="next-link" href="waist_cm.html" title="next page">Predict Waist Circumference with Diffusion Weighted Imaging</a>
-
-              </div>
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="dep_full_example.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Predicting Substance Dependence from Multi-Site Data</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="waist_cm.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Predict Waist Circumference with Diffusion Weighted Imaging</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
               
           </main>
           
 
       </div>
     </div>
-
-    
-  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
-
-
-    <footer class="footer mt-5 mt-md-0">
+  
+    <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <footer class="footer mt-5 mt-md-0">
   <div class="container">
-    <p>
-          &copy; Copyright 2020-2022.<br/>
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
-    </p>
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2020-2022.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+</p>
+    </div>
+    
   </div>
 </footer>
   </body>

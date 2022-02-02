@@ -7,7 +7,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_selection._base import SelectorMixin
 from ...main.input import ParamSearch
 from ...main.CV import BPtCV, CVStrategy
-from ...dataset.Dataset import Dataset
+from ...dataset.dataset import Dataset
 
 
 class ToFixedTransformer(BaseEstimator, TransformerMixin):

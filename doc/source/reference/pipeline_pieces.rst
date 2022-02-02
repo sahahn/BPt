@@ -14,6 +14,7 @@ Pipeline Pieces
    Loader
    Imputer
    Scaler
+   Sampler
    Transformer
    FeatSelector
    Model

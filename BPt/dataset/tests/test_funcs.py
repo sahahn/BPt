@@ -1,6 +1,6 @@
 from pandas.core.algorithms import value_counts
 from ..funcs import concat
-from ..Dataset import Dataset
+from ..dataset import Dataset
 from ..data_file import DataFile
 import pytest
 import numpy as np

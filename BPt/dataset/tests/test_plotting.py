@@ -1,4 +1,4 @@
-from ..Dataset import Dataset
+from ..dataset import Dataset
 import numpy as np
 import tempfile
 import os

@@ -11,7 +11,7 @@ from .CV import get_bpt_cv
 from ..pipeline.constructors import (LoaderConstructor, ImputerConstructor,
                                      ScalerConstructor, TransformerConstructor,
                                      FeatSelectorConstructor, ModelConstructor,
-                                     CustomConstructor)
+                                     CustomConstructor, SamplerConstructor)
 
 import warnings
 from pandas.util._decorators import doc
@@ -788,6 +788,61 @@ class Scaler(Piece):
 
         self._check_args()
 
+
+@doc(params=_bp_docs['params'],
+     cache_loc=_bp_docs['cache_loc'],
+     extra_params=_bp_docs['extra_params'])
+class Sampler(Piece):
+    '''The Sampler is a :class:`Pipeline` or :class:`ModelPipeline` piece
+    that is used for operations which involve changing the number of subjects in
+    just the training set.
+
+    Note: This object is still experimental, and not yet fully tested.
+
+    Parameters
+    ----------
+    obj : str or custom obj
+        | `obj` if passed a str, must be a predefined
+          sampler. Can also pass a sklearn compatible custom
+          object here directly. 
+
+        | See :ref:`Pipeline Objects<pipeline_objects>` to read more about
+            pipeline objects in general.
+
+    ref_scope : :ref:`Scope`, optional
+        | The parameter is passed as any valid
+          scope, or None if not needed, and if
+          non-null is used to pass along information on
+          which columns - typically non input ones,
+          should be passed along the base sampler object.
+          E.g., in the case of over-sampling, passing
+          a scope here would indicate which columns values
+          the oversampling should be based on.
+
+          ::
+
+            default = None
+
+    {params}
+
+    {cache_loc}
+
+    {extra_params}
+
+    '''
+
+    _constructor = SamplerConstructor
+
+    def __init__(self, obj, ref_scope=None, params=0,
+                 cache_loc=None, **extra_params):
+
+        self.obj = obj
+        self.ref_scope = ref_scope
+        self.params = params
+        self.cache_loc = cache_loc
+        self.extra_params = extra_params
+
+        self._check_args()
 
 @doc(**_bp_docs)
 class Transformer(Piece):

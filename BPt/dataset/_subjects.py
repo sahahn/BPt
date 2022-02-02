@@ -1,6 +1,6 @@
 import pandas as pd
 from pandas.util._decorators import doc
-from .Dataset import _shared_docs
+from .dataset import _shared_docs
 from .helpers import (base_load_subjects)
 from ..util import conv_to_list
 from ..main.input_operations import Intersection, ValueSubset

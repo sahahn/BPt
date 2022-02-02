@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 from .datasets import (get_fake_dataset, get_fake_dataset7,
                        get_fake_multi_index_dataset, get_example1_dataset)
-from ..Dataset import Dataset
+from ..dataset import Dataset
 
 
 def test_to_category():

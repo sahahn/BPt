@@ -1,5 +1,5 @@
 import numpy as np
-from ..Dataset import Dataset
+from ..dataset import Dataset
 import pytest
 import os
 import tempfile

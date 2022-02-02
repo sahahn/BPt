@@ -131,7 +131,14 @@ class BPtPipeline(Pipeline):
                 # cloned and now fitted transformer
                 self.steps[step_idx] = (name, cloned_transformer)
 
-        return X
+                # Check to see if special X sampler case
+                if isinstance(X, tuple) and len(X) == 3:
+
+                    # Un-pack correctly
+                    X, resample_inds, fit_index = X
+                    y = y[resample_inds]
+
+        return X, y
 
     def fit(self, X, y=None, mapping=None,
             fit_index=None, **fit_params):
@@ -180,8 +187,7 @@ class BPtPipeline(Pipeline):
         fit_params_steps = self._check_fit_params(**fit_params)
 
         # Fit and transform X for all but the last step.
-        Xt = self._fit(X, y, fit_index=fit_index,
-                       **fit_params_steps)
+        Xt, y = self._fit(X, y, fit_index=fit_index, **fit_params_steps)
 
         # Fit the final step
         with _print_elapsed_time('Pipeline',

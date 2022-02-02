@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from pandas.util._decorators import doc
 from ..util import save_docx_table, get_top_substrs
-from .Dataset import _file_docs, _shared_docs
+from .dataset import _file_docs, _shared_docs
 
 _plot_docs = _file_docs.copy()
 _plot_docs['scope'] = _shared_docs['scope']

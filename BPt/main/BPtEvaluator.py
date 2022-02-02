@@ -17,6 +17,9 @@ from .helpers import clean_str
 from copy import deepcopy
 import pickle as pkl
 
+from matplotlib import cm
+from matplotlib import colors
+
 _base_docs = {}
 
 _base_docs['dataset'] = """dataset : :class:`Dataset`
@@ -29,6 +32,18 @@ _base_docs['dataset'] = """dataset : :class:`Dataset`
                 behavior may occur.
 
     """
+
+def set_color(colorbar):
+
+    frac = colorbar.n / colorbar.total 
+    c = cm.get_cmap('BuGn')
+
+    # Scale from 0-1 to modified range
+    t_min, t_max = .25, .8
+    frac_scale = frac * (t_max - t_min) + t_min
+
+    # Update color in bar
+    colorbar.colour = colors.rgb2hex(c(frac_scale))
 
 
 def score_rep(score):
@@ -650,6 +665,7 @@ class BPtEvaluator():
 
         # If just folds bar update and return
         if len(progress_bars) == 1:
+            set_color(folds_bar)
             folds_bar.refresh()
             return [folds_bar]
 
@@ -664,6 +680,8 @@ class BPtEvaluator():
                 folds_bar.n = self.n_splits_
 
         # Update and return
+        set_color(folds_bar)
+        set_color(repeats_bar)
         folds_bar.refresh()
         repeats_bar.refresh()
         return [folds_bar, repeats_bar]
@@ -681,10 +699,12 @@ class BPtEvaluator():
         # Reset
         for bar in progress_bars:
             bar.n = 0
+            set_color(bar)
             bar.refresh()
 
         # Increment and refresh compare
         self.compare_bars[-1].n += 1
+        set_color(self.compare_bars[-1])
         self.compare_bars[-1].refresh()
 
         return

@@ -4,7 +4,7 @@ from ...pipeline.BPtSearchCV import BPtGridSearchCV, NevergradSearchCV
 from ..input import (Loader, ModelPipeline, Model, Pipeline, Scaler,
                      ParamSearch, FeatSelector, Transformer, CV, CVStrategy)
 from ..input_operations import Select
-from ...dataset.Dataset import Dataset
+from ...dataset.dataset import Dataset
 from ...default.params.Params import Choice
 from ..funcs import evaluate, cross_val_score, _sk_check_y
 import pytest

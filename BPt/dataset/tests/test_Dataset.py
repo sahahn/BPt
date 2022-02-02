@@ -10,7 +10,7 @@ from .datasets import (get_fake_dataset,
                        get_fake_multi_index_dataset,
                        get_fake_dataset5, get_full_dataset,
                        get_full_int_index_dataset)
-from ..Dataset import Dataset
+from ..dataset import Dataset
 import pickle
 
 

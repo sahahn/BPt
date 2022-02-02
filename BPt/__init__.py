@@ -1,7 +1,7 @@
-from .dataset.Dataset import Dataset
+from .dataset.dataset import Dataset
 from .dataset.funcs import read_csv, concat
 from .main.input import (Loader, Imputer, Scaler,
-                         Transformer,
+                         Transformer, Sampler,
                          FeatSelector, Model, Ensemble,
                          Param_Search, ParamSearch, ModelPipeline,
                          Model_Pipeline, Pipeline,
@@ -28,7 +28,7 @@ __all__ = ["Dataset", "Loader",
            "Ensemble", "Param_Search", "ParamSearch",
            "Model_Pipeline", "Problem_Spec", "ProblemSpec", "Select",
            "Duplicate", "Pipe", "ValueSubset",
-           "CV", "CVStrategy", "Intersection",
+           "CV", "CVStrategy", "Intersection", "Sampler",
            "cross_validate", "cross_val_score", "evaluate",
            'p', "Feat_Selector", 'ModelPipeline', 'Pipeline',
            'BPtEvaluator', 'BPtEvaluatorSubset', 'read_pickle',

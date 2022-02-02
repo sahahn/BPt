@@ -1,5 +1,5 @@
 from ..helpers import proc_fop, proc_file_input, auto_determine_subjects
-from ..Dataset import Dataset
+from ..dataset import Dataset
 import pytest
 
 

@@ -7,7 +7,7 @@ from ..input import (Model, ModelPipeline, Pipeline, CV, Scaler,
 from ..funcs import (pipeline_check, problem_spec_check, get_estimator,
                      _preproc_pipeline, _preproc_param_search)
 from ..CV import BPtCV
-from ...dataset.Dataset import Dataset
+from ...dataset.dataset import Dataset
 import pytest
 from sklearn.linear_model import Ridge
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier

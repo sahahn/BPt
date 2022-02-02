@@ -4,3 +4,12 @@
 
 Version 2.2.2
 ---------------
+
+- Sampler class
+  - Added new input :class:`Sampler` class.
+
+- Shading to progress bar
+  - The progress bar in :class:`BPtEvaluator` now is shaded, no real reason, just prettier.
+
+- Some internal refactoring
+  - Internal renaming of modules to more pythonic.

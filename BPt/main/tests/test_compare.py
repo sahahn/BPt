@@ -1,6 +1,6 @@
 from ..compare import (Option, CompareDict, MultipleSummary,
                        compare_dict_from_existing)
-from ...dataset.Dataset import Dataset
+from ...dataset.dataset import Dataset
 from ..funcs import evaluate
 import numpy as np
 from ..input import (Model, Pipeline)

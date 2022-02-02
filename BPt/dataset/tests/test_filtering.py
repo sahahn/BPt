@@ -1,5 +1,5 @@
 
-from ..Dataset import Dataset
+from ..dataset import Dataset
 import pandas as pd
 from .datasets import (get_fake_dataset, get_fake_dataset2, get_fake_dataset3,
                        get_fake_dataset4, get_fake_dataset6,

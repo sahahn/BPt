@@ -2,7 +2,7 @@ import numpy as np
 from itertools import combinations
 from .helpers import proc_fop
 from pandas.util._decorators import doc
-from .Dataset import _shared_docs, _sip_docs, _file_docs
+from .dataset import _shared_docs, _sip_docs, _file_docs
 
 
 def _drop_subjects(self, subjects):

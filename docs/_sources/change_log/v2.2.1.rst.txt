@@ -1,6 +1,0 @@
-.. _whatsnew_221:
-
-.. currentmodule:: BPt
-
-Version 2.2.1
----------------

@@ -4,7 +4,7 @@ from .helpers import (add_new_categories, remove_unused_categories,
                       get_str_round)
 from operator import add
 from functools import reduce
-from .Dataset import _shared_docs, _sip_docs
+from .dataset import _shared_docs, _sip_docs
 from pandas.util._decorators import doc
 
 

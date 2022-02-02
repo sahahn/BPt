@@ -33,8 +33,19 @@ _base_docs['dataset'] = """dataset : :class:`Dataset`
 
     """
 
-def set_color(colorbar):
+def _refresh_bar(colorbar, n=None):
 
+    # Allow passing list of colorbars
+    if isinstance(colorbar, list):
+        for bar in colorbar:
+            _refresh_bar(bar, n=n)
+        return
+
+    # Can optionally set n through this function
+    if n is not None:
+        colorbar.n = n
+
+    # Get the current fraction of completed
     frac = colorbar.n / colorbar.total 
     c = cm.get_cmap('BuGn')
 
@@ -44,6 +55,9 @@ def set_color(colorbar):
 
     # Update color in bar
     colorbar.colour = colors.rgb2hex(c(frac_scale))
+
+    # Lastly, call refresh
+    colorbar.refresh()
 
 
 def score_rep(score):
@@ -665,8 +679,7 @@ class BPtEvaluator():
 
         # If just folds bar update and return
         if len(progress_bars) == 1:
-            set_color(folds_bar)
-            folds_bar.refresh()
+            _refresh_bar(folds_bar)
             return [folds_bar]
 
         # If both, check to see if n_repeats increments
@@ -679,11 +692,8 @@ class BPtEvaluator():
             if repeats_bar.n == self.n_repeats_:
                 folds_bar.n = self.n_splits_
 
-        # Update and return
-        set_color(folds_bar)
-        set_color(repeats_bar)
-        folds_bar.refresh()
-        repeats_bar.refresh()
+        # Update and  then return
+        _refresh_bar([folds_bar, repeats_bar])
         return [folds_bar, repeats_bar]
 
     def _finish_progress_bars(self, progress_bars):
@@ -695,17 +705,12 @@ class BPtEvaluator():
 
             return
 
-        # Otherwise compare bars case
-        # Reset
-        for bar in progress_bars:
-            bar.n = 0
-            set_color(bar)
-            bar.refresh()
+        # Otherwise compare bars case, reset
+        _refresh_bar(progress_bars, n=0)
 
         # Increment and refresh compare
         self.compare_bars[-1].n += 1
-        set_color(self.compare_bars[-1])
-        self.compare_bars[-1].refresh()
+        _refresh_bar(self.compare_bars[-1])
 
         return
 

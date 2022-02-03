@@ -8,6 +8,10 @@ Version 2.2.2
 - Sampler class
   - Added new input :class:`Sampler` class.
 
+- add data files function updated
+  - The add data files method is now robust to reference index that are integer
+  - The new default subject to file is now 'auto'.
+
 - Shading to progress bar
   - The progress bar in :class:`BPtEvaluator` now is shaded, no real reason, just prettier.
 

@@ -1164,7 +1164,7 @@ class Dataset(pd.DataFrame):
 
         # Checks the subset of scope columns if any NaN
         # and returns any found.
-        return self[~pd.isnull(self[cols][:]).any(axis=1)].index
+        return self[pd.isnull(self[cols][:]).any(axis=1)].index
 
     def get_non_nan_subjects(self, scope):
         '''TODO - write docstring

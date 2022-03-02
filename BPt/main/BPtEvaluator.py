@@ -1441,7 +1441,7 @@ class BPtEvaluator():
                      importances_std=fis_to_df(std_series))
 
     @doc(dataset=_base_docs['dataset'])
-    def get_X_transform_df(self, dataset, fold=0, subjects='tr', nested_model=True):
+    def get_X_transform_df(self, dataset, fold=0, subjects='tr', nested_model=True, trans_y=False):
         '''This method is used as a helper for getting the transformed
         input data for one of the saved models run during evaluate.
 
@@ -1480,6 +1480,14 @@ class BPtEvaluator():
 
                 default = False
 
+        trans_y : bool, optional
+            Can optionally try to tranform y along with X,
+            this is experimental designed to work with
+            samplers. Default is False, as not 100% confident
+            will work correctly in all cases.
+
+            default = False
+
 
         Returns
         ----------
@@ -1508,8 +1516,8 @@ class BPtEvaluator():
 
         # Get as X dataframe, since passing df don't need to worry
         # about transform_index
-        X_fold, _ = dataset.get_Xy(problem_spec=self.ps,
-                                   subjects=subjects)
+        X_fold, y_fold = dataset.get_Xy(problem_spec=self.ps,
+                                        subjects=subjects)
 
         # Get feature names from fold
         if nested_model:
@@ -1521,12 +1529,25 @@ class BPtEvaluator():
                                                         encoders=self.encoders_,
                                                         nested_model=False)
 
+        # Trans y experimental case
+        if trans_y:
+            X_trans_fold, y_trans_fold, transform_index =\
+                estimator.transform(X_fold, nested_model=nested_model, trans_y=y_fold)
+
+            X_trans_df = pd.DataFrame(X_trans_fold, columns=feat_names,  index=transform_index)
+            y_series = pd.Series(y_trans_fold, index=transform_index)
+            return X_trans_df, y_series
+
         # Transform the data up to right before it gets passed to the
         # final model
         X_trans_fold = estimator.transform(X_fold, nested_model=nested_model)
+        
+        # Put the data in a dataframe with associated feature names, and index then return
+        return pd.DataFrame(X_trans_fold, columns=feat_names,  index=X_fold.index)
 
-        # Put the data in a dataframe with associated feature names
-        return pd.DataFrame(X_trans_fold, columns=feat_names)
+
+
+
 
     def compare(self, other, rope_interval=[-0.01, 0.01]):
         '''This method is designed to perform a statistical comparison

@@ -514,8 +514,12 @@ def _plot_category(self, col, subjs, print_info=True, **plot_args):
     counts = counts.reset_index()
 
     # Plot
-    sns.catplot(x=col, y='index', data=counts,
+    g = sns.catplot(x=col, y='index', data=counts,
                 kind='bar', orient='h', ci=None)
+
+    # Try
+    ax = g.facet_axis(0, 0)
+    ax.bar_label(ax.containers[0])
 
     if plot_args['count']:
         plt.xlabel('Counts')

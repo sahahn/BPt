@@ -29,7 +29,10 @@ Old_Examples/*
 
 Examples/Full_Examples/Sex*
 
-
+doc/user_guide/fake_surf_data
+doc/user_guide/fake_time_data
+doc/user_guide/fake_time_data/*
+doc/user_guide/fake_surf_data/*
 
 # C extensions
 *.so

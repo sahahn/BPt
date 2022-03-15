@@ -113,7 +113,10 @@ def get_mean_fis(estimators, prop):
         return None
 
     # Return as mean over axis 0
-    return np.mean(np.array(fis), axis=0)
+    try:
+        return np.mean(np.array(fis), axis=0)
+    except ValueError:
+        return None
 
 def check_for_nested_loader(objs):
     '''Go through in nested manner and see if any

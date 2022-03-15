@@ -1638,6 +1638,29 @@ class Dataset(pd.DataFrame):
 
         return X, y
 
+    def split_by(self, scope, decode_values=True):
+        '''TODO add docs'''
+
+        # Get the passed columns
+        split_cols = self.get_cols(scope)
+        
+        # If just one, get vals
+        if len(split_cols) == 1:
+            split_series = self._get_values(split_cols[0], dropna=False,
+                                            decode_values=decode_values)
+
+        # Otherwise get combo 
+        else:
+            split_series = self._get_combo_col(split_cols, decode_values=decode_values)
+
+        # Gen dict of splits
+        splits = {}
+        for u_val in split_series.unique():
+            subjs = split_series[split_series == u_val].index
+            splits[u_val] = self.loc[subjs]
+
+        return splits
+
     def _replace_datafiles_with_repr_(self):
 
         def is_int(i):
@@ -1778,7 +1801,8 @@ class Dataset(pd.DataFrame):
                             nan_to_class,
                             copy_as_non_input,
                             add_unique_overlap,
-                            _replace_cat_values)
+                            _replace_cat_values,
+                            _get_combo_col)
 
     from ._validation import (_validate_group_key,
                               _proc_cv_strategy,

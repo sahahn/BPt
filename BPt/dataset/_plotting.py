@@ -517,7 +517,7 @@ def _plot_category(self, col, subjs, print_info=True, **plot_args):
     g = sns.catplot(x=col, y='index', data=counts,
                 kind='bar', orient='h', ci=None)
 
-    # Try
+    # Add the raw value also
     ax = g.facet_axis(0, 0)
     ax.bar_label(ax.containers[0])
 

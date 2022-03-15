@@ -8,6 +8,9 @@ Version 2.2.2
 - Sampler class
   - Added new input :class:`Sampler` class.
 
+- Improve plotting categorical plots
+  - Now when plotting categorical with :class:`Dataset.plot` will display the raw numbers by each bar.
+
 - add data files function updated
   - The add data files method is now robust to reference index that are integer
   - The new default subject to file is now 'auto'.
@@ -17,3 +20,6 @@ Version 2.2.2
 
 - Some internal refactoring
   - Internal renaming of modules to more pythonic.
+
+- Add repr and iter to :class:`Compare`
+  - Just changing how it looks, no functional changes

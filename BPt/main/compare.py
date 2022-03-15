@@ -237,6 +237,12 @@ class Compare(BPtInputMixIn):
             # Then replace with copy
             option.value = copy(option.value)
 
+    def __iter__(self):
+        return iter(self.options)
+
+    def __repr__(self):
+        return 'CompareDict(' + repr(self.options) + ')'
+
 
 class Options():
 
@@ -411,7 +417,7 @@ class CompareDict(dict):
         # Get example value to base summary on
         ex = self.__getitem__(list(self.keys())[0])
 
-        # @TODO make sure all of same time
+        # @TODO make sure all of same type
 
         # if Evaluation results
         if isinstance(ex, BPtEvaluator):

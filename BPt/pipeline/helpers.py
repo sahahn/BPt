@@ -409,7 +409,8 @@ def pipe_hash(objs, steps):
     return hash_str1 + hash_str2
 
 
-def list_loader_hash(X_col, file_mapping, y, estimator):
+def list_loader_hash(X_col, file_mapping, y, estimator,
+                     extra_params=None):
 
     # Convert X_col to data files,  then str, then hash
     as_data_files_str = [file_mapping[int(key)].quick_hash_repr() for key in X_col]
@@ -422,7 +423,9 @@ def list_loader_hash(X_col, file_mapping, y, estimator):
     hash_estimator_copy = check_replace(deepcopy(estimator))
     hash_str3 = joblib_hash(hash_estimator_copy, hash_name='md5')
 
-    return hash_str1 + hash_str2 + hash_str3
+    hash_str4 = joblib_hash(extra_params, hash_name='md5')
+
+    return hash_str1 + hash_str2 + hash_str3 + hash_str4
 
 
 def replace_with_in_params(params, original, replace):

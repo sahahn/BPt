@@ -788,7 +788,8 @@ class LoaderConstructor(Constructor):
                        file_mapping=file_mapping_subset,
                        n_jobs=self.spec['n_jobs'],
                        fix_n_jobs=param.fix_n_wrapper_jobs,
-                       cache_loc=param.cache_loc)
+                       cache_loc=param.cache_loc,
+                       skip_y_cache=param.skip_y_cache)
 
             # Add to loaders, use same as base name
             loaders.append((name, wrapped_obj))

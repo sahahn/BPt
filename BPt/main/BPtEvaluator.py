@@ -20,6 +20,8 @@ import pickle as pkl
 from matplotlib import cm
 from matplotlib import colors
 
+from sklearn.metrics._scorer import _MultimetricScorer
+
 _base_docs = {}
 
 _base_docs['dataset'] = """dataset : :class:`Dataset`
@@ -782,13 +784,20 @@ class BPtEvaluator():
             self.estimators.append(estimator_)
 
     def _score_estimator(self, estimator_, X_val, y_val):
+        
 
-        # Save score for each scorer
-        for scorer_str in self.ps.scorer:
-            score = self.ps.scorer[scorer_str](estimator_,
-                                               X_val,
-                                               np.array(y_val))
+        # Use multi-metric scorer here - handles not repeating calls to
+        # predict / predict proba, ect... - can safely wrap even single metrics
+        scorers = _MultimetricScorer(**self.ps.scorer)
+        scores = scorers(estimator_, X_val, np.array(y_val))
+
+        # Append each to scores, keeps track per fold
+        for scorer_str in self.scores:
+
+            score = scores[scorer_str]
             self.scores[scorer_str].append(score)
+
+            # Optional verbose
             self._print(f'{scorer_str}: {score_rep(score)}', level=1)
 
         # Spacing for nice looking output

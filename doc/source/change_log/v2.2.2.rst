@@ -11,6 +11,15 @@ Version 2.2.2
 - Improve plotting categorical plots
   - Now when plotting categorical with :class:`Dataset.plot` will display the raw numbers by each bar.
 
+- Fixed the caching for :class:`Loader`
+  - Error w/ previous versions for caching with :class:`Loader` when behav == 'all'
+  - Now fixed, and more effienct.
+
+- More efficient scoring  / bug fix
+  - Updating scoring logic in :func:`evaluate` to stop re-calling predict / predict proba when there was multiple scores.
+  - New implementation uses to logic from sklearn multimetric wrapper to handle this better.
+  - Can give a big speed up in cases where early pipeline transformation / predictions take a long time and multiple metrics are calculated.
+
 - add data files function updated
   - The add data files method is now robust to reference index that are integer
   - The new default subject to file is now 'auto'.

@@ -483,8 +483,19 @@ class BPtListLoader(BPtLoader):
         if not os.path.exists(hash_loc):
             return None
 
+        if self.verbose:
+            print(f'Loading from fit_cache at {hash_loc}', flush=True)
+
         # If found, then return saved, fitted estimator
-        return load(hash_loc)
+        try:
+            return load(hash_loc)
+        
+        except:
+            if self.verbose:
+                print(f'Error loading from fit_cache, skipping load cache.', flush=True)
+
+        return None
+
 
     def _cache_fit(self):
         '''Cache fitted estimator'''
@@ -528,7 +539,14 @@ class BPtListLoader(BPtLoader):
             print(f'Loading from transform_cache at {hash_loc}', flush=True)
 
         # If found, load and return
-        return load(hash_loc)
+        try:
+            return load(hash_loc)
+        
+        except:
+            if self.verbose:
+                print(f'Error loading from transform_cache, skipping load cache.', flush=True)
+
+        return None
 
     def _cache_transform(self, X_trans):
         '''cache transform is called after just the trans, sep of rest inds / other feats,
@@ -565,11 +583,7 @@ class BPtListLoader(BPtLoader):
         
         # If found, set and end
         if estimator is not None:
-            self.estimator_ = estimator
-            
-            if self.verbose:
-                print('Loaded estimator from the fit cache.', flush=True)
-            
+            self.estimator_ = estimator            
             return self
 
         if self.verbose:

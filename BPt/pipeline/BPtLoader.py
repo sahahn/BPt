@@ -42,7 +42,7 @@ class BPtLoader(ScopeTransformer):
 
     def __init__(self, estimator, inds, file_mapping,
                  n_jobs=1, fix_n_jobs=False,
-                 cache_loc=None, skip_y_cache=False):
+                 cache_loc=None, skip_y_cache=False, verbose=True):
         '''The inds for loaders are special, they should not be
         set with Ellipsis. Instead in the case of all, should be
         passed inds as usual.'''
@@ -57,6 +57,7 @@ class BPtLoader(ScopeTransformer):
         self.fix_n_jobs = fix_n_jobs
         self.n_jobs = n_jobs
         self.skip_y_cache = skip_y_cache
+        self.verbose = verbose
 
     # Override inherited n_jobs propegate behavior
     @property
@@ -159,9 +160,6 @@ class BPtLoader(ScopeTransformer):
 
         # Update the mapping + out_mapping_
         self._update_loader_mappings(mapping)
-
-        # Compat with list loader style caching
-        self._cache_fit(X_trans, mapping=mapping)
 
         # Now return X_trans
         return X_trans
@@ -372,10 +370,6 @@ class BPtLoader(ScopeTransformer):
 
         return new_name
 
-    def _cache_fit(self, X_trans, mapping):
-        '''Just exists for compat.'''
-        return
-
 
 class CompatArray(list):
 
@@ -465,9 +459,9 @@ class BPtListLoader(BPtLoader):
     def _set_transform_hash(self, X, trans_params):
 
         self.transform_hash_ = list_loader_hash(X_col=X.get_cache_keys(self.inds_[0]),
-                                                y=None, 
+                                                y=self.fit_hash_, 
                                                 file_mapping=self.file_mapping,
-                                                estimator=self.estimator_,
+                                                estimator=None,
                                                 extra_params=trans_params)
 
     def _check_transform_cache(self, X):
@@ -483,6 +477,9 @@ class BPtListLoader(BPtLoader):
         if not os.path.exists(hash_loc):
             return None
 
+        if self.verbose:
+            print(f'Loading from transform_cache at {hash_loc}', flush=True)
+
         # If found, load and return
         return load(hash_loc)
 
@@ -495,6 +492,9 @@ class BPtListLoader(BPtLoader):
 
         # Get the hash loc
         hash_loc = self._get_hash_loc(self.transform_hash_)
+
+        if self.verbose:
+            print(f'Saving to transform_cache at {hash_loc} with shape {X_trans.shape}', flush=True)
 
         # Save just X_trans
         dump(X_trans, hash_loc)
@@ -562,13 +562,26 @@ class BPtListLoader(BPtLoader):
         # If found, set and end
         if estimator is not None:
             self.estimator_ = estimator
+            
+            if self.verbose:
+                print('Loaded estimator from the fit cache.', flush=True)
+            
             return self
+
+        if self.verbose:
+            print(f'Fit shape: {X.shape}, with load ind: {self.inds_[0]}', flush=True)
 
         # Only load if not cached
         X.load(ind=self.inds_[0], file_mapping=self.file_mapping)
 
+        if self.verbose:
+            print('Loaded files for load ind:', self.inds_[0], flush=True)
+
         # Then fit
         self.estimator_.fit(X[self.inds_[0]], y=y, **fit_params)
+
+        # Try cache
+        self._cache_fit()
 
         return self
 
@@ -592,14 +605,15 @@ class BPtListLoader(BPtLoader):
         self._set_transform_hash(X, trans_params)
 
         # Check transform cache - only if X is not loaded
+        X_trans = None
         if not X.loaded:
-            X_trans = self._check_transform_cache(X, trans_params)
-        else:
-            X.load(ind=self.inds_[0], file_mapping=self.file_mapping)
-            X_trans = None
-        
+            X_trans = self._check_transform_cache(X)
+
         # If cache not found, transform
         if X_trans is None:
+
+            # Can just call loaded again to make sure loaded
+            X.load(ind=self.inds_[0], file_mapping=self.file_mapping)
             X_trans = self.estimator_.transform(X[self.inds_[0]], **trans_params)
 
             # Try to save newly transformed
@@ -615,5 +629,7 @@ class BPtListLoader(BPtLoader):
 
         # Prepare stacked X_trans with rest inds
         ret_X_trans = np.hstack([X_trans, X.conv_rest_back(self.rest_inds_)])
+        if self.verbose:
+            print(f'Final return transform shape: {ret_X_trans.shape}')
 
         return ret_X_trans

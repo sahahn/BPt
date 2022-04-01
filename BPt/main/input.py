@@ -618,7 +618,9 @@ class Loader(Piece):
 
     def __init__(self, obj, behav='single', params=0, scope='data file',
                  cache_loc=None,
-                 fix_n_wrapper_jobs=False, **extra_params):
+                 fix_n_wrapper_jobs=False,
+                 skip_y_cache=False,
+                 **extra_params):
 
         self.obj = obj
 
@@ -632,6 +634,7 @@ class Loader(Piece):
         self.cache_loc = cache_loc
         self.extra_params = extra_params
         self.fix_n_wrapper_jobs = fix_n_wrapper_jobs
+        self.skip_y_cache = skip_y_cache
 
         self._check_args()
 

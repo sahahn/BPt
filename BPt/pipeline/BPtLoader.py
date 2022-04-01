@@ -456,7 +456,54 @@ class BPtListLoader(BPtLoader):
                                      fit_index=fit_index,
                                      **fit_params)
 
+    def _check_fit_cache(self, X, y=None, **fit_params):
+        
+        if self.cache_loc is None:
+            return None
+
+        # Make sure X is compat array here
+        # but should not be loaded yet
+        if not isinstance(X, CompatArray):
+            X = CompatArray(X)
+
+        # If skip y cache, dont cache on y
+        if self.skip_y_cache:
+            y = None
+
+        # Compute hash - pass keys, y, file_mapping, estimator
+        self.fit_hash_ = list_loader_hash(X_col=X[self.inds_[0]],
+                                          y=y,
+                                          file_mapping=self.file_mapping,
+                                          estimator=self.estimator,
+                                          extra_params=fit_params)
+        hash_loc = self._get_hash_loc(self.fit_hash_)
+
+
+        # If not found, return None
+        if not os.path.exists(hash_loc):
+            return None
+
+        # If found, then return saved, fitted estimator
+        return load(hash_loc)
+
+    def _cache_fit(self):
+        '''Cache fitted estimator'''
+
+        # No cache, skip
+        if self.cache_loc is None:
+            return
+
+        # Get the fit hash loc
+        hash_loc = self._get_hash_loc(self.fit_hash_)
+
+        # Cache estimator
+        dump(self.estimator_, hash_loc)
+
     def _set_transform_hash(self, X, trans_params):
+        
+        # Skip if not caching
+        if self.cache_loc is None:
+            return
 
         self.transform_hash_ = list_loader_hash(X_col=X.get_cache_keys(self.inds_[0]),
                                                 y=self.fit_hash_, 
@@ -464,7 +511,7 @@ class BPtListLoader(BPtLoader):
                                                 estimator=None,
                                                 extra_params=trans_params)
 
-    def _check_transform_cache(self, X):
+    def _check_transform_cache(self):
 
         # X is compat array here, but not loaded
 
@@ -508,50 +555,7 @@ class BPtListLoader(BPtLoader):
         hash_loc = os.path.join(self.cache_loc, h)
 
         return hash_loc
-
-    def _check_fit_cache(self, X, y=None, **fit_params):
-        
-        if self.cache_loc is None:
-            return None
-
-        # Make sure X is compat array here
-        # but should not be loaded yet
-        if not isinstance(X, CompatArray):
-            X = CompatArray(X)
-
-        # If skip y cache, dont cache on y
-        if self.skip_y_cache:
-            y = None
-
-        # Compute hash - pass keys, y, file_mapping, estimator
-        self.fit_hash_ = list_loader_hash(X_col=X[self.inds_[0]],
-                                          y=y,
-                                          file_mapping=self.file_mapping,
-                                          estimator=self.estimator,
-                                          extra_params=fit_params)
-        hash_loc = self._get_hash_loc(self.fit_hash_)
-
-
-        # If not found, return None
-        if not os.path.exists(hash_loc):
-            return None
-
-        # If found, then return saved, fitted estimator
-        return load(hash_loc)
-
-    def _cache_fit(self):
-        '''Cache fitted estimator'''
-
-        # No cache, skip
-        if self.cache_loc is None:
-            return
-
-        # Get the fit hash loc
-        hash_loc = self._get_hash_loc(self.fit_hash_)
-
-        # Cache estimator
-        dump(self.estimator_, hash_loc)
-                             
+               
     def _fit(self, X, y=None, **fit_params):
         '''Override the internal fit function to fit only
         the single requested column.'''
@@ -607,7 +611,7 @@ class BPtListLoader(BPtLoader):
         # Check transform cache - only if X is not loaded
         X_trans = None
         if not X.loaded:
-            X_trans = self._check_transform_cache(X)
+            X_trans = self._check_transform_cache()
 
         # If cache not found, transform
         if X_trans is None:

@@ -218,7 +218,6 @@ class CounterBalance(BaseEstimator, TransformerMixin):
         # Return resampled X and new_fit_inds
         return X[self.sampled_inds_], self.sampled_inds_, new_fit_index
                 
-
     def fit_transform(self, X, y=None, fit_index=None):
 
         if isinstance(X, pd.DataFrame):

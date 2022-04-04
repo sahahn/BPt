@@ -531,9 +531,13 @@ def _plot_category(self, col, subjs, print_info=True, **plot_args):
     g = sns.catplot(x=col, y='index', data=counts,
                 kind='bar', orient='h', ci=None)
 
-    # Add the raw value also
-    ax = g.facet_axis(0, 0)
-    ax.bar_label(ax.containers[0])
+    # Add the raw value also as label
+    # might fail w/ some library versions, if so, just skip
+    try:
+        ax = g.facet_axis(0, 0)
+        ax.bar_label(ax.containers[0])
+    except AttributeError:
+        pass
 
     if plot_args['count']:
         plt.xlabel('Counts')

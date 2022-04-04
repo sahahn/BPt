@@ -476,6 +476,12 @@ def _plot_col(self, col, subjs,
 
     # If type error when plotting float, try category instead
     except TypeError:
+
+        # Clear previous
+        plt.clf()
+        self._print('Failed plotting as float, trying as categorical')
+
+        # Then try plot as category
         return self._plot_category(col=col,
                                    subjs=subjs,
                                    print_info=print_info,

@@ -470,8 +470,16 @@ def _plot_col(self, col, subjs,
                                    **plot_args)
 
     # Otherwise float
-    return self._plot_float(col=col, subjs=subjs,
-                            print_info=print_info, **plot_args)
+    try:
+        return self._plot_float(col=col, subjs=subjs,
+                                print_info=print_info, **plot_args)
+
+    # If type error when plotting float, try category instead
+    except TypeError:
+        return self._plot_category(col=col,
+                                   subjs=subjs,
+                                   print_info=print_info,
+                                   **plot_args)
 
 
 def _plot_float(self, col, subjs, print_info=True, **plot_args):

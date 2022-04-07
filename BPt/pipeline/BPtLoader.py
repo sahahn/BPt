@@ -42,7 +42,8 @@ class BPtLoader(ScopeTransformer):
 
     def __init__(self, estimator, inds, file_mapping,
                  n_jobs=1, fix_n_jobs=False,
-                 cache_loc=None, skip_y_cache=False, verbose=True):
+                 cache_loc=None, skip_y_cache=False,
+                 verbose=False):
         '''The inds for loaders are special, they should not be
         set with Ellipsis. Instead in the case of all, should be
         passed inds as usual.'''

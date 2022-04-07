@@ -1,5 +1,5 @@
 from ..from_sklearn import load_cali
-from ...dataset.Dataset import Dataset
+from ...dataset.dataset import Dataset
 
 
 def test_load_cali():

@@ -1,5 +1,6 @@
 from ..helpers import get_obj_and_params, all_from_objects
 from ...extensions.loaders import Identity
+import warnings
 
 LOADERS = {
     'identity': (Identity, ['default']),
@@ -7,7 +8,11 @@ LOADERS = {
 
 # If nilearn dependencies
 try:
-    from nilearn.input_data import NiftiLabelsMasker
+
+    with warnings.catch_warnings():
+        warnings.simplefilter(action='ignore', category=FutureWarning)
+        from nilearn.input_data import NiftiLabelsMasker
+
     from ...extensions.loaders import SingleConnectivityMeasure
     LOADERS['volume rois'] = (NiftiLabelsMasker, ['default'])
     LOADERS['connectivity'] = (SingleConnectivityMeasure, ['default'])

@@ -359,6 +359,21 @@ def save_all():
     save(lines, 'scalers')
 
     lines = []
+    lines = main_category(lines, 'Samplers')
+    lines.append('Different base obj choices for the '
+                 ':class:`Scaler<BPt.Sampler>` '
+                 'are shown below')
+    lines.append('The exact str indicator, as passed to the `obj` param is '
+                 'represented' +
+                 ' by the sub-heading (within "")')
+    lines.append('Additionally, a link to the original models documentation ' +
+                 'as well as the implemented parameter '
+                 'distributions are shown.')
+    lines.append('')
+    lines = add_no_type_block(lines, o.scalers.SCALERS)
+    save(lines, 'samplers')
+
+    lines = []
     lines = main_category(lines, 'Transformers')
     lines.append('Different base obj choices for the '
                  ':class:`Transformer<BPt.Transformer>` are shown below')

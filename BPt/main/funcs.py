@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from ..pipeline.BPtPipelineConstructor import get_pipe
 from ..default.options.scorers import process_scorers
-from .BPtEvaluator import BPtEvaluator
+from .BPtEvaluator import BPtEvaluator, _refresh_bar
 from sklearn.model_selection import check_cv
 from .input_operations import Intersection
 from pandas.util._decorators import doc
@@ -1193,8 +1193,7 @@ def evaluate(pipeline, dataset,
     # Close compare bars
     if compare_bars is not None:
         for bar in compare_bars:
-            bar.n = bar.total
-            bar.refresh()
+            _refresh_bar(bar, n=bar.total)
             bar.close()
 
     return evaluators

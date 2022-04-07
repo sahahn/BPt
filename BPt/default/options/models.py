@@ -19,6 +19,7 @@ from sklearn.linear_model import (LogisticRegression, ElasticNet,
                                   TweedieRegressor)
 
 from sklearn.svm import SVC, LinearSVR, SVR, LinearSVC
+import warnings
 from ..helpers import get_obj_and_params, all_from_avaliable
 
 
@@ -165,7 +166,9 @@ MODELS = {
 }
 
 try:
-    from xgboost import XGBClassifier, XGBRegressor
+    with warnings.catch_warnings():
+        warnings.simplefilter(action='ignore', category=FutureWarning)
+        from xgboost import XGBClassifier, XGBRegressor
 
     AVALIABLE['binary']['xgb'] = 'xgb classifier'
     AVALIABLE['regression']['xgb'] = 'xgb regressor'

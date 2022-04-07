@@ -1,10 +1,11 @@
 import numpy as np
+import pandas as pd
 from sklearn.preprocessing import LabelEncoder, KBinsDiscretizer
 from .helpers import (add_new_categories, remove_unused_categories,
                       get_str_round)
 from operator import add
 from functools import reduce
-from .Dataset import _shared_docs, _sip_docs
+from .dataset import _shared_docs, _sip_docs
 from pandas.util._decorators import doc
 
 
@@ -789,16 +790,8 @@ def add_unique_overlap(self, cols, new_col, decode_values=True, inplace=False):
     if new_col in list(self):
         raise KeyError('Passed new col: ' + new_col + ' already exists!')
 
-    # Generate a list of modified series
-    combo = []
-    for col in cols:
-
-        vals = self._get_values(col, dropna=False,
-                                decode_values=decode_values)
-        combo.append(col + '=' + vals.astype(str) + ' ')
-
-    # Combine
-    combo = reduce(add, combo)
+    # Get new combined values
+    combo = self._get_combo_col(cols, decode_values=decode_values)
 
     # Add as new column
     self[new_col] = combo
@@ -823,3 +816,21 @@ def add_unique_overlap(self, cols, new_col, decode_values=True, inplace=False):
 
     # Make sure scopes updated
     self._check_scopes()
+
+def _get_combo_col(self, cols, decode_values=True):
+
+    # Generate a list of modified series
+    combo = []
+    index, dtype = None, None
+
+    for col in cols:
+        vals = self._get_values(col, dropna=False,
+                                decode_values=decode_values)
+        index, dtype = vals.index, vals.dtype
+
+        combo.append(col + '=' + vals.astype(str) + ' ')
+
+    # Combine
+    combo = reduce(add, combo)
+
+    return pd.Series(combo, index=index, dtype=dtype)

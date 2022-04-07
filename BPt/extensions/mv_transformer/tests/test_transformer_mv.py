@@ -1,4 +1,4 @@
-from ....dataset.Dataset import Dataset
+from ....dataset.dataset import Dataset
 from ....main.input import Pipeline, Scaler, Model, ParamSearch
 from ....main.funcs import get_estimator
 import tempfile

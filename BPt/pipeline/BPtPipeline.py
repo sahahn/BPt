@@ -131,7 +131,14 @@ class BPtPipeline(Pipeline):
                 # cloned and now fitted transformer
                 self.steps[step_idx] = (name, cloned_transformer)
 
-        return X
+                # Check to see if special X sampler case
+                if isinstance(X, tuple) and len(X) == 3:
+
+                    # Un-pack correctly
+                    X, resample_inds, fit_index = X
+                    y = y[resample_inds]
+
+        return X, y
 
     def fit(self, X, y=None, mapping=None,
             fit_index=None, **fit_params):
@@ -180,8 +187,7 @@ class BPtPipeline(Pipeline):
         fit_params_steps = self._check_fit_params(**fit_params)
 
         # Fit and transform X for all but the last step.
-        Xt = self._fit(X, y, fit_index=fit_index,
-                       **fit_params_steps)
+        Xt, y = self._fit(X, y, fit_index=fit_index, **fit_params_steps)
 
         # Fit the final step
         with _print_elapsed_time('Pipeline',
@@ -263,7 +269,7 @@ class BPtPipeline(Pipeline):
 
         return ordered_objs, ordered_names
 
-    def transform(self, X, transform_index=None, nested_model=False):
+    def transform(self, X, transform_index=None, nested_model=False, trans_y=None):
 
         Xt = X
 
@@ -287,6 +293,16 @@ class BPtPipeline(Pipeline):
             # Transform X - think in place is okay
             Xt = transformer.transform(Xt, **trans_params)
 
+            # Check to see if special Xt sampler case
+            if isinstance(Xt, tuple) and len(Xt) == 3:
+
+                # Un-pack
+                Xt, resample_inds, transform_index = Xt
+
+                # Make sure trans_y is not None
+                if trans_y is not None:
+                    trans_y = np.array(trans_y)[resample_inds]
+
         # Need to check the last step / model in case of nested model
         if nested_model:
             model = self.steps[-1][1]
@@ -301,7 +317,12 @@ class BPtPipeline(Pipeline):
                                           nested_model=nested_model)
 
                 # Transform X
+                # TODO Handle potential nested trans y case
                 Xt = model.transform(Xt, **trans_params)
+
+        # If passed trans y, return new y + transform index
+        if trans_y is not None:
+            return Xt, trans_y, transform_index
 
         return Xt
 

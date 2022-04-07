@@ -113,7 +113,10 @@ def get_mean_fis(estimators, prop):
         return None
 
     # Return as mean over axis 0
-    return np.mean(np.array(fis), axis=0)
+    try:
+        return np.mean(np.array(fis), axis=0)
+    except ValueError:
+        return None
 
 def check_for_nested_loader(objs):
     '''Go through in nested manner and see if any
@@ -409,7 +412,8 @@ def pipe_hash(objs, steps):
     return hash_str1 + hash_str2
 
 
-def list_loader_hash(X_col, file_mapping, y, estimator):
+def list_loader_hash(X_col, file_mapping, y, estimator,
+                     extra_params=None):
 
     # Convert X_col to data files,  then str, then hash
     as_data_files_str = [file_mapping[int(key)].quick_hash_repr() for key in X_col]
@@ -419,10 +423,23 @@ def list_loader_hash(X_col, file_mapping, y, estimator):
     hash_str2 = joblib_hash(y, hash_name='md5')
 
     # Hash the estimator - w/ extra special check
-    hash_estimator_copy = check_replace(deepcopy(estimator))
-    hash_str3 = joblib_hash(hash_estimator_copy, hash_name='md5')
+    if estimator is None:
+        hash_str3 = ''
+    else:
+        hash_estimator_copy = check_replace(deepcopy(estimator))
+        hash_str3 = joblib_hash(hash_estimator_copy, hash_name='md5')
 
-    return hash_str1 + hash_str2 + hash_str3
+    # Hash anything extra
+    if extra_params is None or len(extra_params) == 0:
+        hash_str4 = ''
+    else:
+        hash_str4 = joblib_hash(extra_params, hash_name='md5')
+
+    # Concat
+    full_hash = hash_str1 + hash_str2 + hash_str3 + hash_str4
+
+    # Longer to hash, but shorter str, try this
+    return joblib_hash(full_hash)
 
 
 def replace_with_in_params(params, original, replace):

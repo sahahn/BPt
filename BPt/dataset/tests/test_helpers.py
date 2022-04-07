@@ -1,5 +1,5 @@
 from ..helpers import proc_fop, proc_file_input, auto_determine_subjects
-from ..Dataset import Dataset
+from ..dataset import Dataset
 import pytest
 
 
@@ -59,3 +59,21 @@ def test_auto_determine_subjects_template2():
     auto_determine_subjects(file_paths, existing_index) == ['subjs_grp1-0001',
                                                             'subjs_grp1-0002',
                                                             'subjs_grp1-0003']
+
+def test_auto_determine_subjects_template_int_case():
+
+    data = Dataset()
+    data['1'] = [1, 2, 3]
+    data.index = [1, 2, 3]
+    
+    existing_index = data.index
+
+    # Make sure to test with and w/o leading 0's
+    file_paths = ['some_loc/subjs_grp1-0001',
+                  'some_loc/subjs_grp1-0002',
+                  'some_loc/subjs_grp1-3']
+
+
+    # Makes sure index works
+    subjs = auto_determine_subjects(file_paths, existing_index)
+    assert data.loc[subjs].shape == (3, 1)

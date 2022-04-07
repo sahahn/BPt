@@ -1,8 +1,3 @@
-"""
-Scalers.py
-====================================
-File containing the various data scalers.
-"""
 from ..helpers import get_obj_and_params, all_from_objects
 from sklearn.preprocessing import (MinMaxScaler, RobustScaler, StandardScaler,
                                    PowerTransformer, MaxAbsScaler,
@@ -39,7 +34,7 @@ SCALERS = {
 # @TODO find way to re-use these default ones
 def get_scaler_and_params(scaler_str, extra_params, params,
                           **kwargs):
-    '''Returns a scaler based on proced str indicator input,
+    '''Returns a scaler based on proc'ed str indicator input,
 
     Parameters
     ----------

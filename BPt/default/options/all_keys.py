@@ -21,6 +21,9 @@ def get_all_keys():
     from .scalers import all_obj_keys
     all_keys.update(all_obj_keys)
 
+    from .samplers import all_obj_keys
+    all_keys.update(all_obj_keys)
+
     from .transformers import all_obj_keys
     all_keys.update(all_obj_keys)
 

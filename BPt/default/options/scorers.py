@@ -104,6 +104,8 @@ def get_scorers_by_type(problem_type):
 
 def process_scorers(in_scorers, problem_type):
 
+    # TODO add sklean style check scorer?
+
     # If already correct scorers dict.
     if isinstance(in_scorers, dict):
         return in_scorers
@@ -127,6 +129,8 @@ def process_scorers(in_scorers, problem_type):
             name = 'Custom Scorer ' + str(cnt)
             scorers[name] = wrap_non_picklable_objects(scorer_strs[m])
             cnt += 1
+
+    
 
     return scorers
 

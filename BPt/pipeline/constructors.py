@@ -15,8 +15,10 @@ from copy import deepcopy
 from .Selector import selector_wrapper
 from sklearn.compose import TransformedTargetRegressor
 from .BPtSearchCV import wrap_param_search
+from .bpt_sampler import BPtSampler
 from .ensemble_wrappers import EnsembleWrapper
 from collections import defaultdict
+import pandas as pd
 
 import numpy as np
 
@@ -100,6 +102,36 @@ def add_estimator_to_params(passed_params):
 
     return params
 
+def process_nested_params(params, name, scope_name, new_params):
+
+    # Change any associated params
+    param_keys = list(params)
+    for key in param_keys:
+        split_key = key.split('__')
+
+        # If this is an associated param w/ this obj
+        if split_key[0] == name:
+
+            # Replace name with estimator
+            name = split_key[0] + scope_name
+            split_key[0] = 'estimator'
+
+            # Create new name
+            new_name = '__'.join([name] + split_key)
+
+            # Add to new params - which can be the same as params
+            new_params[new_name] = params.pop(key)
+
+    # Return the new params
+    return new_params
+
+
+def check_cache_loc(input_param):
+
+    if hasattr(input_param, 'cache_loc'):
+        return getattr(input_param, 'cache_loc')
+    return None
+
 
 class Constructor():
 
@@ -155,10 +187,9 @@ class Constructor():
 
         # Process everything but the select groups first
         # Putting the recursive call to process here... even though I
-        # think call to
-        # just _process could work too. The logic is, I don't think it will
-        # hurt,
-        # and if more options beyond Select are added to process later... this
+        # think call to just _process could work too.
+        # The logic is, I don't think it will
+        # hurt, and if more options beyond Select are added to process later... this
         # will hopefully cover those cases.
         non_select_objs, obj_params =\
             self.process([i for idx, i in enumerate(params) if
@@ -355,6 +386,39 @@ class Constructor():
 
         return inds
 
+    def _proc_obj_scope(self, input_param):
+
+        if hasattr(input_param, 'scope'):
+
+            # Proc scope
+            scope = input_param.scope
+
+            # Sets to either inds or Ellipsis if all
+            inds = self._check_scope_all(scope)
+
+            # Get scope name
+            scope_name = get_scope_name(scope)
+
+        elif hasattr(input_param, 'scopes'):
+
+            # Proc scope
+            scopes = input_param.scopes
+
+            # Sets to either inds or Ellipsis if all
+            inds = [self._check_scope_all(scope) for scope in scopes]
+
+            # Get scope name
+            # TODO ??
+            scope_name = ''
+
+        # If no scope, the assumes inds is all
+        else:
+
+            inds = Ellipsis
+            scope_name = 'all'
+
+        return inds, scope_name
+
     def _make_col_version(self, objs, params, input_params, Wrapper):
         '''@TODO re-use pieces from this and checking for a Scope model, comb
         simmilar functionality into one method.'''
@@ -367,41 +431,14 @@ class Constructor():
             # Unpack name and obj
             name, obj = objs[i][0], objs[i][1]
 
-            # Make sure n_jobs and random_state are set in the base object
-            if hasattr(obj, 'n_jobs'):
-                setattr(obj, 'n_jobs', self.spec['n_jobs'])
-            if hasattr(obj, 'random_state'):
-                setattr(obj, 'random_state', self.spec['random_state'])
+            # Set n_jobs + random state
+            obj = self._check_params(obj)
 
-            if hasattr(input_params[i], 'scope'):
+            # Get inds / name from params
+            inds, scope_name = self._proc_obj_scope(input_params[i])
 
-                # Proc scope
-                scope = input_params[i].scope
-
-                # Sets to either inds or Ellipsis if all
-                inds = self._check_scope_all(scope)
-
-                # Get scope name
-                scope_name = get_scope_name(scope)
-
-            elif hasattr(input_params[i], 'scopes'):
-
-                # Proc scope
-                scopes = input_params[i].scopes
-
-                # Sets to either inds or Ellipsis if all
-                inds = [self._check_scope_all(scope) for scope in scopes]
-
-                # Get scope name
-                scope_name = ''
-
-            else:
-                raise RuntimeError('No scope or scopes in object')
-
-            if hasattr(input_params[i], 'cache_loc'):
-                cache_loc = getattr(input_params[i], 'cache_loc')
-            else:
-                cache_loc = None
+            # Get cache loc if any
+            cache_loc = check_cache_loc(input_params[i])
 
             # Create the col obj as a the passed Wrapper
             col_obj = (name + scope_name,
@@ -410,22 +447,8 @@ class Constructor():
                                cache_loc=cache_loc))
             col_objs.append(col_obj)
 
-            # Change any associated params
-            for key in params:
-                split_key = key.split('__')
-
-                # If this is an associated param w/ this obj
-                if split_key[0] == name:
-
-                    # Replace name with estimator
-                    name = split_key[0] + scope_name
-                    split_key[0] = 'estimator'
-
-                    # Create new name
-                    new_name = '__'.join([name] + split_key)
-
-                    # Save under new name
-                    col_params[new_name] = params[key]
+            # Process nested params
+            col_params = process_nested_params(params, name, scope_name, col_params)
 
         return col_objs, col_params
 
@@ -653,22 +676,10 @@ class ModelConstructor(TypeConstructor):
                        BPtModel(estimator=model[1], inds=inds))
 
         # Change any associated params with this model obj
-        param_keys = list(model_params)
-        for key in param_keys:
-            split_key = key.split('__')
-
-            # If this is an associated param w/ this obj
-            if split_key[0] == name:
-
-                # Replace name with estimator
-                name = split_key[0] + scope_name
-                split_key[0] = 'estimator'
-
-                # Create new name
-                new_name = '__'.join([name] + split_key)
-
-                # Replace under new name
-                model_params[new_name] = model_params.pop(key)
+        model_params = process_nested_params(model_params,
+                                             name,
+                                             scope_name,
+                                             model_params)
 
         return scope_model, model_params
 
@@ -777,7 +788,8 @@ class LoaderConstructor(Constructor):
                        file_mapping=file_mapping_subset,
                        n_jobs=self.spec['n_jobs'],
                        fix_n_jobs=param.fix_n_wrapper_jobs,
-                       cache_loc=param.cache_loc)
+                       cache_loc=param.cache_loc,
+                       skip_y_cache=param.skip_y_cache)
 
             # Add to loaders, use same as base name
             loaders.append((name, wrapped_obj))
@@ -843,6 +855,57 @@ class ScalerConstructor(Constructor):
         return self._make_col_version(objs, obj_params, params,
                                       Wrapper=ScopeTransformer)
 
+class SamplerConstructor(Constructor):
+    name = 'samplers'
+
+    def _process(self, params):
+
+        from ..default.options.samplers import get_sampler_and_params
+
+        # Get base sampler objs and associated params
+        objs, obj_params =\
+            self._get_objs_and_params(get_sampler_and_params, params)
+
+        # Make objs + params
+        sampler_objs, sampler_params = [], {}
+
+        # Loop through objects
+        for i in range(len(objs)):
+
+            # Unpack name and obj
+            name, obj = objs[i][0], objs[i][1]
+
+            # Set n_jobs + random state
+            obj = self._check_params(obj)
+
+            # If None, assume already set
+            if params[i].ref_scope is not None:
+                
+                # Get list of groups col names
+                cols = self.dataset._get_cols(params[i].ref_scope)
+
+                # Set as dataframe
+                groups = pd.DataFrame(self.dataset[cols])
+
+                # Set the groups attribute
+                setattr(obj, 'groups', groups)
+
+            # Get cache loc if any
+            cache_loc = check_cache_loc(params[i])
+
+            # Add sampler object, fixed scope / inds == all
+            sampler_obj = (name,
+                           BPtSampler(obj, inds=Ellipsis, cache_loc=cache_loc))
+            sampler_objs.append(sampler_obj)
+
+            # Process obj params into sampler params
+            sampler_params = process_nested_params(obj_params,
+                                                   name=name,
+                                                   scope_name='',
+                                                   new_params=sampler_params)
+
+        # Want to return here
+        return sampler_objs, sampler_params
 
 class TransformerConstructor(Constructor):
 

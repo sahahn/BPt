@@ -1,6 +1,6 @@
 from .test_evaluate import get_fake_dataset
 from ..input import Model, Pipeline, Scaler, CV
-from ...dataset.Dataset import Dataset
+from ...dataset.dataset import Dataset
 from ..funcs import evaluate
 from ..BPtEvaluator import is_notebook
 import pytest

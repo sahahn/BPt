@@ -25,9 +25,19 @@ def proc_fop(fop):
 
 def auto_determine_subjects(file_paths, existing_index):
 
+    # Check if is integer index
+    is_int = False
+    if hasattr(existing_index, 'dtype'):
+        is_int = 'int' in existing_index.dtype.name
+
     # Set as list from index
     existing_index = list(existing_index)
+
     if len(existing_index) > 1:
+        
+        # If int, need to handle special case
+        if is_int:
+            existing_index = [str(i) for i in existing_index]
 
         # Figure out from existing index
         # how it would have been loaded by auto
@@ -53,6 +63,10 @@ def auto_determine_subjects(file_paths, existing_index):
     subjects = get_unique_str_markers(file_paths,
                                       template=template,
                                       template_marker='SUBJ-MARKER')
+
+    
+    if is_int:
+        subjects = [int(s) for s in subjects]
 
     return subjects
 

@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from pandas.util._decorators import doc
 from ..util import save_docx_table, get_top_substrs
-from .Dataset import _file_docs, _shared_docs
+from .dataset import _file_docs, _shared_docs
 
 _plot_docs = _file_docs.copy()
 _plot_docs['scope'] = _shared_docs['scope']
@@ -470,8 +470,22 @@ def _plot_col(self, col, subjs,
                                    **plot_args)
 
     # Otherwise float
-    return self._plot_float(col=col, subjs=subjs,
-                            print_info=print_info, **plot_args)
+    try:
+        return self._plot_float(col=col, subjs=subjs,
+                                print_info=print_info, **plot_args)
+
+    # If type error when plotting float, try category instead
+    except TypeError:
+
+        # Clear previous
+        plt.clf()
+        self._print('Failed plotting as float, trying as categorical')
+
+        # Then try plot as category
+        return self._plot_category(col=col,
+                                   subjs=subjs,
+                                   print_info=print_info,
+                                   **plot_args)
 
 
 def _plot_float(self, col, subjs, print_info=True, **plot_args):
@@ -514,8 +528,16 @@ def _plot_category(self, col, subjs, print_info=True, **plot_args):
     counts = counts.reset_index()
 
     # Plot
-    sns.catplot(x=col, y='index', data=counts,
+    g = sns.catplot(x=col, y='index', data=counts,
                 kind='bar', orient='h', ci=None)
+
+    # Add the raw value also as label
+    # might fail w/ some library versions, if so, just skip
+    try:
+        ax = g.facet_axis(0, 0)
+        ax.bar_label(ax.containers[0])
+    except AttributeError:
+        pass
 
     if plot_args['count']:
         plt.xlabel('Counts')

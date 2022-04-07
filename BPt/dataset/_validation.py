@@ -1,7 +1,7 @@
 from ..main.CV import CVStrategy
 from .helpers import save_subjects
 import pandas as pd
-from .Dataset import _shared_docs
+from .dataset import _shared_docs
 from pandas.util._decorators import doc
 
 _val_docs = {}

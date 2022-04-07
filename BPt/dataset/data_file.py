@@ -64,6 +64,39 @@ class DataFile():
     def quick_hash_repr(self):
         return self.loc + '-' + self.load_func.__name__
 
+class DataFileNaN(DataFile):
+
+    def __init__(self):
+        self.loc = 'NaN'
+        self.load_func = None
+
+    def _load(self):
+        return np.nan
+
+    def reduce(self, reduce_func):
+        return np.nan
+
+    def __lt__(self, other):
+        return self.loc < other.loc
+
+    def __eq__(self, other):
+        return self.loc == other.loc
+
+    def __hash__(self):
+        return hash(np.nan)
+
+    def __deepcopy__(self, memo):
+        return DataFileNaN()
+
+    def __repr__(self):
+        return 'DataFileNaN()'
+
+    def __str__(self):
+        return self.__repr__()
+
+    def quick_hash_repr(self):
+        return self.loc + '-' + self.load_func.__name__
+
 
 def mp_single_load(files, reduce_func):
 
@@ -93,7 +126,10 @@ def load_data_file_proxy(values, reduce_func, file_mapping, n_jobs=1):
 
     # Nested func for multi-proc, to vectorize
     def change_to_map(x):
-        return file_mapping[x]
+        try:
+            return file_mapping[x]
+        except KeyError:
+            return DataFileNaN()
     v_func = np.vectorize(change_to_map)
 
     # Apply v_func to each split

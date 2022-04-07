@@ -1,6 +1,6 @@
 from ...main.input import Imputer, Model
 from ..constructors import ImputerConstructor
-from ...dataset.Dataset import Dataset
+from ...dataset.dataset import Dataset
 import numpy as np
 from sklearn.linear_model import LogisticRegression, LinearRegression
 from sklearn.experimental import enable_iterative_imputer

@@ -121,7 +121,10 @@ def proc_X_trans(X_trans, vectorize):
 # Create wrapper for nilearn connectivity measure to make it
 # work with 1 subject
 try:
-    from nilearn.connectome import ConnectivityMeasure
+
+    with warnings.catch_warnings():
+        warnings.simplefilter(action='ignore', category=FutureWarning)
+        from nilearn.connectome import ConnectivityMeasure
 
     class SingleConnectivityMeasure(ConnectivityMeasure):
         '''| See :class:`nilearn.connectome.ConnectivityMeasure`.
@@ -456,9 +459,14 @@ def get_loader_pipe(parc, pipe='elastic_pipe', obj_params=None, **loader_params)
         obj_params = {}
 
     try:
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter(action='ignore', category=FutureWarning)
+            from nilearn.input_data  import NiftiLabelsMasker, NiftiMapsMasker
+
         from neurotools.transform import SurfLabels, SurfMaps
         from neurotools.loading import load
-        from nilearn.input_data  import NiftiLabelsMasker, NiftiMapsMasker
+        
     except ImportError:
         raise ImportError('neurotools must be installed!')
 

@@ -238,7 +238,7 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
 
         # Get X_trans
         X_trans = self._est_transform(X, **trans_params)
-
+        
         # Save number of output features after X_trans
         self.n_trans_feats_ = X_trans.shape[1]
 
@@ -249,14 +249,17 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
             if len(self.rest_inds_) == 0:
                 return np.hstack([X_trans, X[:, self.inds_]])
 
-            return np.hstack([X_trans, X[:, self.rest_inds_],
+            # Stacked with rest inds
+            return np.hstack([X_trans,
+                              X[:, self.rest_inds_],
                               X[:, self.inds_]])
 
-        # Return stacked X_trans with rest inds
+
+        # Return stack rest inds if any
         if len(self.rest_inds_) > 0:
             return np.hstack([X_trans, X[:, self.rest_inds_]])
 
-        # No rest inds, return directly
+        # Final case, just X_trans
         return X_trans
 
     def _est_transform(self, X, **trans_params):

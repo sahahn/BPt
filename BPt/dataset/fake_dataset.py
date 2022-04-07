@@ -1,4 +1,4 @@
-from .Dataset import Dataset
+from .dataset import Dataset
 import warnings
 
 

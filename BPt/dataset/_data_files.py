@@ -4,7 +4,7 @@ from joblib import Parallel, delayed
 from .data_file import DataFile
 from .helpers import (proc_file_input, mp_consol_save, wrap_load_func)
 from pandas.util._decorators import doc
-from .Dataset import _shared_docs, _sip_docs
+from .dataset import _shared_docs, _sip_docs
 import numpy as np
 import pandas as pd
 
@@ -46,7 +46,7 @@ def get_file_mapping(self, cols=None):
 
 
 @doc(load_func=_shared_docs['load_func'], inplace=_shared_docs['inplace'])
-def add_data_files(self, files, file_to_subject,
+def add_data_files(self, files, file_to_subject='auto',
                    load_func=np.load, inplace=False):
     '''This method allows adding columns of type
     'data file' to the Dataset class.
@@ -66,7 +66,7 @@ def add_data_files(self, files, file_to_subject,
           which specifies how to convert from passed
           file path, to a subject name.
 
-    file_to_subject : python function, dict of or 'auto'
+    file_to_subject : python function, dict of or 'auto', optional
         | This parameter represents how the subject name should
           be determined from the passed file paths. This
           parameter can be passed any python function, where
@@ -80,15 +80,24 @@ def add_data_files(self, files, file_to_subject,
           to subject. If just one function is passed, it will be used
           for to load all dictionary entries. For example:
 
-        | You may also pass the custom str 'auto' to
-          specify that the subject name should be the base
-          file name with the extension removed. For example
-          if the path is '/some/path/subj16.npy' then the auto
-          subject will be 'subj16'.
+        | You may also pass the custom str 'auto', which is the
+          default, to specify that the subject should try to be automatically
+          inferred. Note that the way in which this occurs is somewhat
+          complex, and potentially a bit brittle, so make sure to check
+          to see that all index names were inferred correctly. Also note
+          that already having a column of reference index names loaded can
+          help the program figure out what kind of index to put, e.g.,
+          if your desired index names are 'subj_1', 'subj_2', unless you already
+          have an example column loaded, this method will likely just set the index
+          as '1' and '2'.
 
         | In the case that the underlying index is a MultiIndex, this
           function should be designed to return the subject in correct
           tuple form. See Examples below.
+
+        ::
+
+            default == 'auto'
 
     {load_func}
 

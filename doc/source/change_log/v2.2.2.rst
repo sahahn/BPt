@@ -20,7 +20,7 @@ Version 2.2.2
   - New implementation uses to logic from sklearn multimetric wrapper to handle this better.
   - Can give a big speed up in cases where early pipeline transformation / predictions take a long time and multiple metrics are calculated.
 
-- add data files function updated
+- Add data files function updated
   - The add data files method is now robust to reference index that are integer
   - The new default subject to file is now 'auto'.
 

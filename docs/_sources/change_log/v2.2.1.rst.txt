@@ -1,0 +1,9 @@
+.. _whatsnew_221:
+
+.. currentmodule:: BPt
+
+Version 2.2.1
+---------------
+- Just documentation changes
+  - Now auto generate docs
+  - Fix some formatting docs will look better

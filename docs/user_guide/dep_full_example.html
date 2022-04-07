@@ -1,0 +1,2350 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Predicting Substance Dependence from Multi-Site Data &#8212; BPt 2.2.2 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/pandas.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Predict Stop Signal Response Time (SSRT)" href="ssrt.html" />
+    <link rel="prev" title="Predict BMI" href="bmi_full_example.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../index.html">
+  <img src="../_static/red_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../installation/index.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../reference/index.html">
+  API reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../options/index.html">
+  Default Options
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../change_log/index.html">
+  Change Log
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../cite/index.html">
+  Cite BPt
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/sahahn/BPt" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/SageHahn11" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="why_bpt.html">
+   Why BPt?
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="loading_data.html">
+   Loading Data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="saving_data.html">
+   Saving Data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="test_split.html">
+   Test Split
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="role.html">
+   Role
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="scope.html">
+   Scope
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="data_types.html">
+   Data Types
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="data_files.html">
+   Data Files
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="load_timeseries_example.html">
+     Loading Fake Timeseries Surface Data
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="subjects.html">
+   Subjects
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="pipeline_objects.html">
+   Pipeline Objects
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="params.html">
+   Params
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="extra_params.html">
+   Extra Params
+  </a>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bmi_full_example.html">
+   Predict BMI
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Predicting Substance Dependence from Multi-Site Data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ssrt.html">
+   Predict Stop Signal Response Time (SSRT)
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="waist_cm.html">
+   Predict Waist Circumference with Diffusion Weighted Imaging
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="sex.html">
+   Predict Sex
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Loading-/-Preparing-Data">
+   Loading / Preparing Data
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Running-ML">
+   Running ML
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#3-fold-CV-random-splits">
+   3-fold CV random splits
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Preserving-Groups-by-Site">
+   Preserving Groups by Site
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Other-options?">
+   Other options?
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Leave-out-site-CV">
+   Leave-out-site CV
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Train-only-subjects">
+   Train-only subjects
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Drop-imbalanced-subjects">
+   Drop imbalanced subjects
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Results-Summary">
+   Results Summary
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Disentangle-Target-and-Site?">
+   Disentangle Target and Site?
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt .copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<section id="Predicting-Substance-Dependence-from-Multi-Site-Data">
+<h1>Predicting Substance Dependence from Multi-Site Data<a class="headerlink" href="#Predicting-Substance-Dependence-from-Multi-Site-Data" title="Permalink to this headline">#</a></h1>
+<p>This notebook explores an example using data from the ENIGMA Addiction Consortium. Within this notebook we will be trying to predict between participants with any drug dependence (alcohol, cocaine, etc…), vs. healthy controls. The data for this is sources from a number of individual studies from all around the world and with different scanners etc… making this a challenging problem with its own unique considerations. Structural FreeSurfer ROIs are used. The raw data cannot be made available due
+to data use agreements.</p>
+<p>The key idea explored in this notebook is a particular tricky problem introduced by case-only sites, which are subject’s data from site’s with only case’s. This introduces a confound where you cannot easily tell if the classifier is learning to predict site or the dependence status of interest.</p>
+<p>Featured in this notebook as well are some helpful code snippets for converting from BPt versions earlier than BPt 2.0 to valid BPt 2.0+ code.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">BPt</span> <span class="k">as</span> <span class="nn">bp</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">simplefilter</span>
+<span class="kn">from</span> <span class="nn">sklearn.exceptions</span> <span class="kn">import</span> <span class="n">ConvergenceWarning</span>
+<span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">ConvergenceWarning</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/sage/anaconda3/envs/bpt/lib/python3.9/site-packages/nilearn/datasets/__init__.py:93: FutureWarning: Fetchers from the nilearn.datasets module will be updated in version 0.9 to return python strings instead of bytes and Pandas dataframes instead of Numpy arrays.
+  warn(&#34;Fetchers from the nilearn.datasets module will be &#34;
+</pre></div></div>
+</div>
+<section id="Loading-/-Preparing-Data">
+<h2>Loading / Preparing Data<a class="headerlink" href="#Loading-/-Preparing-Data" title="Permalink to this headline">#</a></h2>
+<p>As a general tip it can be useful to wrap something like a series of steps that load multiple DataFrames and merge them into a function. That said, it is often useful when first writing the function to try it taking advantage of the interactive-ness of the jupyter-notebook.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load_base_df</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Loads and merges a DataFrame from multiple raw files&#39;&#39;&#39;</span>
+
+    <span class="n">na_vals</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;  &#39;</span><span class="p">,</span> <span class="s1">&#39;nan&#39;</span><span class="p">,</span> <span class="s1">&#39;NaN&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Load first part of data</span>
+    <span class="n">d1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s1">&#39;/home/sage/Downloads/e1.xlsx&#39;</span><span class="p">,</span> <span class="n">na_values</span><span class="o">=</span><span class="n">na_vals</span><span class="p">)</span>
+    <span class="n">d2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s1">&#39;/home/sage/Downloads/e2.xlsx&#39;</span><span class="p">,</span> <span class="n">na_values</span><span class="o">=</span><span class="n">na_vals</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">])</span>
+
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Subject&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Subject&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;str&#39;</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s1">&#39;Subject&#39;</span><span class="p">:</span> <span class="s1">&#39;subject&#39;</span><span class="p">},</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Load second part</span>
+    <span class="n">df2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s1">&#39;/home/sage/Downloads/e3.xlsx&#39;</span><span class="p">,</span> <span class="n">na_values</span><span class="o">=</span><span class="n">na_vals</span><span class="p">)</span>
+    <span class="n">df2</span><span class="p">[</span><span class="s1">&#39;Subject ID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df2</span><span class="p">[</span><span class="s1">&#39;Subject ID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;str&#39;</span><span class="p">)</span>
+    <span class="n">df2</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s1">&#39;Subject ID&#39;</span><span class="p">:</span> <span class="s1">&#39;subject&#39;</span><span class="p">},</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df2</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Merge</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">df2</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;subject&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Rename age and sex</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s1">&#39;Sex_y&#39;</span><span class="p">:</span> <span class="s1">&#39;Sex&#39;</span><span class="p">,</span> <span class="s1">&#39;Age_y&#39;</span><span class="p">:</span> <span class="s1">&#39;Age&#39;</span><span class="p">},</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Remove subject name to obsficate</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">)))</span>
+
+    <span class="k">return</span> <span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">load_base_df</span><span class="p">()</span>
+<span class="n">df</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(3525, 224)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Cast to dataset</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># Drop non relevant columns</span>
+<span class="n">data</span><span class="o">.</span><span class="n">drop_cols_by_nan</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">drop_cols</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;Dependent&#39;</span><span class="p">,</span> <span class="n">inclusions</span><span class="o">=</span><span class="s1">&#39;any drug&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">drop_cols</span><span class="p">(</span><span class="n">exclusions</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Half&#39;</span><span class="p">,</span> <span class="s1">&#39;30 days&#39;</span><span class="p">,</span> <span class="s1">&#39;Site &#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;Sex_&#39;</span><span class="p">,</span> <span class="s1">&#39;Age_&#39;</span><span class="p">,</span> <span class="s1">&#39;Primary Drug&#39;</span><span class="p">,</span> <span class="s1">&#39;ICV.&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Set binary vars as categorical</span>
+<span class="n">data</span><span class="o">.</span><span class="n">auto_detect_categorical</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">to_binary</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;category&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;to binary cols:&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">get_cols</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">))</span>
+
+<span class="c1"># Set target and drop any NaNs</span>
+<span class="n">data</span><span class="o">.</span><span class="n">set_role</span><span class="p">(</span><span class="s1">&#39;Dependent any drug&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">drop_nan_subjects</span><span class="p">(</span><span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Save this set of vars under scope covars</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">add_scope</span><span class="p">([</span><span class="s1">&#39;ICV&#39;</span><span class="p">,</span> <span class="s1">&#39;Sex&#39;</span><span class="p">,</span> <span class="s1">&#39;Age&#39;</span><span class="p">,</span> <span class="s1">&#39;Education&#39;</span><span class="p">,</span> <span class="s1">&#39;Handedness&#39;</span><span class="p">],</span> <span class="s1">&#39;covars&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;scope covars = &#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">get_cols</span><span class="p">(</span><span class="s1">&#39;covars&#39;</span><span class="p">))</span>
+
+<span class="c1"># Set site as non input</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">set_role</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="s1">&#39;non input&#39;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">ordinalize</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;non input&#39;</span><span class="p">)</span>
+
+<span class="c1"># Drop subjects with too many NaN&#39;s and big outliers</span>
+<span class="n">data</span><span class="o">.</span><span class="n">drop_subjects_by_nan</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">filter_outliers_by_std</span><span class="p">(</span><span class="n">n_std</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Setting NaN threshold to: 1762.5
+Dropped 20 Columns
+Dropped 3 Columns
+Dropped 36 Columns
+Num. categorical variables in dataset: 3
+to binary cols: [&#39;Dependent any drug&#39;, &#39;Handedness&#39;, &#39;Sex&#39;]
+Dropped 479 Rows
+scope covars =  [&#39;Age&#39;, &#39;Education&#39;, &#39;Handedness&#39;, &#39;ICV&#39;, &#39;Sex&#39;]
+Setting NaN threshold to: 82.5
+Dropped 38 Rows
+Dropped 5 Rows
+</pre></div></div>
+</div>
+<p><strong>Legacy Equivilent pre BPt 2.0 loading code</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ML = BPt_ML(&#39;Enigma_Alc&#39;,
+             log_dr = None,
+             n_jobs = 8)
+
+ML.Set_Default_Load_Params(subject_id = &#39;subject&#39;,
+                           na_values = [&#39; &#39;, &#39;  &#39;, &#39;nan&#39;, &#39;NaN&#39;],
+                           drop_na = .5)
+
+ML.Load_Data(df=df,
+             drop_keys = [&#39;Unnamed:&#39;, &#39;Site&#39;, &#39;Half&#39;, &#39;PI&#39;, &#39;Dependent&#39;,
+                          &#39;Surface Area&#39;, &#39;Thickness&#39;, &#39;ICV&#39;, &#39;Subcortical&#39;,
+                          &#39;Sex&#39;, &#39;Age&#39;, &#39;Primary Drug&#39;, &#39;Education&#39;, &#39;Handedness&#39;],
+             inclusion_keys=None,
+             unique_val_warn=None,
+             clear_existing=True)
+
+ML.Load_Targets(df=df,
+                col_name = &#39;Dependent any drug&#39;,
+                data_type = &#39;b&#39;)
+
+ML.Load_Covars(df=df,
+               col_name = [&#39;ICV&#39;, &#39;Sex&#39;, &#39;Age&#39;],
+               drop_na = False,
+               data_type = [&#39;f&#39;, &#39;b&#39;, &#39;f&#39;])
+
+ML.Load_Covars(df = df,
+               col_name = [&#39;Education&#39;, &#39;Handedness&#39;],
+               data_type = [&#39;f&#39;, &#39;b&#39;],
+               drop_na = False,
+               filter_outlier_std = 10)
+
+ML.Load_Strat(df=df,
+              col_name=[&#39;Sex&#39;, &#39;Site&#39;],
+              binary_col=[True, False]
+              )
+
+ML.Prepare_All_Data()
+</pre></div>
+</div>
+<p>Let’s take a look at what we prepared. We can see that visually the Dataset is grouped by role.</p>
+<p>Let’s plot some variables of interest</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;target&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Dependent any drug: 3003 rows
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_dep_full_example_10_1.png" src="../_images/user_guide_dep_full_example_10_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Site: 3003 rows
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_dep_full_example_11_1.png" src="../_images/user_guide_dep_full_example_11_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">plot_bivar</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="s1">&#39;Dependent any drug&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Site: 3003 rows
+Dependent any drug: 3003 rows
+Plotting 3003 overlap valid subjects.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_dep_full_example_12_1.png" src="../_images/user_guide_dep_full_example_12_1.png" />
+</div>
+</div>
+<p>That bi-variate plot is a little hard to read… we can make it bigger though easy enough. Let’s say we also wanted to save it (we need to add show=False)</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">data</span><span class="o">.</span><span class="n">plot_bivar</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="s1">&#39;Dependent any drug&#39;</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;site_by_drug.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Site: 3003 rows
+Dependent any drug: 3003 rows
+Plotting 3003 overlap valid subjects.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_dep_full_example_14_1.png" src="../_images/user_guide_dep_full_example_14_1.png" />
+</div>
+</div>
+<p>Okay next, we are going to define a custom validation strategy to use, which is essentially going to preserve subjects within the same train and test fold based on site.</p>
+<p><strong>Legacy Code</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from BPt import CV
+group_site = CV(groups=&#39;Site&#39;)
+</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">group_site</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">CVStrategy</span><span class="p">(</span><span class="n">groups</span><span class="o">=</span><span class="s1">&#39;Site&#39;</span><span class="p">)</span>
+<span class="n">group_site</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CVStrategy(groups=&#39;Site&#39;)
+</pre></div></div>
+</div>
+<p>We then can use this CV strategy as an argument when defining the train test split.</p>
+<p><strong>Legacy Code</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ML.Train_Test_Split(test_size =.2, cv=group_site)
+</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">set_test_split</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mf">.2</span><span class="p">,</span> <span class="n">cv_strategy</span><span class="o">=</span><span class="n">group_site</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Performing test split on: 3003 subjects.
+random_state: 5
+Test split size: 0.2
+
+Performed train/test split
+Train size: 2379
+Test size:  624
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Dependent any drug: 2379 rows
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_dep_full_example_19_1.png" src="../_images/user_guide_dep_full_example_19_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Dependent any drug: 624 rows
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_dep_full_example_19_3.png" src="../_images/user_guide_dep_full_example_19_3.png" />
+</div>
+</div>
+</section>
+<section id="Running-ML">
+<h2>Running ML<a class="headerlink" href="#Running-ML" title="Permalink to this headline">#</a></h2>
+<p>Next, we are going to evaluate some different machine learning models on the problem we have defined. Notably not much has changed here with respect to the old version, except some cosmetic changes like Problem_Spec to ProblemSpec. Also we have a new <code class="docutils literal notranslate"><span class="pre">evaluate</span></code> function instead of calling Evaluate via the ML object (<code class="docutils literal notranslate"><span class="pre">ML.Evaluate</span></code>).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This just holds some commonly used values</span>
+<span class="n">ps</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">ProblemSpec</span><span class="p">(</span><span class="n">subjects</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">,</span>
+                    <span class="n">scorer</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;matthews&#39;</span><span class="p">,</span> <span class="s1">&#39;roc_auc&#39;</span><span class="p">,</span> <span class="s1">&#39;balanced_accuracy&#39;</span><span class="p">],</span>
+                    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">ps</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ProblemSpec(n_jobs=16, scorer=[&#39;matthews&#39;, &#39;roc_auc&#39;, &#39;balanced_accuracy&#39;],
+            subjects=&#39;train&#39;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define a ModelPipeline to use with imputation, scaling and an elastic net</span>
+<span class="n">pipe</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">ModelPipeline</span><span class="p">(</span><span class="n">imputers</span><span class="o">=</span><span class="p">[</span><span class="n">bp</span><span class="o">.</span><span class="n">Imputer</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">),</span>
+                                  <span class="n">bp</span><span class="o">.</span><span class="n">Imputer</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="s1">&#39;median&#39;</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;category&#39;</span><span class="p">)],</span>
+                        <span class="n">scalers</span><span class="o">=</span><span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="s1">&#39;standard&#39;</span><span class="p">),</span>
+                        <span class="n">model</span><span class="o">=</span><span class="n">bp</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="s1">&#39;elastic&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+                        <span class="n">param_search</span><span class="o">=</span><span class="n">bp</span><span class="o">.</span><span class="n">ParamSearch</span><span class="p">(</span>
+                            <span class="n">search_type</span><span class="o">=</span><span class="s1">&#39;DiscreteOnePlusOne&#39;</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="mi">64</span><span class="p">))</span>
+<span class="n">pipe</span><span class="o">.</span><span class="n">print_all</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ModelPipeline
+-------------
+imputers=\
+[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),
+ Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;)]
+
+scalers=\
+Scaler(obj=&#39;standard&#39;)
+
+model=\
+Model(obj=&#39;elastic&#39;, params=1)
+
+param_search=\
+ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=64,
+            search_type=&#39;DiscreteOnePlusOne&#39;)
+
+</pre></div></div>
+</div>
+</section>
+<section id="3-fold-CV-random-splits">
+<h2>3-fold CV random splits<a class="headerlink" href="#3-fold-CV-random-splits" title="Permalink to this headline">#</a></h2>
+<p>Let’s start by evaluating this model is a fairly naive way, just 3 folds of CV.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                      <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">bp</span><span class="o">.</span><span class="n">CV</span><span class="p">(</span><span class="n">splits</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">results</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Predicting target = Dependent any drug
+Using problem_type = binary
+Using scope = all (defining a total of 163 features).
+Evaluating 2379 total data points.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "096378b8b9d045239c0e5fce543c3999", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+Train size: 1586 - Val size: 793
+Fit fold in 15.781 seconds.
+matthews: 0.45819711214039605
+roc_auc: 0.8219843414397561
+balanced_accuracy: 0.7347294394789718
+
+Train size: 1586 - Val size: 793
+Fit fold in 12.219 seconds.
+matthews: 0.43270247791412836
+roc_auc: 0.8060915258007118
+balanced_accuracy: 0.7243174488434163
+
+Train size: 1586 - Val size: 793
+Fit fold in 11.532 seconds.
+matthews: 0.4005078667838128
+roc_auc: 0.7789128332642631
+balanced_accuracy: 0.7066203895565686
+
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;matthews&#39;: 0.43046915227944577, &#39;roc_auc&#39;: 0.8023295668349103, &#39;balanced_accuracy&#39;: 0.721889092626319}
+std_scores = {&#39;matthews&#39;: 0.023604421407805696, &#39;roc_auc&#39;: 0.01778394323677345, &#39;balanced_accuracy&#39;: 0.0116032282095078}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_X_transform_df&#39;, &#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=16, problem_type=&#39;binary&#39;,
+            scorer={&#39;balanced_accuracy&#39;: make_scorer(balanced_accuracy_score),
+                    &#39;matthews&#39;: make_scorer(matthews_corrcoef),
+                    &#39;roc_auc&#39;: make_scorer(roc_auc_score, needs_threshold=True)},
+            subjects=&#39;train&#39;, target=&#39;Dependent any drug&#39;)
+</pre></div></div>
+</div>
+<p>Notably this is likely going to give us overly optimistic results. Let’s look at just the Site’s drawn from the first evaluation fold to get a feel for why.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">plot_bivar</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="s1">&#39;Dependent any drug&#39;</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">train_subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">data</span><span class="o">.</span><span class="n">plot_bivar</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="s1">&#39;Dependent any drug&#39;</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">val_subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Site: 1586 rows
+Dependent any drug: 1586 rows
+Plotting 1586 overlap valid subjects.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_dep_full_example_26_1.png" src="../_images/user_guide_dep_full_example_26_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Site: 793 rows
+Dependent any drug: 793 rows
+Plotting 793 overlap valid subjects.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_dep_full_example_26_3.png" src="../_images/user_guide_dep_full_example_26_3.png" />
+</div>
+</div>
+</section>
+<section id="Preserving-Groups-by-Site">
+<h2>Preserving Groups by Site<a class="headerlink" href="#Preserving-Groups-by-Site" title="Permalink to this headline">#</a></h2>
+<p>We can see that for example the 149 subjects from site 1 in the validation set had 269 subjects also from site 1 to potentially memorize site effects from! The confound is a site with only cases. One way we can account for this is through something we’ve already hinted at, using the group site cv from earlier. We can create a new CV object with this attribute.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">site_cv</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">CV</span><span class="p">(</span><span class="n">splits</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">cv_strategy</span><span class="o">=</span><span class="n">group_site</span><span class="p">)</span>
+<span class="n">site_cv</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CV(cv_strategy=CVStrategy(groups=&#39;Site&#39;))
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                      <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">site_cv</span><span class="p">)</span>
+<span class="n">results</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "5dbfc07f21b24324a748ba0e1998d195", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;matthews&#39;: 0.2806937010851929, &#39;roc_auc&#39;: 0.724342679133859, &#39;balanced_accuracy&#39;: 0.6448295419977427}
+std_scores = {&#39;matthews&#39;: 0.09542590294675868, &#39;roc_auc&#39;: 0.04969484135272, &#39;balanced_accuracy&#39;: 0.0595558011571011}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=16, problem_type=&#39;binary&#39;, scorer={&#39;balanced_accuracy&#39;: make_scorer(balanced_accuracy_score), &#39;matthews&#39;: make_scorer(matthews_corrcoef), &#39;roc_auc&#39;: make_scorer(roc_auc_score, needs_threshold=True)}, subjects=&#39;train&#39;, target=&#39;Dependent any drug&#39;)
+</pre></div></div>
+</div>
+<p>We can now make the same plots as before, confirming now that the sites are different.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">plot_bivar</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="s1">&#39;Dependent any drug&#39;</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">train_subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">data</span><span class="o">.</span><span class="n">plot_bivar</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="s1">&#39;Dependent any drug&#39;</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">val_subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Site: 1471 rows
+Dependent any drug: 1471 rows
+Plotting 1471 overlap valid subjects.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_dep_full_example_31_1.png" src="../_images/user_guide_dep_full_example_31_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Site: 908 rows
+Dependent any drug: 908 rows
+Plotting 908 overlap valid subjects.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_dep_full_example_31_3.png" src="../_images/user_guide_dep_full_example_31_3.png" />
+</div>
+</div>
+<p>Another piece we might want to look at in this case is the weighted_mean_scores. That is, each of the splits has train and test sets of slightly different sizes, so how does the metric change if we weight it by the number of validation subjects in that fold</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span><span class="o">.</span><span class="n">weighted_mean_scores</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;matthews&#39;: 0.2962912181056522,
+ &#39;roc_auc&#39;: 0.731185680809635,
+ &#39;balanced_accuracy&#39;: 0.6545156761514691}
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                      <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">results</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "c1125e8677974cdb9d85d73fd28d5bea", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;matthews&#39;: 0.4198523568381287, &#39;roc_auc&#39;: 0.8021293794313956, &#39;balanced_accuracy&#39;: 0.71695304741449}
+std_scores = {&#39;matthews&#39;: 0.05886752017766923, &#39;roc_auc&#39;: 0.020630146396151645, &#39;balanced_accuracy&#39;: 0.030556740029522838}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=16, problem_type=&#39;binary&#39;, scorer={&#39;balanced_accuracy&#39;: make_scorer(balanced_accuracy_score), &#39;matthews&#39;: make_scorer(matthews_corrcoef), &#39;roc_auc&#39;: make_scorer(roc_auc_score, needs_threshold=True)}, subjects=&#39;train&#39;, target=&#39;Dependent any drug&#39;)
+</pre></div></div>
+</div>
+</section>
+<section id="Other-options?">
+<h2>Other options?<a class="headerlink" href="#Other-options?" title="Permalink to this headline">#</a></h2>
+<p>What other options do we have to handle site with CV besides just the group splitting?</p>
+<ol class="arabic simple">
+<li><p>Explicit leave-out-site CV: Where every train set is composed of all sites but one, and the validation set is the left out site.</p></li>
+<li><p>Use the train-only parameter in CV.</p></li>
+<li><p>Only evaluate subjects from sites with both cases and controls.</p></li>
+</ol>
+<p>Let’s try option 1 first.</p>
+</section>
+<section id="Leave-out-site-CV">
+<h2>Leave-out-site CV<a class="headerlink" href="#Leave-out-site-CV" title="Permalink to this headline">#</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># All we need to do for leave-out-site is specify that splits = Site</span>
+<span class="n">leave_out_site_cv</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">CV</span><span class="p">(</span><span class="n">splits</span><span class="o">=</span><span class="s1">&#39;Site&#39;</span><span class="p">)</span>
+
+<span class="c1"># This will actually raise an error</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                          <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">leave_out_site_cv</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "564eb1338e244b9491eda2b16f4042de", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Only one class present in y_true. ROC AUC score is not defined in that case.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/sage/anaconda3/envs/bpt/lib/python3.9/site-packages/sklearn/metrics/_classification.py:870: RuntimeWarning: invalid value encountered in double_scalars
+  mcc = cov_ytyp / np.sqrt(cov_ytyt * cov_ypyp)
+</pre></div></div>
+</div>
+<p>Uh oh looks like this option actually failed. What happened? Well basically since we have sites with only one class, we are trying to compute metrics that require two classes. Let’s try again this time just using scorers that can work in the case of only one class.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">scorer</span><span class="o">=</span><span class="s1">&#39;accuracy&#39;</span><span class="p">,</span>
+                      <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">leave_out_site_cv</span><span class="p">)</span>
+
+<span class="n">results</span><span class="o">.</span><span class="n">mean_scores</span><span class="p">,</span> <span class="n">results</span><span class="o">.</span><span class="n">std_scores</span><span class="p">,</span> <span class="n">results</span><span class="o">.</span><span class="n">weighted_mean_scores</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "a23ef370f42f4cf0a1018d0b94638683", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+({&#39;accuracy&#39;: 0.6236689337343281},
+ {&#39;accuracy&#39;: 0.19902767857831596},
+ {&#39;accuracy&#39;: 0.6658259773013872})
+</pre></div></div>
+</div>
+<p>The problem here is accuracy is likely a pretty bad metric, especially for the sites which have both cases and controls, but a skewed distribution. In general using the group preserving by Site is likely a better option.</p>
+</section>
+<section id="Train-only-subjects">
+<h2>Train-only subjects<a class="headerlink" href="#Train-only-subjects" title="Permalink to this headline">#</a></h2>
+<p>One optional way of handling these subjects from sites with only cases or only controls is to just never evaluate them. To instead always treat them as train subjects. We can notably then either use random splits or group preserving by CV.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">check_imbalanced</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="n">as_int</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Dependent any drug&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">as_int</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">as_int</span><span class="p">)</span>
+
+<span class="c1"># Apply function to check if each site has all the same target variable</span>
+<span class="n">is_imbalanced</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">check_imbalanced</span><span class="p">)</span>
+
+<span class="c1"># Note these are internal values, not the original ones</span>
+<span class="n">imbalanced_sites</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">is_imbalanced</span><span class="p">)</span>
+
+<span class="c1"># We can specify just these subjects using the ValueSubset wrapper</span>
+<span class="n">imbalanced_subjs</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">ValueSubset</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">imbalanced_sites</span><span class="p">,</span> <span class="n">decode_values</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now define our new version of the group site cv</span>
+<span class="n">site_cv_tr_only</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">CV</span><span class="p">(</span><span class="n">splits</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">cv_strategy</span><span class="o">=</span><span class="n">group_site</span><span class="p">,</span>
+                        <span class="n">train_only_subjects</span><span class="o">=</span><span class="n">imbalanced_subjs</span><span class="p">)</span>
+
+<span class="c1"># And evaluate</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                      <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">site_cv_tr_only</span><span class="p">)</span>
+<span class="n">results</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "f247edb6a5934227a6e1e32d7909a80f", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;matthews&#39;: 0.024294039432900597, &#39;roc_auc&#39;: 0.5292721521624003, &#39;balanced_accuracy&#39;: 0.5116503104881627}
+std_scores = {&#39;matthews&#39;: 0.0818023189639453, &#39;roc_auc&#39;: 0.053461117751205205, &#39;balanced_accuracy&#39;: 0.04147838671486171}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=16, problem_type=&#39;binary&#39;, scorer={&#39;balanced_accuracy&#39;: make_scorer(balanced_accuracy_score), &#39;matthews&#39;: make_scorer(matthews_corrcoef), &#39;roc_auc&#39;: make_scorer(roc_auc_score, needs_threshold=True)}, subjects=&#39;train&#39;, target=&#39;Dependent any drug&#39;)
+</pre></div></div>
+</div>
+<p>The take-away here is maybe a little bleak. Essentially it is saying that some of the high scores we got earlier might have been in large part due to scores from the imbalanced sites.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># And we can also run a version with just random splits</span>
+<span class="n">tr_only_cv</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">CV</span><span class="p">(</span><span class="n">splits</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">train_only_subjects</span><span class="o">=</span><span class="n">imbalanced_subjs</span><span class="p">)</span>
+
+<span class="c1"># And evaluate</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                      <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">tr_only_cv</span><span class="p">)</span>
+<span class="n">results</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "b31f4d77d6bf4e098dc5e140f4c6acbb", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;matthews&#39;: 0.23754373855512448, &#39;roc_auc&#39;: 0.6581411778771414, &#39;balanced_accuracy&#39;: 0.6117532215243421}
+std_scores = {&#39;matthews&#39;: 0.028251718001276915, &#39;roc_auc&#39;: 0.00840487420017697, &#39;balanced_accuracy&#39;: 0.01031391488070083}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=16, problem_type=&#39;binary&#39;, scorer={&#39;balanced_accuracy&#39;: make_scorer(balanced_accuracy_score), &#39;matthews&#39;: make_scorer(matthews_corrcoef), &#39;roc_auc&#39;: make_scorer(roc_auc_score, needs_threshold=True)}, subjects=&#39;train&#39;, target=&#39;Dependent any drug&#39;)
+</pre></div></div>
+</div>
+<p>While this version with random splits does better, we are still notably ignoring the distribution of case to control in the sites with both cases and controls. Based on the group preserving results what it seems like is going on is that when subjects from the same site are split across validation folds, the classifier might be able to just memorize Site instead of the effect of interest. Lets use Site 29 as an example.</p>
+<p>Let’s look at just fold 1 first.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The train and val subjects from fold 0</span>
+<span class="n">tr_subjs</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">train_subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">val_subjs</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">val_subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># An object specifying just site 29&#39;s subjects</span>
+<span class="n">site29</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">ValueSubset</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="n">decode_values</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Get the intersection w/ intersection obj</span>
+<span class="n">site_29_tr</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Intersection</span><span class="p">([</span><span class="n">tr_subjs</span><span class="p">,</span> <span class="n">site29</span><span class="p">])</span>
+<span class="n">site_29_val</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Intersection</span><span class="p">([</span><span class="n">val_subjs</span><span class="p">,</span> <span class="n">site29</span><span class="p">])</span>
+
+<span class="c1"># Plot</span>
+<span class="n">data</span><span class="o">.</span><span class="n">plot_bivar</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="s1">&#39;Dependent any drug&#39;</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="n">bp</span><span class="o">.</span><span class="n">Intersection</span><span class="p">([</span><span class="n">tr_subjs</span><span class="p">,</span> <span class="n">site29</span><span class="p">]))</span>
+<span class="n">data</span><span class="o">.</span><span class="n">plot_bivar</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="s1">&#39;Dependent any drug&#39;</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="n">bp</span><span class="o">.</span><span class="n">Intersection</span><span class="p">([</span><span class="n">val_subjs</span><span class="p">,</span> <span class="n">site29</span><span class="p">]))</span>
+
+<span class="c1"># Grab just the subjects as actual index</span>
+<span class="n">val_subjs</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_subjects</span><span class="p">(</span><span class="n">site_29_val</span><span class="p">)</span>
+
+<span class="c1"># Get a dataframe with the predictions made for just fold0</span>
+<span class="n">preds_df_fold0</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">get_preds_dfs</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Let&#39;s see predictions for just these validation subjects</span>
+<span class="n">preds_df_fold0</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">val_subjs</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Site: 70 rows
+Dependent any drug: 70 rows
+Plotting 70 overlap valid subjects.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_dep_full_example_47_1.png" src="../_images/user_guide_dep_full_example_47_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Site: 30 rows
+Dependent any drug: 30 rows
+Plotting 30 overlap valid subjects.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_dep_full_example_47_3.png" src="../_images/user_guide_dep_full_example_47_3.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>predict</th>
+      <th>predict_proba</th>
+      <th>decision_function</th>
+      <th>y_true</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>3458</th>
+      <td>0.0</td>
+      <td>0.810241</td>
+      <td>-1.451580</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3459</th>
+      <td>0.0</td>
+      <td>0.902262</td>
+      <td>-2.222618</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3462</th>
+      <td>0.0</td>
+      <td>0.976899</td>
+      <td>-3.744522</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3470</th>
+      <td>0.0</td>
+      <td>0.954009</td>
+      <td>-3.032217</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3478</th>
+      <td>0.0</td>
+      <td>0.964846</td>
+      <td>-3.312243</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3479</th>
+      <td>0.0</td>
+      <td>0.900526</td>
+      <td>-2.203087</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3482</th>
+      <td>0.0</td>
+      <td>0.946305</td>
+      <td>-2.869253</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3484</th>
+      <td>0.0</td>
+      <td>0.681535</td>
+      <td>-0.760837</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3485</th>
+      <td>0.0</td>
+      <td>0.924836</td>
+      <td>-2.509949</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3486</th>
+      <td>0.0</td>
+      <td>0.957875</td>
+      <td>-3.124076</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3494</th>
+      <td>0.0</td>
+      <td>0.870815</td>
+      <td>-1.908185</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3497</th>
+      <td>0.0</td>
+      <td>0.959444</td>
+      <td>-3.163663</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3498</th>
+      <td>0.0</td>
+      <td>0.877308</td>
+      <td>-1.967185</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3502</th>
+      <td>0.0</td>
+      <td>0.892309</td>
+      <td>-2.114550</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3503</th>
+      <td>0.0</td>
+      <td>0.946427</td>
+      <td>-2.871650</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>3507</th>
+      <td>0.0</td>
+      <td>0.968260</td>
+      <td>-3.417921</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3509</th>
+      <td>0.0</td>
+      <td>0.961510</td>
+      <td>-3.218103</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3512</th>
+      <td>0.0</td>
+      <td>0.907378</td>
+      <td>-2.282028</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3517</th>
+      <td>0.0</td>
+      <td>0.976704</td>
+      <td>-3.735907</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3521</th>
+      <td>0.0</td>
+      <td>0.665222</td>
+      <td>-0.686655</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3523</th>
+      <td>0.0</td>
+      <td>0.699328</td>
+      <td>-0.844100</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3423</th>
+      <td>0.0</td>
+      <td>0.951770</td>
+      <td>-2.982337</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3429</th>
+      <td>0.0</td>
+      <td>0.603810</td>
+      <td>-0.421364</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3434</th>
+      <td>0.0</td>
+      <td>0.955454</td>
+      <td>-3.065661</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3437</th>
+      <td>0.0</td>
+      <td>0.934065</td>
+      <td>-2.650873</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3442</th>
+      <td>0.0</td>
+      <td>0.912519</td>
+      <td>-2.344782</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3443</th>
+      <td>0.0</td>
+      <td>0.927844</td>
+      <td>-2.554032</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3447</th>
+      <td>0.0</td>
+      <td>0.916637</td>
+      <td>-2.397506</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3453</th>
+      <td>0.0</td>
+      <td>0.945561</td>
+      <td>-2.854691</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3455</th>
+      <td>0.0</td>
+      <td>0.745451</td>
+      <td>-1.074496</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>We can see that it has learned to just predict 0 for every subject, which because of the imbalance is right most of the time, but really doesn’t tell us if it has learned to predict site or substance dependence.</p>
+</section>
+<section id="Drop-imbalanced-subjects">
+<h2>Drop imbalanced subjects<a class="headerlink" href="#Drop-imbalanced-subjects" title="Permalink to this headline">#</a></h2>
+<p>The last option was just don’t use the imbalanced subjects at all. We will do this by indexing only the balanced sites</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Note the ~ before the previously defined is_imbalanced</span>
+<span class="n">balanced_sites</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="o">~</span><span class="n">is_imbalanced</span><span class="p">)</span>
+
+<span class="c1"># We can specify just these subjects using the ValueSubset wrapper</span>
+<span class="n">balanced_subjs</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">ValueSubset</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">balanced_sites</span><span class="p">,</span> <span class="n">decode_values</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Evaluate with site preserving cv from earlier but now using just the balanced train subjects</span>
+<span class="n">train_just_balanced</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Intersection</span><span class="p">([</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="n">balanced_subjs</span><span class="p">])</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                      <span class="n">subjects</span><span class="o">=</span><span class="n">train_just_balanced</span><span class="p">,</span>
+                      <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">site_cv</span><span class="p">)</span>
+<span class="n">results</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "8d17d0d434dd452eb75b6b7019897c19", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;matthews&#39;: 0.23079311975258734, &#39;roc_auc&#39;: 0.6494071534373412, &#39;balanced_accuracy&#39;: 0.6141868842892168}
+std_scores = {&#39;matthews&#39;: 0.09467372271946288, &#39;roc_auc&#39;: 0.07189605086562514, &#39;balanced_accuracy&#39;: 0.05165558889230518}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=16, problem_type=&#39;binary&#39;, scorer={&#39;balanced_accuracy&#39;: make_scorer(balanced_accuracy_score), &#39;matthews&#39;: make_scorer(matthews_corrcoef), &#39;roc_auc&#39;: make_scorer(roc_auc_score, needs_threshold=True)}, subjects=Intersection([&#39;train&#39;, ValueSubset(name=Site, values=[ 2  3  4  5  6  7 11 12 13 14 16 17 18 19 20 21 22 23 24 25 26 27], decode_values=False)]), target=&#39;Dependent any drug&#39;)
+</pre></div></div>
+</div>
+<p>This actually seems to show that the imbalanced site confound with doesn’t just corrupt cross validated results, but also actively impedes the model learning the real relationship. That we are better off just not using subjects with from sites with only cases. Yikes.</p>
+<p>Likewise, we can do the random split strategy again too.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                      <span class="n">subjects</span><span class="o">=</span><span class="n">train_just_balanced</span><span class="p">,</span>
+                      <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">bp</span><span class="o">.</span><span class="n">CV</span><span class="p">(</span><span class="n">splits</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">results</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "66a60e3de9a74942965d31bf28c2776e", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;matthews&#39;: 0.3099741843096915, &#39;roc_auc&#39;: 0.7185050035507189, &#39;balanced_accuracy&#39;: 0.6557306499974717}
+std_scores = {&#39;matthews&#39;: 0.05501720339208484, &#39;roc_auc&#39;: 0.030948171887409684, &#39;balanced_accuracy&#39;: 0.02748782703232899}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=16, problem_type=&#39;binary&#39;, scorer={&#39;balanced_accuracy&#39;: make_scorer(balanced_accuracy_score), &#39;matthews&#39;: make_scorer(matthews_corrcoef), &#39;roc_auc&#39;: make_scorer(roc_auc_score, needs_threshold=True)}, subjects=Intersection([&#39;train&#39;, ValueSubset(name=Site, values=[ 2  3  4  5  6  7 11 12 13 14 16 17 18 19 20 21 22 23 24 25 26 27], decode_values=False)]), target=&#39;Dependent any drug&#39;)
+</pre></div></div>
+</div>
+<p>Also, we could run it with a leave-out-site CV. Now we can use the normal metrics.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                      <span class="n">subjects</span><span class="o">=</span><span class="n">train_just_balanced</span><span class="p">,</span>
+                      <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">leave_out_site_cv</span><span class="p">)</span>
+<span class="n">results</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "165db5b66d3d424da2e0badb0a3d019a", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/sage/anaconda3/envs/bpt/lib/python3.9/site-packages/sklearn/metrics/_classification.py:870: RuntimeWarning: invalid value encountered in double_scalars
+  mcc = cov_ytyp / np.sqrt(cov_ytyt * cov_ypyp)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;matthews&#39;: 0.14755625865911742, &#39;roc_auc&#39;: 0.6060559623948263, &#39;balanced_accuracy&#39;: 0.5636346829506975}
+std_scores = {&#39;matthews&#39;: 0.17026794856315272, &#39;roc_auc&#39;: 0.12014100381868857, &#39;balanced_accuracy&#39;: 0.076467544201846}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=16, problem_type=&#39;binary&#39;, scorer={&#39;balanced_accuracy&#39;: make_scorer(balanced_accuracy_score), &#39;matthews&#39;: make_scorer(matthews_corrcoef), &#39;roc_auc&#39;: make_scorer(roc_auc_score, needs_threshold=True)}, subjects=Intersection([&#39;train&#39;, ValueSubset(name=Site, values=[ 2  3  4  5  6  7 11 12 13 14 16 17 18 19 20 21 22 23 24 25 26 27], decode_values=False)]), target=&#39;Dependent any drug&#39;)
+</pre></div></div>
+</div>
+</section>
+<section id="Results-Summary">
+<h2>Results Summary<a class="headerlink" href="#Results-Summary" title="Permalink to this headline">#</a></h2>
+<p>To summarize, of all of the above different iterations. Only the results from the versions where subjects from case-only sites are treated as train-only or dropped and evaluated group-preserving by site are likely un-biased! The leave-out-site CV results should be okay too, but let’s skip those for now.</p>
+<p>Train Only Scores: mean_scores = {‘matthews’: 0.024294039432900597, ‘roc_auc’: 0.5292721521624003, ‘balanced_accuracy’: 0.5116503104881627}</p>
+<p>Dropped Scores: mean_scores = {‘matthews’: 0.23079311975258734, ‘roc_auc’: 0.6494071534373412, ‘balanced_accuracy’: 0.6141868842892168}</p>
+<p>By these interm results we can with some confidence conclude dropping subjects is the way to go, unless we want to dig deeper…</p>
+</section>
+<section id="Disentangle-Target-and-Site?">
+<h2>Disentangle Target and Site?<a class="headerlink" href="#Disentangle-Target-and-Site?" title="Permalink to this headline">#</a></h2>
+<p>Can information on dependance from case-only sites be some how disentangled from site?</p>
+<p>This actually leads to a follow up a question. Namely is there any way to extract usable information from case-only site subjects? This question I actually investigated more deeply in <a class="reference external" href="https://onlinelibrary.wiley.com/doi/full/10.1002/hbm.25248">https://onlinelibrary.wiley.com/doi/full/10.1002/hbm.25248</a> The idea of train-only subjects is actually from this paper, though it still has some important differences then the way we formulated it.</p>
+<p>The key piece in the paper which we haven’t tried to do yet is centered around the problem of the classifier learning site related information instead of dependence related information in the train-only setup. We essentially need a way of forcing the classifier to learn this. The way proposed in the paper proposes that maybe we can by restricting the features provided to the classifier, give it only features related to dependence and not those related to site. In order to do this, we need to add
+a feature selection step.</p>
+<p>There are different ways to compose the problem, but we will specify the feature selection step as a seperate layer of nesting, importantly one that is evaluated according to the same site_cv_tr_only that we will be evaluating with. Remember the goal here is to select features which help us learn to predict useful information from case only sites, i.e., with feature only related to Dependence and not site!</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Same imputer and scaler</span>
+<span class="n">imputers</span> <span class="o">=</span> <span class="p">[</span><span class="n">bp</span><span class="o">.</span><span class="n">Imputer</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">),</span>
+            <span class="n">bp</span><span class="o">.</span><span class="n">Imputer</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="s1">&#39;median&#39;</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;category&#39;</span><span class="p">)]</span>
+<span class="n">scaler</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="s1">&#39;standard&#39;</span><span class="p">)</span>
+
+<span class="c1"># This object will be used to set features as an array of binary hyper-parameters</span>
+<span class="n">feat_selector</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">FeatSelector</span><span class="p">(</span><span class="s1">&#39;selector&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># This param search is responsible for optimizing the selected features from feat_selector</span>
+<span class="n">param_search</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">ParamSearch</span><span class="p">(</span><span class="s1">&#39;RandomSearch&#39;</span><span class="p">,</span>
+                              <span class="n">n_iter</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+                              <span class="n">cv</span><span class="o">=</span><span class="n">site_cv_tr_only</span><span class="p">)</span>
+
+<span class="c1"># We create a nested elastic net model to optimize - no particular CV should be okay</span>
+<span class="n">random_search</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">ParamSearch</span><span class="p">(</span><span class="s1">&#39;RandomSearch&#39;</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">elastic_search</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="s1">&#39;elastic&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">param_search</span><span class="o">=</span><span class="n">random_search</span><span class="p">)</span>
+
+<span class="c1"># Put it all together in a pipeline</span>
+<span class="n">fs_pipe</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span><span class="n">imputers</span> <span class="o">+</span> <span class="p">[</span><span class="n">scaler</span><span class="p">,</span> <span class="n">feat_selector</span><span class="p">,</span> <span class="n">elastic_search</span><span class="p">],</span>
+                      <span class="n">param_search</span><span class="o">=</span><span class="n">param_search</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Note: This may take a while to evaluate as we now have two levels of parameters to optimize, e.g., for each choice of features, we need to train a nested elastic net.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">fs_pipe</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                      <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">site_cv_tr_only</span><span class="p">)</span>
+<span class="n">results</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "f1f8a66a76bc4caca6e291375574ebbd", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;matthews&#39;: 0.02346740168044174, &#39;roc_auc&#39;: 0.4992373334460878, &#39;balanced_accuracy&#39;: 0.511308005873143}
+std_scores = {&#39;matthews&#39;: 0.09763704971436771, &#39;roc_auc&#39;: 0.06654364664577839, &#39;balanced_accuracy&#39;: 0.04908589456453536}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=16, problem_type=&#39;binary&#39;, scorer={&#39;balanced_accuracy&#39;: make_scorer(balanced_accuracy_score), &#39;matthews&#39;: make_scorer(matthews_corrcoef), &#39;roc_auc&#39;: make_scorer(roc_auc_score, needs_threshold=True)}, subjects=&#39;train&#39;, target=&#39;Dependent any drug&#39;)
+</pre></div></div>
+</div>
+<p>Unfortunetly this doesn’t seem to work. Notably we still arn’t quite following the method from the paper, which performs a meta-analysis on the results from the feature search to find overlapping subsets of features. As of the time of writing this example, a simmilar strategy has not been able to be easily integrated into BPt.</p>
+<p>The above method still has a few problems, one being severe overfitting. Namely, because a number of subjects are reserved in train-only roles, the same small number of subjects are being used over and over in cross-validation.</p>
+<p>We can confirm this intutiton by comparing the best score achieved internally for each set of features w/ how they score in the outer cross validation.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">results</span><span class="o">.</span><span class="n">estimators</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">best_score_</span><span class="p">,</span> <span class="n">results</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="s1">&#39;matthews&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(0.034082343012732844, 0.1394079745869329)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">results</span><span class="o">.</span><span class="n">estimators</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">best_score_</span><span class="p">,</span> <span class="n">results</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="s1">&#39;matthews&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(0.15037612204051184, -0.09944769119313912)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">results</span><span class="o">.</span><span class="n">estimators</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">best_score_</span><span class="p">,</span> <span class="n">results</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="s1">&#39;matthews&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(0.10307484584144071, 0.030441921647531428)
+</pre></div></div>
+</div>
+<p>These values are quite different to say the least. Part of the problem again is that such a small amount of data is being used to determine generalization. What if instead of a the 3-fold group preserving train only feature selection CV, we instead used a leave-out-site scheme on site with train only? I doubt it will help, but let’s see…</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">leave_out_site_tr_only_cv</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">CV</span><span class="p">(</span><span class="n">splits</span><span class="o">=</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span>
+                                  <span class="n">train_only_subjects</span><span class="o">=</span><span class="n">imbalanced_subjs</span><span class="p">)</span>
+
+<span class="n">fs_pipe</span><span class="o">.</span><span class="n">param_search</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">ParamSearch</span><span class="p">(</span>
+    <span class="s1">&#39;RandomSearch&#39;</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="n">cv</span><span class="o">=</span><span class="n">leave_out_site_tr_only_cv</span><span class="p">)</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">fs_pipe</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                      <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">site_cv_tr_only</span><span class="p">)</span>
+<span class="n">results</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "c054d65a6bf74615b7f4c680cff13e18", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;matthews&#39;: 0.03667173630581328, &#39;roc_auc&#39;: 0.5248868808677055, &#39;balanced_accuracy&#39;: 0.5178404766273731}
+std_scores = {&#39;matthews&#39;: 0.11389312167894736, &#39;roc_auc&#39;: 0.06057589628452694, &#39;balanced_accuracy&#39;: 0.05676567744096608}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=16, problem_type=&#39;binary&#39;, scorer={&#39;balanced_accuracy&#39;: make_scorer(balanced_accuracy_score), &#39;matthews&#39;: make_scorer(matthews_corrcoef), &#39;roc_auc&#39;: make_scorer(roc_auc_score, needs_threshold=True)}, subjects=&#39;train&#39;, target=&#39;Dependent any drug&#39;)
+</pre></div></div>
+</div>
+<p>This does a little better. But only slightly. What if we also used this leave-out site strategy for the outer loop? This would be to address the issue that the outer CV has the same problem as the inner, where the validation set is overly specific and small in some folds.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">fs_pipe</span><span class="p">,</span>
+                      <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                      <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span>
+                      <span class="n">cv</span><span class="o">=</span><span class="n">leave_out_site_tr_only_cv</span><span class="p">,</span>
+                      <span class="n">eval_verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">results</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Predicting target = Dependent any drug
+Using problem_type = binary
+Using scope = all defining an initial total of 163 features.
+Evaluating 2379 total data points.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "59378c11530a4015ae9f61b0ed7afc25", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Train shape = (2082, 163) (number of data points x number of feature)
+Val shape = (297, 163) (number of data points x number of feature)
+Fit fold in 433.108 seconds.
+matthews: 0.27971196025033845
+roc_auc: 0.6950904392764857
+balanced_accuracy: 0.6410575858250277
+Train shape = (2338, 163) (number of data points x number of feature)
+Val shape = (41, 163) (number of data points x number of feature)
+Fit fold in 488.837 seconds.
+matthews: 0.0
+roc_auc: 0.4492753623188406
+balanced_accuracy: 0.5
+Train shape = (2345, 163) (number of data points x number of feature)
+Val shape = (34, 163) (number of data points x number of feature)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/sage/anaconda3/envs/bpt/lib/python3.9/site-packages/sklearn/metrics/_classification.py:870: RuntimeWarning: invalid value encountered in double_scalars
+  mcc = cov_ytyp / np.sqrt(cov_ytyt * cov_ypyp)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Fit fold in 448.277 seconds.
+matthews: -0.1604088343952626
+roc_auc: 0.46315789473684216
+balanced_accuracy: 0.42280701754385963
+Train shape = (2338, 163) (number of data points x number of feature)
+Val shape = (41, 163) (number of data points x number of feature)
+Fit fold in 470.407 seconds.
+matthews: -0.019138755980861243
+roc_auc: 0.47368421052631576
+balanced_accuracy: 0.49043062200956933
+Train shape = (2327, 163) (number of data points x number of feature)
+Val shape = (52, 163) (number of data points x number of feature)
+Fit fold in 448.843 seconds.
+matthews: 0.3354656500760583
+roc_auc: 0.6979166666666666
+balanced_accuracy: 0.6636904761904762
+Train shape = (2009, 163) (number of data points x number of feature)
+Val shape = (370, 163) (number of data points x number of feature)
+Fit fold in 437.145 seconds.
+matthews: 0.020177568979434148
+roc_auc: 0.49300137342567435
+balanced_accuracy: 0.5099646415943426
+Train shape = (2308, 163) (number of data points x number of feature)
+Val shape = (71, 163) (number of data points x number of feature)
+Fit fold in 451.353 seconds.
+matthews: 0.0
+roc_auc: 0.5223285486443381
+balanced_accuracy: 0.5
+Train shape = (2319, 163) (number of data points x number of feature)
+Val shape = (60, 163) (number of data points x number of feature)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/sage/anaconda3/envs/bpt/lib/python3.9/site-packages/sklearn/metrics/_classification.py:870: RuntimeWarning: invalid value encountered in double_scalars
+  mcc = cov_ytyp / np.sqrt(cov_ytyt * cov_ypyp)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Fit fold in 454.574 seconds.
+matthews: -0.12598815766974242
+roc_auc: 0.5039682539682541
+balanced_accuracy: 0.44047619047619047
+Train shape = (2313, 163) (number of data points x number of feature)
+Val shape = (66, 163) (number of data points x number of feature)
+Fit fold in 458.078 seconds.
+matthews: 0.053121271525973054
+roc_auc: 0.5089947089947089
+balanced_accuracy: 0.5253968253968253
+Train shape = (2310, 163) (number of data points x number of feature)
+Val shape = (69, 163) (number of data points x number of feature)
+Fit fold in 452.421 seconds.
+matthews: 0.2622746101092192
+roc_auc: 0.6256366723259762
+balanced_accuracy: 0.6294567062818336
+Train shape = (2242, 163) (number of data points x number of feature)
+Val shape = (137, 163) (number of data points x number of feature)
+Fit fold in 442.038 seconds.
+matthews: -0.11597093720775255
+roc_auc: 0.5342528735632184
+balanced_accuracy: 0.4574712643678161
+Train shape = (2338, 163) (number of data points x number of feature)
+Val shape = (41, 163) (number of data points x number of feature)
+Fit fold in 456.392 seconds.
+matthews: 0.2313602894352951
+roc_auc: 0.6515151515151514
+balanced_accuracy: 0.6257575757575757
+Train shape = (2352, 163) (number of data points x number of feature)
+Val shape = (27, 163) (number of data points x number of feature)
+Fit fold in 462.279 seconds.
+matthews: -0.12507270025494252
+roc_auc: 0.37912087912087916
+balanced_accuracy: 0.43956043956043955
+Train shape = (2301, 163) (number of data points x number of feature)
+Val shape = (78, 163) (number of data points x number of feature)
+Fit fold in 453.980 seconds.
+matthews: 0.12403989506994083
+roc_auc: 0.5671052631578948
+balanced_accuracy: 0.5565789473684211
+Train shape = (2279, 163) (number of data points x number of feature)
+Val shape = (100, 163) (number of data points x number of feature)
+Fit fold in 442.766 seconds.
+matthews: 0.06294058066909786
+roc_auc: 0.4231578947368421
+balanced_accuracy: 0.5368421052631579
+Train shape = (2320, 163) (number of data points x number of feature)
+Val shape = (59, 163) (number of data points x number of feature)
+Fit fold in 450.422 seconds.
+matthews: -0.005703586973049607
+roc_auc: 0.48160919540229885
+balanced_accuracy: 0.4982758620689655
+Train shape = (2345, 163) (number of data points x number of feature)
+Val shape = (34, 163) (number of data points x number of feature)
+Fit fold in 460.327 seconds.
+matthews: 0.10213764617139019
+roc_auc: 0.6423611111111112
+balanced_accuracy: 0.5451388888888888
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;matthews&#39;: 0.05405567645912566, &#39;roc_auc&#39;: 0.5360103823230292, &#39;balanced_accuracy&#39;: 0.5284061852113758}
+std_scores = {&#39;matthews&#39;: 0.14703361948297453, &#39;roc_auc&#39;: 0.0926704447511229, &#39;balanced_accuracy&#39;: 0.07192589246275141}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=16, problem_type=&#39;binary&#39;, scorer={&#39;balanced_accuracy&#39;: make_scorer(balanced_accuracy_score), &#39;matthews&#39;: make_scorer(matthews_corrcoef), &#39;roc_auc&#39;: make_scorer(roc_auc_score, needs_threshold=True)}, subjects=&#39;train&#39;, target=&#39;Dependent any drug&#39;)
+</pre></div></div>
+</div>
+<p>Seeing the results for each site seperately with the verbose option really makes some of the problem clear, namely that a number of small sites don’t seem to generalize well. This is simmilar to what we saw in the case of using leave-out-site with case-only subjects dropped, where we had a huge std in roc auc between folds.</p>
+<p>Another potential problem with doing leave-out-site is that the way the underlying data was collected, different sites will have subjects with dependence to different substances. This can certainly cause issues, as say our classifier only learns to classify alcohol dependence (the strongest signal), then it will do poorly on sites for other substances. Which is good in one way, that it lets us know the classifier is not generalizing, but it doesn’t solve the generalization problem.</p>
+<p>Anyways, that will end this example for now. Leaving the problem of how to best exploit information from case-only sites as an open question (though if interested, a more faithful reproduction of the method presented in <a class="reference external" href="https://onlinelibrary.wiley.com/doi/full/10.1002/hbm.25248">https://onlinelibrary.wiley.com/doi/full/10.1002/hbm.25248</a> might prove to be fruitful. Specifically, in the end only using a few, maybe 3-4, features, which is notably quite different then what we are trying above, i.e., trying just 16 random sets of features).</p>
+</section>
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2020-2022.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

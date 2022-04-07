@@ -1,0 +1,986 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>BPt.Dataset.rolling &#8212; BPt 2.2.2 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="BPt.Dataset.round" href="BPt.Dataset.round.html" />
+    <link rel="prev" title="BPt.Dataset.rmul" href="BPt.Dataset.rmul.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../index.html">
+  <img src="../../_static/red_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../installation/index.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  API reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../options/index.html">
+  Default Options
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../change_log/index.html">
+  Change Log
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../cite/index.html">
+  Cite BPt
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/sahahn/BPt" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/SageHahn11" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../dataset.html">
+   Dataset
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2 current active">
+    <a class="reference internal" href="BPt.Dataset.html">
+     BPt.Dataset
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_cols.html">
+     BPt.Dataset.get_cols
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_subjects.html">
+     BPt.Dataset.get_subjects
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_values.html">
+     BPt.Dataset.get_values
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.add_scope.html">
+     BPt.Dataset.add_scope
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.remove_scope.html">
+     BPt.Dataset.remove_scope
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.set_role.html">
+     BPt.Dataset.set_role
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.set_roles.html">
+     BPt.Dataset.set_roles
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_roles.html">
+     BPt.Dataset.get_roles
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.rename.html">
+     BPt.Dataset.rename
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.copy.html">
+     BPt.Dataset.copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.auto_detect_categorical.html">
+     BPt.Dataset.auto_detect_categorical
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_Xy.html">
+     BPt.Dataset.get_Xy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.to_binary.html">
+     BPt.Dataset.to_binary
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.binarize.html">
+     BPt.Dataset.binarize
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.k_bin.html">
+     BPt.Dataset.k_bin
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.ordinalize.html">
+     BPt.Dataset.ordinalize
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.nan_to_class.html">
+     BPt.Dataset.nan_to_class
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.copy_as_non_input.html">
+     BPt.Dataset.copy_as_non_input
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.add_unique_overlap.html">
+     BPt.Dataset.add_unique_overlap
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.add_data_files.html">
+     BPt.Dataset.add_data_files
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.to_data_file.html">
+     BPt.Dataset.to_data_file
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.consolidate_data_files.html">
+     BPt.Dataset.consolidate_data_files
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.update_data_file_paths.html">
+     BPt.Dataset.update_data_file_paths
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_file_mapping.html">
+     BPt.Dataset.get_file_mapping
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.filter_outliers_by_std.html">
+     BPt.Dataset.filter_outliers_by_std
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.filter_outliers_by_percent.html">
+     BPt.Dataset.filter_outliers_by_percent
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.filter_categorical_by_percent.html">
+     BPt.Dataset.filter_categorical_by_percent
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_cols.html">
+     BPt.Dataset.drop_cols
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_nan_subjects.html">
+     BPt.Dataset.drop_nan_subjects
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_subjects_by_nan.html">
+     BPt.Dataset.drop_subjects_by_nan
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_cols_by_unique_val.html">
+     BPt.Dataset.drop_cols_by_unique_val
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_cols_by_nan.html">
+     BPt.Dataset.drop_cols_by_nan
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_id_cols.html">
+     BPt.Dataset.drop_id_cols
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_duplicate_cols.html">
+     BPt.Dataset.drop_duplicate_cols
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.apply_inclusions.html">
+     BPt.Dataset.apply_inclusions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.apply_exclusions.html">
+     BPt.Dataset.apply_exclusions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.plot.html">
+     BPt.Dataset.plot
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.plot_bivar.html">
+     BPt.Dataset.plot_bivar
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.nan_info.html">
+     BPt.Dataset.nan_info
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.summary.html">
+     BPt.Dataset.summary
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.set_test_split.html">
+     BPt.Dataset.set_test_split
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.set_train_split.html">
+     BPt.Dataset.set_train_split
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.test_split.html">
+     BPt.Dataset.test_split
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.train_split.html">
+     BPt.Dataset.train_split
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.save_test_split.html">
+     BPt.Dataset.save_test_split
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.save_train_split.html">
+     BPt.Dataset.save_train_split
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../pipeline.html">
+   Pipelines
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Pipeline.html">
+     BPt.Pipeline
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.ModelPipeline.html">
+     BPt.ModelPipeline
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../pipeline_pieces.html">
+   Pipeline Pieces
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Loader.html">
+     BPt.Loader
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Imputer.html">
+     BPt.Imputer
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Scaler.html">
+     BPt.Scaler
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Sampler.html">
+     BPt.Sampler
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Transformer.html">
+     BPt.Transformer
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.FeatSelector.html">
+     BPt.FeatSelector
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Model.html">
+     BPt.Model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Ensemble.html">
+     BPt.Ensemble
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.ParamSearch.html">
+     BPt.ParamSearch
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../problem_spec.html">
+   ProblemSpec
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+  <label for="toctree-checkbox-4">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.ProblemSpec.html">
+     BPt.ProblemSpec
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../CV.html">
+   CV
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+  <label for="toctree-checkbox-5">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.CV.html">
+     BPt.CV
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.CVStrategy.html">
+     BPt.CVStrategy
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../input_operations.html">
+   Input Operations
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+  <label for="toctree-checkbox-6">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Select.html">
+     BPt.Select
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Duplicate.html">
+     BPt.Duplicate
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.ValueSubset.html">
+     BPt.ValueSubset
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Intersection.html">
+     BPt.Intersection
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Pipe.html">
+     BPt.Pipe
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../compare.html">
+   Compare
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+  <label for="toctree-checkbox-7">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Compare.html">
+     BPt.Compare
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Option.html">
+     BPt.Option
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.CompareDict.html">
+     BPt.CompareDict
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.compare_dict_from_existing.html">
+     BPt.compare_dict_from_existing
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../dists.html">
+   Parameter Distributions
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+  <label for="toctree-checkbox-8">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Choice.html">
+     BPt.p.Choice
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.TransitionChoice.html">
+     BPt.p.TransitionChoice
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Scalar.html">
+     BPt.p.Scalar
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Log.html">
+     BPt.p.Log
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Array.html">
+     BPt.p.Array
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Tuple.html">
+     BPt.p.Tuple
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Dict.html">
+     BPt.p.Dict
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Instrumentation.html">
+     BPt.p.Instrumentation
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../evaluate.html">
+   Evaluate
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+  <label for="toctree-checkbox-9">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.get_estimator.html">
+     BPt.get_estimator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.evaluate.html">
+     BPt.evaluate
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.cross_validate.html">
+     BPt.cross_validate
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.cross_val_score.html">
+     BPt.cross_val_score
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.BPtEvaluator.html">
+     BPt.BPtEvaluator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.BPtEvaluatorSubset.html">
+     BPt.BPtEvaluatorSubset
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../extensions.html">
+   Extension Classes
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/>
+  <label for="toctree-checkbox-10">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.extensions.Identity.html">
+     BPt.extensions.Identity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.extensions.ThresholdNetworkMeasures.html">
+     BPt.extensions.ThresholdNetworkMeasures
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.extensions.SingleConnectivityMeasure.html">
+     BPt.extensions.SingleConnectivityMeasure
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../util.html">
+   Util
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/>
+  <label for="toctree-checkbox-11">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.util.save_docx_table.html">
+     BPt.util.save_docx_table
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.util.is_array_like.html">
+     BPt.util.is_array_like
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+
+<nav id="bd-toc-nav">
+    
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="bpt-dataset-rolling">
+<h1>BPt.Dataset.rolling<a class="headerlink" href="#bpt-dataset-rolling" title="Permalink to this headline">#</a></h1>
+<dl class="py method">
+<dt class="sig sig-object py" id="BPt.Dataset.rolling">
+<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">rolling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_periods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">win_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">closed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'single'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../../../../../opt/hostedtoolcache/Python/3.9.12/x64/lib/python3.9/site-packages/pandas/core/generic.py#L11241-L11279"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.rolling" title="Permalink to this definition">#</a></dt>
+<dd><p>Provide rolling window calculations.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>window</strong><span class="classifier">int, offset, or BaseIndexer subclass</span></dt><dd><p>Size of the moving window.</p>
+<p>If an integer, the fixed number of observations used for
+each window.</p>
+<p>If an offset, the time period of each window. Each
+window will be a variable sized based on the observations included in
+the time-period. This is only valid for datetimelike indexes.
+To learn more about the offsets &amp; frequency strings, please see <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases">this link</a>.</p>
+<p>If a BaseIndexer subclass, the window boundaries
+based on the defined <code class="docutils literal notranslate"><span class="pre">get_window_bounds</span></code> method. Additional rolling
+keyword arguments, namely <code class="docutils literal notranslate"><span class="pre">min_periods</span></code>, <code class="docutils literal notranslate"><span class="pre">center</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">closed</span></code> will be passed to <code class="docutils literal notranslate"><span class="pre">get_window_bounds</span></code>.</p>
+</dd>
+<dt><strong>min_periods</strong><span class="classifier">int, default None</span></dt><dd><p>Minimum number of observations in window required to have a value;
+otherwise, result is <code class="docutils literal notranslate"><span class="pre">np.nan</span></code>.</p>
+<p>For a window that is specified by an offset, <code class="docutils literal notranslate"><span class="pre">min_periods</span></code> will default to 1.</p>
+<p>For a window that is specified by an integer, <code class="docutils literal notranslate"><span class="pre">min_periods</span></code> will default
+to the size of the window.</p>
+</dd>
+<dt><strong>center</strong><span class="classifier">bool, default False</span></dt><dd><p>If False, set the window labels as the right edge of the window index.</p>
+<p>If True, set the window labels as the center of the window index.</p>
+</dd>
+<dt><strong>win_type</strong><span class="classifier">str, default None</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">None</span></code>, all points are evenly weighted.</p>
+<p>If a string, it must be a valid <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/signal.windows.html#module-scipy.signal.windows">scipy.signal window function</a>.</p>
+<p>Certain Scipy window types require additional parameters to be passed
+in the aggregation function. The additional parameters must match
+the keywords specified in the Scipy window type method signature.</p>
+</dd>
+<dt><strong>on</strong><span class="classifier">str, optional</span></dt><dd><p>For a DataFrame, a column label or Index level on which
+to calculate the rolling window, rather than the DataFrame’s index.</p>
+<p>Provided integer column is ignored and excluded from result since
+an integer index is not used to calculate the rolling window.</p>
+</dd>
+<dt><strong>axis</strong><span class="classifier">int or str, default 0</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">'index'</span></code>, roll across the rows.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">1</span></code> or <code class="docutils literal notranslate"><span class="pre">'columns'</span></code>, roll across the columns.</p>
+</dd>
+<dt><strong>closed</strong><span class="classifier">str, default None</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">'right'</span></code>, the first point in the window is excluded from calculations.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">'left'</span></code>, the last point in the window is excluded from calculations.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">'both'</span></code>, the no points in the window are excluded from calculations.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">'neither'</span></code>, the first and last points in the window are excluded
+from calculations.</p>
+<p>Default <code class="docutils literal notranslate"><span class="pre">None</span></code> (<code class="docutils literal notranslate"><span class="pre">'right'</span></code>).</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.2.0: </span>The closed parameter with fixed windows is now supported.</p>
+</div>
+</dd>
+<dt><strong>method</strong><span class="classifier">str {‘single’, ‘table’}, default ‘single’</span></dt><dd><div class="versionadded">
+<p><span class="versionmodified added">New in version 1.3.0.</span></p>
+</div>
+<p>Execute the rolling operation per single column or row (<code class="docutils literal notranslate"><span class="pre">'single'</span></code>)
+or over the entire object (<code class="docutils literal notranslate"><span class="pre">'table'</span></code>).</p>
+<p>This argument is only implemented when specifying <code class="docutils literal notranslate"><span class="pre">engine='numba'</span></code>
+in the method call.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Window</span></code> subclass if a <code class="docutils literal notranslate"><span class="pre">win_type</span></code> is passed</dt><dd></dd>
+<dt><code class="docutils literal notranslate"><span class="pre">Rolling</span></code> subclass if <code class="docutils literal notranslate"><span class="pre">win_type</span></code> is not passed</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="BPt.Dataset.expanding.html#BPt.Dataset.expanding" title="BPt.Dataset.expanding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expanding</span></code></a></dt><dd><p>Provides expanding transformations.</p>
+</dd>
+<dt><a class="reference internal" href="BPt.Dataset.ewm.html#BPt.Dataset.ewm" title="BPt.Dataset.ewm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ewm</span></code></a></dt><dd><p>Provides exponential weighted functions.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>See <a class="reference external" href="https://pandas.pydata.org/docs/user_guide/window.html#window-generic" title="(in pandas v1.4.2)"><span class="xref std std-ref">Windowing Operations</span></a> for further usage details
+and examples.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="mi">4</span><span class="p">]})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
+<span class="go">     B</span>
+<span class="go">0  0.0</span>
+<span class="go">1  1.0</span>
+<span class="go">2  2.0</span>
+<span class="go">3  NaN</span>
+<span class="go">4  4.0</span>
+</pre></div>
+</div>
+<p><strong>window</strong></p>
+<p>Rolling sum with a window length of 2 observations.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="go">     B</span>
+<span class="go">0  NaN</span>
+<span class="go">1  1.0</span>
+<span class="go">2  3.0</span>
+<span class="go">3  NaN</span>
+<span class="go">4  NaN</span>
+</pre></div>
+</div>
+<p>Rolling sum with a window span of 2 seconds.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df_time</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="mi">4</span><span class="p">]},</span>
+<span class="gp">... </span>                       <span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s1">&#39;20130101 09:00:00&#39;</span><span class="p">),</span>
+<span class="gp">... </span>                                <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s1">&#39;20130101 09:00:02&#39;</span><span class="p">),</span>
+<span class="gp">... </span>                                <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s1">&#39;20130101 09:00:03&#39;</span><span class="p">),</span>
+<span class="gp">... </span>                                <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s1">&#39;20130101 09:00:05&#39;</span><span class="p">),</span>
+<span class="gp">... </span>                                <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s1">&#39;20130101 09:00:06&#39;</span><span class="p">)])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df_time</span>
+<span class="go">                       B</span>
+<span class="go">2013-01-01 09:00:00  0.0</span>
+<span class="go">2013-01-01 09:00:02  1.0</span>
+<span class="go">2013-01-01 09:00:03  2.0</span>
+<span class="go">2013-01-01 09:00:05  NaN</span>
+<span class="go">2013-01-01 09:00:06  4.0</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df_time</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="s1">&#39;2s&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="go">                       B</span>
+<span class="go">2013-01-01 09:00:00  0.0</span>
+<span class="go">2013-01-01 09:00:02  1.0</span>
+<span class="go">2013-01-01 09:00:03  3.0</span>
+<span class="go">2013-01-01 09:00:05  NaN</span>
+<span class="go">2013-01-01 09:00:06  4.0</span>
+</pre></div>
+</div>
+<p>Rolling sum with forward looking windows with 2 observations.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">indexer</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">indexers</span><span class="o">.</span><span class="n">FixedForwardWindowIndexer</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="n">indexer</span><span class="p">,</span> <span class="n">min_periods</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="go">     B</span>
+<span class="go">0  1.0</span>
+<span class="go">1  3.0</span>
+<span class="go">2  2.0</span>
+<span class="go">3  4.0</span>
+<span class="go">4  4.0</span>
+</pre></div>
+</div>
+<p><strong>min_periods</strong></p>
+<p>Rolling sum with a window length of 2 observations, but only needs a minimum of 1
+observation to calculate a value.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">min_periods</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="go">     B</span>
+<span class="go">0  0.0</span>
+<span class="go">1  1.0</span>
+<span class="go">2  3.0</span>
+<span class="go">3  2.0</span>
+<span class="go">4  4.0</span>
+</pre></div>
+</div>
+<p><strong>center</strong></p>
+<p>Rolling sum with the result assigned to the center of the window index.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">min_periods</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="go">     B</span>
+<span class="go">0  1.0</span>
+<span class="go">1  3.0</span>
+<span class="go">2  3.0</span>
+<span class="go">3  6.0</span>
+<span class="go">4  4.0</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">min_periods</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="go">     B</span>
+<span class="go">0  0.0</span>
+<span class="go">1  1.0</span>
+<span class="go">2  3.0</span>
+<span class="go">3  3.0</span>
+<span class="go">4  6.0</span>
+</pre></div>
+</div>
+<p><strong>win_type</strong></p>
+<p>Rolling sum with a window length of 2, using the Scipy <code class="docutils literal notranslate"><span class="pre">'gaussian'</span></code>
+window type. <code class="docutils literal notranslate"><span class="pre">std</span></code> is required in the aggregation function.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">win_type</span><span class="o">=</span><span class="s1">&#39;gaussian&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">std</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">          B</span>
+<span class="go">0       NaN</span>
+<span class="go">1  0.986207</span>
+<span class="go">2  2.958621</span>
+<span class="go">3       NaN</span>
+<span class="go">4       NaN</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2020-2022.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

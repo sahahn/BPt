@@ -1,0 +1,539 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Differential Evolution &#8212; BPt 2.2.2 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Algorithm Selection" href="alg_selection.html" />
+    <link rel="prev" title="Evolution Strategies" href="ev_strats.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../index.html">
+  <img src="../../_static/red_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../installation/index.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../reference/index.html">
+  API reference
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  Default Options
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../change_log/index.html">
+  Change Log
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../cite/index.html">
+  Cite BPt
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/sahahn/BPt" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/SageHahn11" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../pipeline_options/index.html">
+   Pipeline Options
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../pipeline_options/loaders.html">
+     Loaders
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../pipeline_options/imputers.html">
+     Imputers
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../pipeline_options/scalers.html">
+     Scalers
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../pipeline_options/transformers.html">
+     Transformers
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../pipeline_options/selectors.html">
+     Feat Selectors
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../pipeline_options/models.html">
+     Models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../pipeline_options/ensembles.html">
+     Ensemble Types
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../pipeline_options/scorers.html">
+     Scorers
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="index.html">
+   Search Type Options
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="random_search.html">
+     Random Search
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="one_shot.html">
+     One Shot Optimization
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="one_plus_one.html">
+     One Plus One
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="cma.html">
+     CMA
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ev_strats.html">
+     Evolution Strategies
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Differential Evolution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="alg_selection.html">
+     Algorithm Selection
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="comp_maps.html">
+     Competence Maps
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="misc.html">
+     Misc.
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../default_pipelines.html">
+   Default Pipelines
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#de">
+   ‘DE’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#onepointde">
+   ‘OnePointDE’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#twopointsde">
+   ‘TwoPointsDE’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#lhsde">
+   ‘LhsDE’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#qrde">
+   ‘QrDE’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#minide">
+   ‘MiniDE’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#minilhsde">
+   ‘MiniLhsDE’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#miniqrde">
+   ‘MiniQrDE’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#noisyde">
+   ‘NoisyDE’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#almostrotationinvariantde">
+   ‘AlmostRotationInvariantDE’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#almostrotationinvariantdeandbigpop">
+   ‘AlmostRotationInvariantDEAndBigPop’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#rotationinvariantde">
+   ‘RotationInvariantDE’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#bprotationinvariantde">
+   ‘BPRotationInvariantDE’
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="differential-evolution">
+<span id="dif-evolution"></span><h1>Differential Evolution<a class="headerlink" href="#differential-evolution" title="Permalink to this headline">#</a></h1>
+<p>Background: <a class="reference external" href="https://en.wikipedia.org/wiki/Differential_evolution">https://en.wikipedia.org/wiki/Differential_evolution</a></p>
+<p>In the below descriptions the different DE choices vary on a few different parameters.</p>
+<dl>
+<dt>initialization</dt><dd><p>The algorithm/distribution used for the initialization phase.
+Either,</p>
+<ul class="simple">
+<li><p>‘LHS’ : Latin Hypercube Sampling</p></li>
+<li><p>‘QR’ : Quasi-Random</p></li>
+<li><p>‘gaussian’ : Normal Distribution</p></li>
+</ul>
+<p>(default = ‘gaussian’)</p>
+</dd>
+<dt>scale</dt><dd><p>The scale of random component of the updates</p>
+<p>Either,</p>
+<ul class="simple">
+<li><p>‘mini’ : 1 / sqrt(dimension)</p></li>
+<li><p>1 : no change</p></li>
+</ul>
+<p>(default = 1)</p>
+</dd>
+<dt>crossover</dt><dd><p>The crossover rate value / strategy used during DE.
+Either,</p>
+<ul class="simple">
+<li><p>‘dimension’ : crossover rate of  1 / dimension</p></li>
+<li><p>‘random’ : different random (uniform) crossover rate at each iteration</p></li>
+<li><p>‘onepoint’ : one point crossover</p></li>
+<li><p>‘twopoints’ : two points crossover</p></li>
+</ul>
+<p>(default = .5)</p>
+</dd>
+<dt>popsize</dt><dd><p>The size of the population to use.
+Either,</p>
+<ul class="simple">
+<li><p>‘standard’ : max(num_workers, 30)</p></li>
+<li><p>‘dimension’ : max(num_workers, 30, dimension +1)</p></li>
+<li><p>‘large’ : max(num_workers, 30, 7 * dimension)</p></li>
+</ul>
+<p>Note: dimension refers to the dimensions of the hyper-parameters being searched over.
+‘standard’ by default.s</p>
+<p>(default = ‘standard’)</p>
+</dd>
+<dt>recommendation</dt><dd><p>Choice of the criterion for the best point to recommend.
+Either,</p>
+<ul class="simple">
+<li><p>‘optimistic’ : best</p></li>
+<li><p>‘noisy’ : add noise to choice of best</p></li>
+</ul>
+<p>(default = ‘optimistic’)</p>
+</dd>
+</dl>
+<section id="de">
+<h2>‘DE’<a class="headerlink" href="#de" title="Permalink to this headline">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Defaults</span> <span class="n">Only</span>
+</pre></div>
+</div>
+</section>
+<section id="onepointde">
+<h2>‘OnePointDE’<a class="headerlink" href="#onepointde" title="Permalink to this headline">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">crossover</span><span class="p">:</span> <span class="s1">&#39;onepoint&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="twopointsde">
+<h2>‘TwoPointsDE’<a class="headerlink" href="#twopointsde" title="Permalink to this headline">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">crossover</span><span class="p">:</span> <span class="s1">&#39;twopoint&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="lhsde">
+<h2>‘LhsDE’<a class="headerlink" href="#lhsde" title="Permalink to this headline">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">initialization</span><span class="p">:</span> <span class="s1">&#39;LHS&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="qrde">
+<h2>‘QrDE’<a class="headerlink" href="#qrde" title="Permalink to this headline">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">initialization</span><span class="p">:</span> <span class="s1">&#39;QE&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="minide">
+<h2>‘MiniDE’<a class="headerlink" href="#minide" title="Permalink to this headline">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scale</span><span class="p">:</span> <span class="s1">&#39;mini&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="minilhsde">
+<h2>‘MiniLhsDE’<a class="headerlink" href="#minilhsde" title="Permalink to this headline">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">initialization</span><span class="p">:</span> <span class="s1">&#39;LHS&#39;</span>
+<span class="n">scale</span><span class="p">:</span> <span class="s1">&#39;mini&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="miniqrde">
+<h2>‘MiniQrDE’<a class="headerlink" href="#miniqrde" title="Permalink to this headline">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">initialization</span><span class="p">:</span> <span class="s1">&#39;QE&#39;</span>
+<span class="n">scale</span><span class="p">:</span> <span class="s1">&#39;mini&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="noisyde">
+<h2>‘NoisyDE’<a class="headerlink" href="#noisyde" title="Permalink to this headline">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">recommendation</span><span class="p">:</span> <span class="s1">&#39;noisy&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="almostrotationinvariantde">
+<h2>‘AlmostRotationInvariantDE’<a class="headerlink" href="#almostrotationinvariantde" title="Permalink to this headline">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">crossover</span><span class="p">:</span> <span class="mf">.9</span>
+</pre></div>
+</div>
+</section>
+<section id="almostrotationinvariantdeandbigpop">
+<h2>‘AlmostRotationInvariantDEAndBigPop’<a class="headerlink" href="#almostrotationinvariantdeandbigpop" title="Permalink to this headline">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">crossover</span><span class="p">:</span> <span class="mf">.9</span>
+<span class="n">popsize</span><span class="p">:</span> <span class="s1">&#39;dimension&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="rotationinvariantde">
+<h2>‘RotationInvariantDE’<a class="headerlink" href="#rotationinvariantde" title="Permalink to this headline">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">crossover</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">popsize</span><span class="p">:</span> <span class="s1">&#39;dimension&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="bprotationinvariantde">
+<h2>‘BPRotationInvariantDE’<a class="headerlink" href="#bprotationinvariantde" title="Permalink to this headline">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">crossover</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">popsize</span><span class="p">:</span> <span class="s1">&#39;large&#39;</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2020-2022.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

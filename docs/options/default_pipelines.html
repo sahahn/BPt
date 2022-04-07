@@ -1,0 +1,481 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Default Pipelines &#8212; BPt 2.2.2 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/pandas.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Change Log" href="../change_log/index.html" />
+    <link rel="prev" title="Misc." href="search_type_options/misc.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../index.html">
+  <img src="../_static/red_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../installation/index.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../reference/index.html">
+  API reference
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="index.html">
+  Default Options
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../change_log/index.html">
+  Change Log
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../cite/index.html">
+  Cite BPt
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/sahahn/BPt" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/SageHahn11" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="pipeline_options/index.html">
+   Pipeline Options
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pipeline_options/loaders.html">
+     Loaders
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pipeline_options/imputers.html">
+     Imputers
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pipeline_options/scalers.html">
+     Scalers
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pipeline_options/transformers.html">
+     Transformers
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pipeline_options/selectors.html">
+     Feat Selectors
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pipeline_options/models.html">
+     Models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pipeline_options/ensembles.html">
+     Ensemble Types
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pipeline_options/scorers.html">
+     Scorers
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="search_type_options/index.html">
+   Search Type Options
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="search_type_options/random_search.html">
+     Random Search
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="search_type_options/one_shot.html">
+     One Shot Optimization
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="search_type_options/one_plus_one.html">
+     One Plus One
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="search_type_options/cma.html">
+     CMA
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="search_type_options/ev_strats.html">
+     Evolution Strategies
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="search_type_options/dif_evolution.html">
+     Differential Evolution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="search_type_options/alg_selection.html">
+     Algorithm Selection
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="search_type_options/comp_maps.html">
+     Competence Maps
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="search_type_options/misc.html">
+     Misc.
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Default Pipelines
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+
+<nav id="bd-toc-nav">
+    
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="default-pipelines">
+<span id="id1"></span><h1>Default Pipelines<a class="headerlink" href="#default-pipelines" title="Permalink to this headline">#</a></h1>
+<p>You may optionally consider using one of a number of fully pre-defined pipelines. These can
+be accessed though BPt.default.pipelines.</p>
+<p>We can see a list of all available as follows:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">BPt</span> <span class="k">as</span> <span class="nn">bp</span>
+
+<span class="gp">In [2]: </span><span class="kn">from</span> <span class="nn">BPt.default.pipelines</span> <span class="kn">import</span> <span class="n">pipelines_keys</span>
+
+<span class="gp">In [3]: </span><span class="n">pipelines_keys</span>
+<span class="gh">Out[3]: </span><span class="go"></span>
+<span class="go">[&#39;elastic_pipe&#39;,</span>
+<span class="go"> &#39;ridge_pipe&#39;,</span>
+<span class="go"> &#39;rf_pipe&#39;,</span>
+<span class="go"> &#39;gb_pipe&#39;,</span>
+<span class="go"> &#39;svm_pipe&#39;,</span>
+<span class="go"> &#39;svm_fs_pipe&#39;,</span>
+<span class="go"> &#39;stacking_pipe&#39;,</span>
+<span class="go"> &#39;compare_pipe&#39;]</span>
+</pre></div>
+</div>
+<p>These represent options which we can import, for example:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [4]: </span><span class="kn">from</span> <span class="nn">BPt.default.pipelines</span> <span class="kn">import</span> <span class="n">elastic_pipe</span>
+
+<span class="gp">In [5]: </span><span class="n">elastic_pipe</span>
+<span class="gh">Out[5]: </span><span class="go"></span>
+<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
+<span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
+<span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
+<span class="go">                Model(obj=&#39;elastic&#39;,</span>
+<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
+<span class="go">                                               n_iter=60),</span>
+<span class="go">                      params=1)])</span>
+</pre></div>
+</div>
+<p>We can go through and print each pipeline:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [6]: </span><span class="k">for</span> <span class="n">pipeline</span> <span class="ow">in</span> <span class="n">pipelines_keys</span><span class="p">:</span>
+<span class="gp">   ...: </span>    <span class="nb">print</span><span class="p">(</span><span class="n">pipeline</span><span class="p">)</span>
+<span class="gp">   ...: </span>    <span class="nb">eval</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;print(bp.default.pipelines.</span><span class="si">{</span><span class="n">pipeline</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+<span class="gp">   ...: </span>
+<span class="go">elastic_pipe</span>
+<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
+<span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
+<span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
+<span class="go">                Model(obj=&#39;elastic&#39;,</span>
+<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
+<span class="go">                                               n_iter=60),</span>
+<span class="go">                      params=1)])</span>
+<span class="go">ridge_pipe</span>
+<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
+<span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
+<span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
+<span class="go">                Model(obj=&#39;ridge&#39;,</span>
+<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
+<span class="go">                                               n_iter=60),</span>
+<span class="go">                      params=1)])</span>
+<span class="go">rf_pipe</span>
+<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
+<span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
+<span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
+<span class="go">                Model(obj=&#39;rf&#39;,</span>
+<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
+<span class="go">                                               n_iter=60),</span>
+<span class="go">                      params=1)])</span>
+<span class="go">gb_pipe</span>
+<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
+<span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
+<span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
+<span class="go">                Model(obj=&#39;lgbm&#39;,</span>
+<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
+<span class="go">                                               n_iter=60),</span>
+<span class="go">                      params=1)])</span>
+<span class="go">svm_pipe</span>
+<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
+<span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
+<span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
+<span class="go">                Model(obj=&#39;svm&#39;,</span>
+<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
+<span class="go">                                               n_iter=60),</span>
+<span class="go">                      params=1)])</span>
+<span class="go">svm_fs_pipe</span>
+<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
+<span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
+<span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
+<span class="go">                Model(obj=Pipeline(param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
+<span class="go">                                                            n_iter=60),</span>
+<span class="go">                                   steps=[FeatSelector(obj=&#39;univariate &#39;</span>
+<span class="go">                                                           &#39;selection&#39;,</span>
+<span class="go">                                                       params=2),</span>
+<span class="go">                                          Model(obj=&#39;svm&#39;, params=1)]))])</span>
+<span class="go">stacking_pipe</span>
+<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
+<span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
+<span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
+<span class="go">                Ensemble(base_model=Model(obj=&#39;ridge&#39;,</span>
+<span class="go">                                          param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
+<span class="go">                                                                   n_iter=60),</span>
+<span class="go">                                          params=1),</span>
+<span class="go">                         models=[Model(obj=&#39;elastic&#39;,</span>
+<span class="go">                                       param_search=ParamSearch(cv=CV(cv_strategy=CVS...</span>
+<span class="go">                                       param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
+<span class="go">                                                                n_iter=60),</span>
+<span class="go">                                       params=1),</span>
+<span class="go">                                 Model(obj=Pipeline(param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
+<span class="go">                                                                             n_iter=60),</span>
+<span class="go">                                                    steps=[FeatSelector(obj=&#39;univariate &#39;</span>
+<span class="go">                                                                            &#39;selection&#39;,</span>
+<span class="go">                                                                        params=2),</span>
+<span class="go">                                                           Model(obj=&#39;svm&#39;,</span>
+<span class="go">                                                                 params=1)])),</span>
+<span class="go">                                 Model(obj=&#39;lgbm&#39;,</span>
+<span class="go">                                       param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
+<span class="go">                                                                n_iter=60),</span>
+<span class="go">                                       params=1)],</span>
+<span class="go">                         n_jobs_type=&#39;models&#39;, obj=&#39;stacking&#39;)])</span>
+<span class="go">compare_pipe</span>
+<span class="go">CompareDict([elastic, ridge, svm_fs, lgbm])</span>
+</pre></div>
+</div>
+<p>Note also that the individual pieces which make up the default pipelines can be accessed as well.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [7]: </span><span class="kn">from</span> <span class="nn">BPt.default.pipelines</span> <span class="kn">import</span> <span class="n">pieces_keys</span>
+
+<span class="gp">In [8]: </span><span class="n">pieces_keys</span>
+<span class="gh">Out[8]: </span><span class="go"></span>
+<span class="go">[&#39;m_imputer&#39;,</span>
+<span class="go"> &#39;c_imputer&#39;,</span>
+<span class="go"> &#39;r_scaler&#39;,</span>
+<span class="go"> &#39;ohe&#39;,</span>
+<span class="go"> &#39;random_search&#39;,</span>
+<span class="go"> &#39;elastic_search&#39;,</span>
+<span class="go"> &#39;rf_search&#39;,</span>
+<span class="go"> &#39;gb_search&#39;,</span>
+<span class="go"> &#39;svm_search&#39;,</span>
+<span class="go"> &#39;u_feat&#39;,</span>
+<span class="go"> &#39;svm&#39;,</span>
+<span class="go"> &#39;svm_search_pipe&#39;,</span>
+<span class="go"> &#39;ridge_search&#39;,</span>
+<span class="go"> &#39;stacking&#39;]</span>
+
+<span class="go"># Look at some</span>
+<span class="gp">In [9]: </span><span class="n">bp</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">pipelines</span><span class="o">.</span><span class="n">u_feat</span>
+<span class="gh">Out[9]: </span><span class="go">FeatSelector(obj=&#39;univariate selection&#39;, params=2)</span>
+
+<span class="gp">In [10]: </span><span class="n">bp</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">pipelines</span><span class="o">.</span><span class="n">svm</span>
+<span class="gh">Out[10]: </span><span class="go">Model(obj=&#39;svm&#39;, params=1)</span>
+</pre></div>
+</div>
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2020-2022.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

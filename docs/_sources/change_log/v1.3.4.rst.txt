@@ -1,0 +1,18 @@
+.. _whatsnew_134:
+
+Version 1.3.4
+-----------------
+
+- Added support for pandas >= 1
+    - Previously didn't support latest pandas.
+
+- Add sklearn OneHotEncoder
+    - Previously used category_encoders, use scikit-learn's instead for better and more reliable performance.
+    - This object can be accessed as a transformer under 'one hot encoder'.
+
+- Added initial support for in-place FIs 
+    - Moving from plotting via ML to plotting from the Feature Importance object itself
+    - Only fully supports global right now.
+
+- Allow transformers to be skipped if out of scope
+    - Previously would cause error.

@@ -1,0 +1,976 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>BPt.Dataset.filter_outliers_by_std &#8212; BPt 2.2.2 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="BPt.Dataset.first" href="BPt.Dataset.first.html" />
+    <link rel="prev" title="BPt.Dataset.filter_outliers_by_percent" href="BPt.Dataset.filter_outliers_by_percent.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../index.html">
+  <img src="../../_static/red_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../installation/index.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  API reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../options/index.html">
+  Default Options
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../change_log/index.html">
+  Change Log
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../cite/index.html">
+  Cite BPt
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/sahahn/BPt" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/SageHahn11" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../dataset.html">
+   Dataset
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2 current active">
+    <a class="reference internal" href="BPt.Dataset.html">
+     BPt.Dataset
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_cols.html">
+     BPt.Dataset.get_cols
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_subjects.html">
+     BPt.Dataset.get_subjects
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_values.html">
+     BPt.Dataset.get_values
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.add_scope.html">
+     BPt.Dataset.add_scope
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.remove_scope.html">
+     BPt.Dataset.remove_scope
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.set_role.html">
+     BPt.Dataset.set_role
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.set_roles.html">
+     BPt.Dataset.set_roles
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_roles.html">
+     BPt.Dataset.get_roles
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.rename.html">
+     BPt.Dataset.rename
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.copy.html">
+     BPt.Dataset.copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.auto_detect_categorical.html">
+     BPt.Dataset.auto_detect_categorical
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_Xy.html">
+     BPt.Dataset.get_Xy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.to_binary.html">
+     BPt.Dataset.to_binary
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.binarize.html">
+     BPt.Dataset.binarize
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.k_bin.html">
+     BPt.Dataset.k_bin
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.ordinalize.html">
+     BPt.Dataset.ordinalize
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.nan_to_class.html">
+     BPt.Dataset.nan_to_class
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.copy_as_non_input.html">
+     BPt.Dataset.copy_as_non_input
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.add_unique_overlap.html">
+     BPt.Dataset.add_unique_overlap
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.add_data_files.html">
+     BPt.Dataset.add_data_files
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.to_data_file.html">
+     BPt.Dataset.to_data_file
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.consolidate_data_files.html">
+     BPt.Dataset.consolidate_data_files
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.update_data_file_paths.html">
+     BPt.Dataset.update_data_file_paths
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_file_mapping.html">
+     BPt.Dataset.get_file_mapping
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     BPt.Dataset.filter_outliers_by_std
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.filter_outliers_by_percent.html">
+     BPt.Dataset.filter_outliers_by_percent
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.filter_categorical_by_percent.html">
+     BPt.Dataset.filter_categorical_by_percent
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_cols.html">
+     BPt.Dataset.drop_cols
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_nan_subjects.html">
+     BPt.Dataset.drop_nan_subjects
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_subjects_by_nan.html">
+     BPt.Dataset.drop_subjects_by_nan
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_cols_by_unique_val.html">
+     BPt.Dataset.drop_cols_by_unique_val
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_cols_by_nan.html">
+     BPt.Dataset.drop_cols_by_nan
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_id_cols.html">
+     BPt.Dataset.drop_id_cols
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_duplicate_cols.html">
+     BPt.Dataset.drop_duplicate_cols
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.apply_inclusions.html">
+     BPt.Dataset.apply_inclusions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.apply_exclusions.html">
+     BPt.Dataset.apply_exclusions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.plot.html">
+     BPt.Dataset.plot
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.plot_bivar.html">
+     BPt.Dataset.plot_bivar
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.nan_info.html">
+     BPt.Dataset.nan_info
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.summary.html">
+     BPt.Dataset.summary
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.set_test_split.html">
+     BPt.Dataset.set_test_split
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.set_train_split.html">
+     BPt.Dataset.set_train_split
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.test_split.html">
+     BPt.Dataset.test_split
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.train_split.html">
+     BPt.Dataset.train_split
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.save_test_split.html">
+     BPt.Dataset.save_test_split
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.save_train_split.html">
+     BPt.Dataset.save_train_split
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../pipeline.html">
+   Pipelines
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Pipeline.html">
+     BPt.Pipeline
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.ModelPipeline.html">
+     BPt.ModelPipeline
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../pipeline_pieces.html">
+   Pipeline Pieces
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Loader.html">
+     BPt.Loader
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Imputer.html">
+     BPt.Imputer
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Scaler.html">
+     BPt.Scaler
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Sampler.html">
+     BPt.Sampler
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Transformer.html">
+     BPt.Transformer
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.FeatSelector.html">
+     BPt.FeatSelector
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Model.html">
+     BPt.Model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Ensemble.html">
+     BPt.Ensemble
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.ParamSearch.html">
+     BPt.ParamSearch
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../problem_spec.html">
+   ProblemSpec
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+  <label for="toctree-checkbox-4">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.ProblemSpec.html">
+     BPt.ProblemSpec
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../CV.html">
+   CV
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+  <label for="toctree-checkbox-5">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.CV.html">
+     BPt.CV
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.CVStrategy.html">
+     BPt.CVStrategy
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../input_operations.html">
+   Input Operations
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+  <label for="toctree-checkbox-6">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Select.html">
+     BPt.Select
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Duplicate.html">
+     BPt.Duplicate
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.ValueSubset.html">
+     BPt.ValueSubset
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Intersection.html">
+     BPt.Intersection
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Pipe.html">
+     BPt.Pipe
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../compare.html">
+   Compare
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+  <label for="toctree-checkbox-7">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Compare.html">
+     BPt.Compare
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Option.html">
+     BPt.Option
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.CompareDict.html">
+     BPt.CompareDict
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.compare_dict_from_existing.html">
+     BPt.compare_dict_from_existing
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../dists.html">
+   Parameter Distributions
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+  <label for="toctree-checkbox-8">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Choice.html">
+     BPt.p.Choice
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.TransitionChoice.html">
+     BPt.p.TransitionChoice
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Scalar.html">
+     BPt.p.Scalar
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Log.html">
+     BPt.p.Log
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Array.html">
+     BPt.p.Array
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Tuple.html">
+     BPt.p.Tuple
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Dict.html">
+     BPt.p.Dict
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Instrumentation.html">
+     BPt.p.Instrumentation
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../evaluate.html">
+   Evaluate
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+  <label for="toctree-checkbox-9">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.get_estimator.html">
+     BPt.get_estimator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.evaluate.html">
+     BPt.evaluate
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.cross_validate.html">
+     BPt.cross_validate
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.cross_val_score.html">
+     BPt.cross_val_score
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.BPtEvaluator.html">
+     BPt.BPtEvaluator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.BPtEvaluatorSubset.html">
+     BPt.BPtEvaluatorSubset
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../extensions.html">
+   Extension Classes
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/>
+  <label for="toctree-checkbox-10">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.extensions.Identity.html">
+     BPt.extensions.Identity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.extensions.ThresholdNetworkMeasures.html">
+     BPt.extensions.ThresholdNetworkMeasures
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.extensions.SingleConnectivityMeasure.html">
+     BPt.extensions.SingleConnectivityMeasure
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../util.html">
+   Util
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/>
+  <label for="toctree-checkbox-11">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.util.save_docx_table.html">
+     BPt.util.save_docx_table
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.util.is_array_like.html">
+     BPt.util.is_array_like
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+
+<nav id="bd-toc-nav">
+    
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="bpt-dataset-filter-outliers-by-std">
+<h1>BPt.Dataset.filter_outliers_by_std<a class="headerlink" href="#bpt-dataset-filter-outliers-by-std" title="Permalink to this headline">#</a></h1>
+<dl class="py method">
+<dt class="sig sig-object py" id="BPt.Dataset.filter_outliers_by_std">
+<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">filter_outliers_by_std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">scope='float'</span></em>, <em class="sig-param"><span class="pre">n_std=10</span></em>, <em class="sig-param"><span class="pre">drop=True</span></em>, <em class="sig-param"><span class="pre">reduce_func=&lt;function</span> <span class="pre">mean&gt;</span></em>, <em class="sig-param"><span class="pre">n_jobs=-1</span></em>, <em class="sig-param"><span class="pre">inplace=False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L337-L482"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.filter_outliers_by_std" title="Permalink to this definition">#</a></dt>
+<dd><p>This method is designed to allow dropping outliers
+from the requested columns based on comparisons with that columns
+standard deviation.</p>
+<p>Note: This method operates on each of the columns specified by scope
+independently. In the case that multiple columns are passed, then the
+overlap of all outliers from each column will dropped after all
+have been calculated (therefore the order won’t matter).</p>
+<p>This method can be used with data file’s as well, the
+reduce_func and n_jobs parameters are specific to this case.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a></span></dt><dd><blockquote>
+<div><p>A BPt style <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> used to select a subset of
+column(s) in which to apply the current function to.
+See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more information on how this
+can be applied.</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;float&#39;</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>n_std</strong><span class="classifier">float, tuple, optional</span></dt><dd><p>This value is used to set an outlier threshold by
+standrad deviation. For example if passed n_std = 10,
+then it will be converted internally to (10, 10).
+This parameter determines outliers as
+data points within each
+relevant column (as determined by the scope argument) where their
+value is less than the mean of the
+column - n_std[0] * the standard deviation of the column,
+and greater than the mean of the column + n_std[1] * the standard
+deviation of the column.</p>
+<p>If a single number is passed, that number is applied to
+both the lower
+and upper range.
+If a tuple with None on one side is passed, e.g.
+(None, 3), then nothing will be taken off
+that lower or upper bound.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="mi">10</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>drop</strong><span class="classifier">bool, optional</span></dt><dd><p>By default this function will drop any subjects / index that are
+determined to be outliers. On the otherhand, you
+may instead set specific outlier values as NaN values instead.
+To do this, set drop=False. Now those specific
+values identified as outliers will be replaced with NaN.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>reduce_func</strong><span class="classifier">python function, optional</span></dt><dd><p>The passed python function will be applied only if
+the requested col/column is a ‘data file’. In the case
+that it is, the function should accept as input
+the data from one data file, and should return a single
+scalar value. For example, the default value is
+numpy’s mean function, which returns one value.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>n_jobs</strong><span class="classifier">int, optional</span></dt><dd><p>As with reduce_func, this parameter is only
+valid when the passed col/column is a ‘data file’.
+In that case, this specifies the number of cores
+to use in loading and applying the reduce_func to each
+data file. This can provide a significant speed up when
+passed the number of avaliable cores, but can sometimes
+be memory intensive depending on the underlying size of the file.</p>
+<p>If set to -1, will try to automatically use all avaliable cores.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, perform the current function inplace and return None.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>If we define a dataset, we can check the std.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">BPt</span> <span class="k">as</span> <span class="nn">bp</span>
+
+<span class="gp">In [2]: </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="gp">In [3]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Dataset</span><span class="p">()</span>
+
+<span class="gp">In [4]: </span><span class="n">data</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="gp">In [5]: </span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+
+<span class="gp">In [6]: </span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">])</span>
+<span class="gh">Out[6]: </span><span class="go">(1.4142135623730951, 3.0)</span>
+</pre></div>
+</div>
+<p>We can now see how different thresholds work.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="go"># This won&#39;t drop anything</span>
+<span class="gp">In [7]: </span><span class="n">data</span><span class="o">.</span><span class="n">filter_outliers_by_std</span><span class="p">(</span><span class="n">n_std</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gh">Out[7]: </span><span class="go"></span>
+<span class="go">   1</span>
+<span class="go">0  1</span>
+<span class="go">1  1</span>
+<span class="go">2  2</span>
+<span class="go">3  2</span>
+<span class="go">4  3</span>
+<span class="go">5  3</span>
+<span class="go">6  4</span>
+<span class="go">7  4</span>
+<span class="go">8  5</span>
+<span class="go">9  5</span>
+
+<span class="go"># This will</span>
+<span class="gp">In [8]: </span><span class="n">data</span><span class="o">.</span><span class="n">filter_outliers_by_std</span><span class="p">(</span><span class="n">n_std</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">Dropped 4 Rows</span>
+<span class="gh">Out[8]: </span><span class="go"></span>
+<span class="go">   1</span>
+<span class="go">2  2</span>
+<span class="go">3  2</span>
+<span class="go">4  3</span>
+<span class="go">5  3</span>
+<span class="go">6  4</span>
+<span class="go">7  4</span>
+</pre></div>
+</div>
+<p>What if there was more than one column?</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="go"># Now a subject will be dropped</span>
+<span class="gp">In [10]: </span><span class="n">data</span><span class="o">.</span><span class="n">filter_outliers_by_std</span><span class="p">(</span><span class="n">n_std</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">Dropped 1 Rows</span>
+<span class="gh">Out[10]: </span><span class="go"></span>
+<span class="go">   1  2</span>
+<span class="go">0  1  1</span>
+<span class="go">1  1  1</span>
+<span class="go">2  2  1</span>
+<span class="go">3  2  1</span>
+<span class="go">5  3  1</span>
+<span class="go">6  4  1</span>
+<span class="go">7  4  1</span>
+<span class="go">8  5  1</span>
+<span class="go">9  5  1</span>
+
+<span class="gp">In [11]: </span><span class="n">data</span><span class="o">.</span><span class="n">filter_outliers_by_std</span><span class="p">(</span><span class="n">n_std</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">Dropped 5 Rows</span>
+<span class="gh">Out[11]: </span><span class="go"></span>
+<span class="go">   1  2</span>
+<span class="go">2  2  1</span>
+<span class="go">3  2  1</span>
+<span class="go">5  3  1</span>
+<span class="go">6  4  1</span>
+<span class="go">7  4  1</span>
+</pre></div>
+</div>
+<p>We can also apply it only to one column, and instead of dropping
+subjects, replace outliers with NaN’s</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [12]: </span><span class="n">data</span><span class="o">.</span><span class="n">filter_outliers_by_std</span><span class="p">(</span><span class="n">n_std</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gh">Out[12]: </span><span class="go"></span>
+<span class="go">     1   2</span>
+<span class="go">0  NaN   1</span>
+<span class="go">1  NaN   1</span>
+<span class="go">2  2.0   1</span>
+<span class="go">3  2.0   1</span>
+<span class="go">4  3.0  10</span>
+<span class="go">5  3.0   1</span>
+<span class="go">6  4.0   1</span>
+<span class="go">7  4.0   1</span>
+<span class="go">8  NaN   1</span>
+<span class="go">9  NaN   1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2020-2022.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

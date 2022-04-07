@@ -1,0 +1,1914 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Loading Fake Timeseries Surface Data &#8212; BPt 2.2.2 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/pandas.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Subjects" href="subjects.html" />
+    <link rel="prev" title="Data Files" href="data_files.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../index.html">
+  <img src="../_static/red_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../installation/index.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../reference/index.html">
+  API reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../options/index.html">
+  Default Options
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../change_log/index.html">
+  Change Log
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../cite/index.html">
+  Cite BPt
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/sahahn/BPt" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/SageHahn11" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="why_bpt.html">
+   Why BPt?
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="loading_data.html">
+   Loading Data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="saving_data.html">
+   Saving Data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="test_split.html">
+   Test Split
+  </a>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="role.html">
+   Role
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="scope.html">
+   Scope
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="data_types.html">
+   Data Types
+  </a>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="data_files.html">
+   Data Files
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Loading Fake Timeseries Surface Data
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="subjects.html">
+   Subjects
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="pipeline_objects.html">
+   Pipeline Objects
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="params.html">
+   Params
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="extra_params.html">
+   Extra Params
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bmi_full_example.html">
+   Predict BMI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="dep_full_example.html">
+   Predicting Substance Dependence from Multi-Site Data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ssrt.html">
+   Predict Stop Signal Response Time (SSRT)
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="waist_cm.html">
+   Predict Waist Circumference with Diffusion Weighted Imaging
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="sex.html">
+   Predict Sex
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+
+<nav id="bd-toc-nav">
+    
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt .copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<section id="Loading-Fake-Timeseries-Surface-Data">
+<h1>Loading Fake Timeseries Surface Data<a class="headerlink" href="#Loading-Fake-Timeseries-Surface-Data" title="Permalink to this headline">#</a></h1>
+<p>This notebook is designed to explore some functionality with loading DataFiles and using Loaders.</p>
+<p>This example will require some extra optional libraries, including nibabel and nilearn! Note: while nilearn is not imported, when trying to import SingleConnectivityMeasure, if nilearn is not installed, this will give an ImportError.</p>
+<p>We will also use fake data for this example - so no special datasets required!</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">BPt</span> <span class="k">as</span> <span class="nn">bp</span>
+<span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">os</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">save_fake_timeseries_data</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Save fake timeseries and fake surface data.&#39;&#39;&#39;</span>
+
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10242</span><span class="p">))</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s1">&#39;fake_time_data&#39;</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)):</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;fake_time_data/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_lh&#39;</span><span class="p">,</span> <span class="n">X</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)):</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;fake_time_data/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_rh&#39;</span><span class="p">,</span> <span class="n">X</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>
+
+<span class="n">save_fake_timeseries_data</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Init a Dataset</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Dataset</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Next, we are interested in loading in the files to the dataset as data files. There are a few different ways to do this, but we will use the method add_data_files. We will try and load the timeseries data first.</p>
+<p>First we need a dictionary mapping desired column name to location or a file glob (which is easier so let’s use that).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The *&#39;s just mean wildcard</span>
+<span class="n">files</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;timeseries_lh&#39;</span><span class="p">:</span> <span class="s1">&#39;fake_time_data/*_lh*&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;timeseries_rh&#39;</span><span class="p">:</span> <span class="s1">&#39;fake_time_data/*_rh*&#39;</span><span class="p">}</span>
+
+<span class="c1"># Now let&#39;s try loading with &#39;auto&#39; as the file to subject function</span>
+<span class="n">data</span><span class="o">.</span><span class="n">add_data_files</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div style="float: left; padding: 10px;">
+        <h3>Data</h3><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>timeseries_lh</th>
+      <th>timeseries_rh</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>13_lh</th>
+      <td>Loc(0)</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <th>9_lh</th>
+      <td>Loc(1)</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <th>8_lh</th>
+      <td>Loc(2)</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <th>2_lh</th>
+      <td>Loc(3)</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <th>16_lh</th>
+      <td>Loc(4)</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <th>11_lh</th>
+      <td>Loc(5)</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <th>6_lh</th>
+      <td>Loc(6)</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <th>7_lh</th>
+      <td>Loc(7)</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <th>1_lh</th>
+      <td>Loc(8)</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <th>17_lh</th>
+      <td>Loc(9)</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <th>19_lh</th>
+      <td>Loc(10)</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <th>15_lh</th>
+      <td>Loc(11)</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <th>10_lh</th>
+      <td>Loc(12)</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <th>3_lh</th>
+      <td>Loc(13)</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <th>14_lh</th>
+      <td>Loc(14)</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <th>0_lh</th>
+      <td>Loc(15)</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <th>18_lh</th>
+      <td>Loc(16)</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <th>5_lh</th>
+      <td>Loc(17)</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <th>4_lh</th>
+      <td>Loc(18)</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <th>12_lh</th>
+      <td>Loc(19)</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <th>11_rh</th>
+      <td>nan</td>
+      <td>Loc(20)</td>
+    </tr>
+    <tr>
+      <th>10_rh</th>
+      <td>nan</td>
+      <td>Loc(21)</td>
+    </tr>
+    <tr>
+      <th>12_rh</th>
+      <td>nan</td>
+      <td>Loc(22)</td>
+    </tr>
+    <tr>
+      <th>3_rh</th>
+      <td>nan</td>
+      <td>Loc(23)</td>
+    </tr>
+    <tr>
+      <th>0_rh</th>
+      <td>nan</td>
+      <td>Loc(24)</td>
+    </tr>
+    <tr>
+      <th>18_rh</th>
+      <td>nan</td>
+      <td>Loc(25)</td>
+    </tr>
+    <tr>
+      <th>1_rh</th>
+      <td>nan</td>
+      <td>Loc(26)</td>
+    </tr>
+    <tr>
+      <th>9_rh</th>
+      <td>nan</td>
+      <td>Loc(27)</td>
+    </tr>
+    <tr>
+      <th>14_rh</th>
+      <td>nan</td>
+      <td>Loc(28)</td>
+    </tr>
+    <tr>
+      <th>6_rh</th>
+      <td>nan</td>
+      <td>Loc(29)</td>
+    </tr>
+    <tr>
+      <th>15_rh</th>
+      <td>nan</td>
+      <td>Loc(30)</td>
+    </tr>
+    <tr>
+      <th>7_rh</th>
+      <td>nan</td>
+      <td>Loc(31)</td>
+    </tr>
+    <tr>
+      <th>4_rh</th>
+      <td>nan</td>
+      <td>Loc(32)</td>
+    </tr>
+    <tr>
+      <th>19_rh</th>
+      <td>nan</td>
+      <td>Loc(33)</td>
+    </tr>
+    <tr>
+      <th>5_rh</th>
+      <td>nan</td>
+      <td>Loc(34)</td>
+    </tr>
+    <tr>
+      <th>2_rh</th>
+      <td>nan</td>
+      <td>Loc(35)</td>
+    </tr>
+    <tr>
+      <th>13_rh</th>
+      <td>nan</td>
+      <td>Loc(36)</td>
+    </tr>
+    <tr>
+      <th>8_rh</th>
+      <td>nan</td>
+      <td>Loc(37)</td>
+    </tr>
+    <tr>
+      <th>16_rh</th>
+      <td>nan</td>
+      <td>Loc(38)</td>
+    </tr>
+    <tr>
+      <th>17_rh</th>
+      <td>nan</td>
+      <td>Loc(39)</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>We can see ‘auto’ doesn’t work for us, so we can try writing our own function instead.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">file_to_subj</span><span class="p">(</span><span class="n">loc</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">loc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Actually load it this time</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">add_data_files</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">file_to_subj</span><span class="p">)</span>
+<span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div style="float: left; padding: 10px;">
+        <h3>Data</h3><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>timeseries_lh</th>
+      <th>timeseries_rh</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>13</th>
+      <td>Loc(0)</td>
+      <td>Loc(36)</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Loc(1)</td>
+      <td>Loc(27)</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Loc(2)</td>
+      <td>Loc(37)</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Loc(3)</td>
+      <td>Loc(35)</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>Loc(4)</td>
+      <td>Loc(38)</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>Loc(5)</td>
+      <td>Loc(20)</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Loc(6)</td>
+      <td>Loc(29)</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Loc(7)</td>
+      <td>Loc(31)</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Loc(8)</td>
+      <td>Loc(26)</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>Loc(9)</td>
+      <td>Loc(39)</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>Loc(10)</td>
+      <td>Loc(33)</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>Loc(11)</td>
+      <td>Loc(30)</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>Loc(12)</td>
+      <td>Loc(21)</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Loc(13)</td>
+      <td>Loc(23)</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>Loc(14)</td>
+      <td>Loc(28)</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>Loc(15)</td>
+      <td>Loc(24)</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>Loc(16)</td>
+      <td>Loc(25)</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Loc(17)</td>
+      <td>Loc(34)</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Loc(18)</td>
+      <td>Loc(32)</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>Loc(19)</td>
+      <td>Loc(22)</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>What’s this though? Why are the files showing up as Loc(int). Whats going on is that the data files are really stored as just integers, see:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;timeseries_lh&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+13     0.0
+9      1.0
+8      2.0
+2      3.0
+16     4.0
+11     5.0
+6      6.0
+7      7.0
+1      8.0
+17     9.0
+19    10.0
+15    11.0
+10    12.0
+3     13.0
+14    14.0
+0     15.0
+18    16.0
+5     17.0
+4     18.0
+12    19.0
+Name: timeseries_lh, dtype: float64
+</pre></div></div>
+</div>
+<p>They correspond to locations in a stored file mapping (note: you don’t need to worry about any of this most of the time)</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">file_mapping</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">file_mapping</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">file_mapping</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(DataFile(loc=&#39;/home/sage/BPt/Examples/Short_Examples/fake_time_data/13_lh.npy&#39;),
+ DataFile(loc=&#39;/home/sage/BPt/Examples/Short_Examples/fake_time_data/9_lh.npy&#39;),
+ DataFile(loc=&#39;/home/sage/BPt/Examples/Short_Examples/fake_time_data/8_lh.npy&#39;))
+</pre></div></div>
+</div>
+<p>Let’s add a fake target to our dataset now</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="n">data</span><span class="o">.</span><span class="n">set_target</span><span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div style="float: left; padding: 10px;">
+        <h3>Data</h3><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>timeseries_lh</th>
+      <th>timeseries_rh</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>13</th>
+      <td>Loc(0)</td>
+      <td>Loc(36)</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Loc(1)</td>
+      <td>Loc(27)</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Loc(2)</td>
+      <td>Loc(37)</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Loc(3)</td>
+      <td>Loc(35)</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>Loc(4)</td>
+      <td>Loc(38)</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>Loc(5)</td>
+      <td>Loc(20)</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Loc(6)</td>
+      <td>Loc(29)</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Loc(7)</td>
+      <td>Loc(31)</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Loc(8)</td>
+      <td>Loc(26)</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>Loc(9)</td>
+      <td>Loc(39)</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>Loc(10)</td>
+      <td>Loc(33)</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>Loc(11)</td>
+      <td>Loc(30)</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>Loc(12)</td>
+      <td>Loc(21)</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Loc(13)</td>
+      <td>Loc(23)</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>Loc(14)</td>
+      <td>Loc(28)</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>Loc(15)</td>
+      <td>Loc(24)</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>Loc(16)</td>
+      <td>Loc(25)</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Loc(17)</td>
+      <td>Loc(34)</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Loc(18)</td>
+      <td>Loc(32)</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>Loc(19)</td>
+      <td>Loc(22)</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+<div style="float: left; padding: 10px;">
+        <h3>Target</h3><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>t</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>13</th>
+      <td>0.656648</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>0.298354</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>0.495359</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.414660</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>0.606687</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>0.453163</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>0.853856</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>0.044329</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.916036</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>0.865733</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>0.015055</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>0.082130</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>0.731628</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.074572</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>0.589903</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>0.768409</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>0.536750</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0.401537</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.580557</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>0.508457</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Next we will generate a Loader to apply a parcellation, then extract a measure of connectivity.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">BPt.extensions</span> <span class="kn">import</span> <span class="n">SurfLabels</span>
+
+<span class="n">lh_parc</span> <span class="o">=</span> <span class="n">SurfLabels</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="s1">&#39;data/lh.aparc.annot&#39;</span><span class="p">,</span> <span class="n">vectorize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">rh_parc</span> <span class="o">=</span> <span class="n">SurfLabels</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="s1">&#39;data/rh.aparc.annot&#39;</span><span class="p">,</span> <span class="n">vectorize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>We can see how this object works on example data first.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ex_lh</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">file_mapping</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+<span class="n">ex_lh</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(100, 10242)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trans</span> <span class="o">=</span> <span class="n">lh_parc</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">ex_lh</span><span class="p">)</span>
+<span class="n">trans</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(100, 35)
+</pre></div></div>
+</div>
+<p>We essentially get a reduction from 10242 features to 35.</p>
+<p>Next, we want to transform the matrix into a correlation matrix.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">BPt.extensions</span> <span class="kn">import</span> <span class="n">SingleConnectivityMeasure</span>
+<span class="n">scm</span> <span class="o">=</span> <span class="n">SingleConnectivityMeasure</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;covariance&#39;</span><span class="p">,</span> <span class="n">discard_diagonal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">vectorize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scm</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">trans</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(595,)
+</pre></div></div>
+</div>
+<p>The single connectivity measure is just a wrapper designed to let the ConnectivityMeasure from nilearn work with a single subject’s data at a time.</p>
+<p>Next, let’s use the input special Pipe wrapper to compose these two objects into their own pipeline</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lh_loader</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Loader</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">Pipe</span><span class="p">([</span><span class="n">lh_parc</span><span class="p">,</span> <span class="n">scm</span><span class="p">]),</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;_lh&#39;</span><span class="p">)</span>
+<span class="n">rh_loader</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Loader</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">Pipe</span><span class="p">([</span><span class="n">rh_parc</span><span class="p">,</span> <span class="n">scm</span><span class="p">]),</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;_rh&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Define a simple pipeline with just our loader steps, then evaluate with mostly default settings.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">([</span><span class="n">lh_loader</span><span class="p">,</span> <span class="n">rh_loader</span><span class="p">,</span> <span class="n">bp</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="s1">&#39;linear&#39;</span><span class="p">)])</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="n">results</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ee8b7bc1991f4995a160f3aa2aa124ce", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: -0.3492082271322736, &#39;neg_mean_squared_error&#39;: -0.08532586202634963}
+std_scores = {&#39;explained_variance&#39;: 0.37944917198666483, &#39;neg_mean_squared_error&#39;: 0.025409784568717956}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(problem_type=&#39;regression&#39;,
+            scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score),
+                    &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)},
+            subjects=&#39;all&#39;, target=&#39;t&#39;)
+</pre></div></div>
+</div>
+<p>Don’t be discouraged that this didn’t work, we are after all trying to predict random noise with random noise …</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># These are the steps of the pipeline</span>
+<span class="n">fold0_pipeline</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">estimators</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">fold0_pipeline</span><span class="o">.</span><span class="n">steps</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">step</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+loader_pipe0
+loader_pipe1
+linear regressor
+</pre></div></div>
+</div>
+<p>We can investigate pieces, or use special functions like</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span><span class="o">.</span><span class="n">get_X_transform_df</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">fold</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>timeseries_rh_0</th>
+      <th>timeseries_rh_1</th>
+      <th>timeseries_rh_2</th>
+      <th>timeseries_rh_3</th>
+      <th>timeseries_rh_4</th>
+      <th>timeseries_rh_5</th>
+      <th>timeseries_rh_6</th>
+      <th>timeseries_rh_7</th>
+      <th>timeseries_rh_8</th>
+      <th>timeseries_rh_9</th>
+      <th>...</th>
+      <th>timeseries_lh_585</th>
+      <th>timeseries_lh_586</th>
+      <th>timeseries_lh_587</th>
+      <th>timeseries_lh_588</th>
+      <th>timeseries_lh_589</th>
+      <th>timeseries_lh_590</th>
+      <th>timeseries_lh_591</th>
+      <th>timeseries_lh_592</th>
+      <th>timeseries_lh_593</th>
+      <th>timeseries_lh_594</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>-0.000165</td>
+      <td>0.000046</td>
+      <td>-0.000077</td>
+      <td>-0.000075</td>
+      <td>0.000074</td>
+      <td>-0.000011</td>
+      <td>-0.000049</td>
+      <td>0.000047</td>
+      <td>-0.000024</td>
+      <td>-0.000024</td>
+      <td>...</td>
+      <td>-8.290498e-06</td>
+      <td>-0.000006</td>
+      <td>-0.000023</td>
+      <td>1.610693e-06</td>
+      <td>0.000015</td>
+      <td>-0.000006</td>
+      <td>4.867083e-06</td>
+      <td>-1.215231e-04</td>
+      <td>-0.000140</td>
+      <td>-0.000048</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.000051</td>
+      <td>0.000027</td>
+      <td>-0.000011</td>
+      <td>-0.000003</td>
+      <td>0.000022</td>
+      <td>0.000033</td>
+      <td>0.000049</td>
+      <td>0.000072</td>
+      <td>0.000010</td>
+      <td>-0.000014</td>
+      <td>...</td>
+      <td>9.147214e-06</td>
+      <td>-0.000033</td>
+      <td>-0.000015</td>
+      <td>4.817195e-06</td>
+      <td>0.000001</td>
+      <td>0.000009</td>
+      <td>-3.010718e-05</td>
+      <td>5.807162e-05</td>
+      <td>-0.000070</td>
+      <td>0.000016</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>-0.000019</td>
+      <td>-0.000024</td>
+      <td>-0.000004</td>
+      <td>0.000027</td>
+      <td>-0.000054</td>
+      <td>0.000013</td>
+      <td>0.000064</td>
+      <td>-0.000118</td>
+      <td>-0.000065</td>
+      <td>0.000063</td>
+      <td>...</td>
+      <td>-8.021237e-06</td>
+      <td>-0.000059</td>
+      <td>0.000004</td>
+      <td>-1.018778e-05</td>
+      <td>-0.000026</td>
+      <td>-0.000003</td>
+      <td>1.120659e-05</td>
+      <td>-3.874970e-05</td>
+      <td>0.000057</td>
+      <td>-0.000008</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.000037</td>
+      <td>0.000027</td>
+      <td>0.000050</td>
+      <td>0.000080</td>
+      <td>0.000038</td>
+      <td>0.000009</td>
+      <td>-0.000094</td>
+      <td>-0.000117</td>
+      <td>0.000056</td>
+      <td>-0.000005</td>
+      <td>...</td>
+      <td>2.637188e-07</td>
+      <td>-0.000015</td>
+      <td>-0.000011</td>
+      <td>-6.939784e-06</td>
+      <td>0.000022</td>
+      <td>0.000005</td>
+      <td>-2.519195e-05</td>
+      <td>1.219129e-04</td>
+      <td>0.000021</td>
+      <td>0.000074</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>-0.000030</td>
+      <td>0.000013</td>
+      <td>-0.000048</td>
+      <td>-0.000002</td>
+      <td>0.000043</td>
+      <td>-0.000021</td>
+      <td>-0.000021</td>
+      <td>0.000045</td>
+      <td>0.000015</td>
+      <td>-0.000008</td>
+      <td>...</td>
+      <td>-4.193627e-05</td>
+      <td>-0.000005</td>
+      <td>-0.000038</td>
+      <td>-1.579288e-05</td>
+      <td>-0.000010</td>
+      <td>0.000007</td>
+      <td>-2.074608e-05</td>
+      <td>1.288912e-04</td>
+      <td>0.000048</td>
+      <td>0.000015</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>-0.000027</td>
+      <td>0.000012</td>
+      <td>0.000049</td>
+      <td>-0.000040</td>
+      <td>0.000137</td>
+      <td>-0.000020</td>
+      <td>0.000023</td>
+      <td>0.000057</td>
+      <td>0.000020</td>
+      <td>0.000018</td>
+      <td>...</td>
+      <td>-2.317345e-05</td>
+      <td>0.000047</td>
+      <td>-0.000021</td>
+      <td>-3.256373e-06</td>
+      <td>0.000013</td>
+      <td>0.000006</td>
+      <td>-2.017995e-05</td>
+      <td>3.174790e-05</td>
+      <td>-0.000044</td>
+      <td>-0.000050</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>-0.000003</td>
+      <td>0.000011</td>
+      <td>0.000037</td>
+      <td>-0.000007</td>
+      <td>0.000026</td>
+      <td>0.000034</td>
+      <td>0.000007</td>
+      <td>-0.000071</td>
+      <td>-0.000019</td>
+      <td>-0.000004</td>
+      <td>...</td>
+      <td>1.230251e-05</td>
+      <td>0.000065</td>
+      <td>0.000008</td>
+      <td>8.041033e-07</td>
+      <td>0.000001</td>
+      <td>-0.000026</td>
+      <td>-1.401379e-05</td>
+      <td>2.662647e-05</td>
+      <td>-0.000020</td>
+      <td>0.000032</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>0.000038</td>
+      <td>0.000019</td>
+      <td>0.000006</td>
+      <td>0.000017</td>
+      <td>-0.000173</td>
+      <td>0.000027</td>
+      <td>-0.000058</td>
+      <td>0.000120</td>
+      <td>0.000028</td>
+      <td>-0.000029</td>
+      <td>...</td>
+      <td>-2.762708e-05</td>
+      <td>0.000019</td>
+      <td>0.000015</td>
+      <td>-5.296039e-06</td>
+      <td>-0.000021</td>
+      <td>0.000017</td>
+      <td>-3.512035e-06</td>
+      <td>-1.743649e-04</td>
+      <td>0.000015</td>
+      <td>0.000002</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>-0.000009</td>
+      <td>0.000007</td>
+      <td>0.000034</td>
+      <td>-0.000002</td>
+      <td>0.000032</td>
+      <td>-0.000011</td>
+      <td>-0.000021</td>
+      <td>-0.000113</td>
+      <td>0.000040</td>
+      <td>0.000024</td>
+      <td>...</td>
+      <td>-1.286571e-06</td>
+      <td>-0.000022</td>
+      <td>-0.000027</td>
+      <td>2.031265e-05</td>
+      <td>-0.000008</td>
+      <td>0.000035</td>
+      <td>-5.331094e-06</td>
+      <td>-5.483645e-05</td>
+      <td>0.000103</td>
+      <td>-0.000014</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>0.000062</td>
+      <td>-0.000022</td>
+      <td>0.000060</td>
+      <td>0.000010</td>
+      <td>-0.000017</td>
+      <td>0.000012</td>
+      <td>-0.000019</td>
+      <td>0.000093</td>
+      <td>-0.000002</td>
+      <td>0.000028</td>
+      <td>...</td>
+      <td>-1.272615e-05</td>
+      <td>0.000027</td>
+      <td>-0.000015</td>
+      <td>-1.022682e-05</td>
+      <td>-0.000044</td>
+      <td>-0.000006</td>
+      <td>4.879025e-06</td>
+      <td>3.508208e-07</td>
+      <td>-0.000069</td>
+      <td>-0.000002</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>0.000019</td>
+      <td>0.000110</td>
+      <td>0.000062</td>
+      <td>-0.000019</td>
+      <td>0.000011</td>
+      <td>-0.000007</td>
+      <td>-0.000059</td>
+      <td>-0.000056</td>
+      <td>0.000022</td>
+      <td>-0.000041</td>
+      <td>...</td>
+      <td>-1.971200e-05</td>
+      <td>0.000055</td>
+      <td>0.000020</td>
+      <td>-5.049802e-06</td>
+      <td>0.000014</td>
+      <td>0.000014</td>
+      <td>-4.576251e-07</td>
+      <td>-3.902154e-05</td>
+      <td>0.000023</td>
+      <td>-0.000025</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>0.000013</td>
+      <td>-0.000036</td>
+      <td>-0.000063</td>
+      <td>-0.000026</td>
+      <td>-0.000008</td>
+      <td>-0.000007</td>
+      <td>0.000029</td>
+      <td>-0.000117</td>
+      <td>0.000052</td>
+      <td>0.000013</td>
+      <td>...</td>
+      <td>4.998446e-07</td>
+      <td>-0.000018</td>
+      <td>-0.000016</td>
+      <td>-1.614390e-05</td>
+      <td>0.000006</td>
+      <td>-0.000006</td>
+      <td>1.069373e-05</td>
+      <td>-6.800519e-06</td>
+      <td>0.000029</td>
+      <td>-0.000103</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>-0.000033</td>
+      <td>-0.000027</td>
+      <td>0.000066</td>
+      <td>0.000013</td>
+      <td>0.000021</td>
+      <td>-0.000012</td>
+      <td>0.000061</td>
+      <td>0.000105</td>
+      <td>0.000020</td>
+      <td>0.000022</td>
+      <td>...</td>
+      <td>-3.358210e-06</td>
+      <td>-0.000003</td>
+      <td>-0.000018</td>
+      <td>2.135645e-05</td>
+      <td>0.000009</td>
+      <td>0.000002</td>
+      <td>-1.748675e-05</td>
+      <td>2.181139e-04</td>
+      <td>0.000018</td>
+      <td>-0.000078</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>0.000080</td>
+      <td>-0.000046</td>
+      <td>-0.000040</td>
+      <td>0.000033</td>
+      <td>-0.000092</td>
+      <td>0.000013</td>
+      <td>-0.000005</td>
+      <td>-0.000085</td>
+      <td>0.000020</td>
+      <td>0.000096</td>
+      <td>...</td>
+      <td>-3.432920e-06</td>
+      <td>0.000038</td>
+      <td>0.000048</td>
+      <td>5.295833e-06</td>
+      <td>0.000013</td>
+      <td>0.000030</td>
+      <td>5.164307e-06</td>
+      <td>-9.442774e-05</td>
+      <td>-0.000010</td>
+      <td>-0.000014</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>0.000077</td>
+      <td>-0.000009</td>
+      <td>-0.000118</td>
+      <td>0.000056</td>
+      <td>-0.000049</td>
+      <td>0.000021</td>
+      <td>-0.000036</td>
+      <td>0.000130</td>
+      <td>-0.000081</td>
+      <td>0.000017</td>
+      <td>...</td>
+      <td>-9.383758e-06</td>
+      <td>-0.000027</td>
+      <td>-0.000019</td>
+      <td>-2.622800e-06</td>
+      <td>0.000005</td>
+      <td>0.000009</td>
+      <td>-1.135353e-05</td>
+      <td>1.509882e-05</td>
+      <td>-0.000070</td>
+      <td>-0.000058</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>-0.000113</td>
+      <td>-0.000045</td>
+      <td>0.000040</td>
+      <td>0.000020</td>
+      <td>-0.000040</td>
+      <td>-0.000010</td>
+      <td>-0.000081</td>
+      <td>0.000031</td>
+      <td>-0.000066</td>
+      <td>0.000002</td>
+      <td>...</td>
+      <td>1.523565e-05</td>
+      <td>-0.000071</td>
+      <td>0.000031</td>
+      <td>-6.086060e-06</td>
+      <td>-0.000013</td>
+      <td>0.000003</td>
+      <td>1.540947e-06</td>
+      <td>1.604218e-04</td>
+      <td>0.000140</td>
+      <td>0.000034</td>
+    </tr>
+  </tbody>
+</table>
+<p>16 rows × 1190 columns</p>
+</div></div>
+</div>
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2020-2022.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

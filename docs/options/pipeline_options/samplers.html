@@ -1,0 +1,449 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Samplers &#8212; BPt 2.2.2 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../index.html">
+  <img src="../../_static/red_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../installation/index.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../reference/index.html">
+  API reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  Default Options
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../change_log/index.html">
+  Change Log
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../cite/index.html">
+  Cite BPt
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/sahahn/BPt" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/SageHahn11" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#standard">
+   “standard”
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#minmax">
+   “minmax”
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#maxabs">
+   “maxabs”
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#robust">
+   “robust”
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#yeo">
+   “yeo”
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#boxcox">
+   “boxcox”
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#winsorize">
+   “winsorize”
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#quantile-norm">
+   “quantile norm”
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#quantile-uniform">
+   “quantile uniform”
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#normalize">
+   “normalize”
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="samplers">
+<span id="id1"></span><h1>Samplers<a class="headerlink" href="#samplers" title="Permalink to this headline">#</a></h1>
+<p>Different base obj choices for the <a class="reference internal" href="../../reference/api/BPt.Sampler.html#BPt.Sampler" title="BPt.Sampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scaler</span></code></a> are shown below
+The exact str indicator, as passed to the <cite>obj</cite> param is represented by the sub-heading (within “”)
+Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.</p>
+<section id="standard">
+<h2>“standard”<a class="headerlink" href="#standard" title="Permalink to this headline">#</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html#sklearn.preprocessing.StandardScaler" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.preprocessing.StandardScaler</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“base standard”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">with_mean</span><span class="p">:</span> <span class="kc">True</span>
+<span class="n">with_std</span><span class="p">:</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="minmax">
+<h2>“minmax”<a class="headerlink" href="#minmax" title="Permalink to this headline">#</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html#sklearn.preprocessing.MinMaxScaler" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.preprocessing.MinMaxScaler</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“base minmax”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">feature_range</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="maxabs">
+<h2>“maxabs”<a class="headerlink" href="#maxabs" title="Permalink to this headline">#</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MaxAbsScaler.html#sklearn.preprocessing.MaxAbsScaler" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.preprocessing.MaxAbsScaler</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“default”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span> <span class="n">only</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="robust">
+<h2>“robust”<a class="headerlink" href="#robust" title="Permalink to this headline">#</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.RobustScaler.html#sklearn.preprocessing.RobustScaler" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.preprocessing.RobustScaler</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“base robust”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">quantile_range</span><span class="p">:</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">95</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>“robust gs”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">quantile_range</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">99</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">98</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">97</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">96</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">95</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">94</span><span class="p">),</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">93</span><span class="p">),</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">92</span><span class="p">),</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">91</span><span class="p">),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">90</span><span class="p">),</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">89</span><span class="p">),</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">88</span><span class="p">),</span> <span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">87</span><span class="p">),</span> <span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">86</span><span class="p">),</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">85</span><span class="p">),</span> <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">84</span><span class="p">),</span> <span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">83</span><span class="p">),</span> <span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">82</span><span class="p">),</span> <span class="p">(</span><span class="mi">19</span><span class="p">,</span> <span class="mi">81</span><span class="p">),</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">80</span><span class="p">),</span> <span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">79</span><span class="p">),</span> <span class="p">(</span><span class="mi">22</span><span class="p">,</span> <span class="mi">78</span><span class="p">),</span> <span class="p">(</span><span class="mi">23</span><span class="p">,</span> <span class="mi">77</span><span class="p">),</span> <span class="p">(</span><span class="mi">24</span><span class="p">,</span> <span class="mi">76</span><span class="p">),</span> <span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">75</span><span class="p">),</span> <span class="p">(</span><span class="mi">26</span><span class="p">,</span> <span class="mi">74</span><span class="p">),</span> <span class="p">(</span><span class="mi">27</span><span class="p">,</span> <span class="mi">73</span><span class="p">),</span> <span class="p">(</span><span class="mi">28</span><span class="p">,</span> <span class="mi">72</span><span class="p">),</span> <span class="p">(</span><span class="mi">29</span><span class="p">,</span> <span class="mi">71</span><span class="p">),</span> <span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">70</span><span class="p">),</span> <span class="p">(</span><span class="mi">31</span><span class="p">,</span> <span class="mi">69</span><span class="p">),</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">68</span><span class="p">),</span> <span class="p">(</span><span class="mi">33</span><span class="p">,</span> <span class="mi">67</span><span class="p">),</span> <span class="p">(</span><span class="mi">34</span><span class="p">,</span> <span class="mi">66</span><span class="p">),</span> <span class="p">(</span><span class="mi">35</span><span class="p">,</span> <span class="mi">65</span><span class="p">),</span> <span class="p">(</span><span class="mi">36</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span> <span class="p">(</span><span class="mi">37</span><span class="p">,</span> <span class="mi">63</span><span class="p">),</span> <span class="p">(</span><span class="mi">38</span><span class="p">,</span> <span class="mi">62</span><span class="p">),</span> <span class="p">(</span><span class="mi">39</span><span class="p">,</span> <span class="mi">61</span><span class="p">)])</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="yeo">
+<h2>“yeo”<a class="headerlink" href="#yeo" title="Permalink to this headline">#</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.PowerTransformer.html#sklearn.preprocessing.PowerTransformer" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.preprocessing.PowerTransformer</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“base yeo”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">method</span><span class="p">:</span> <span class="s1">&#39;yeo-johnson&#39;</span>
+<span class="n">standardize</span><span class="p">:</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="boxcox">
+<h2>“boxcox”<a class="headerlink" href="#boxcox" title="Permalink to this headline">#</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.PowerTransformer.html#sklearn.preprocessing.PowerTransformer" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.preprocessing.PowerTransformer</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“base boxcox”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">method</span><span class="p">:</span> <span class="s1">&#39;box-cox&#39;</span>
+<span class="n">standardize</span><span class="p">:</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="winsorize">
+<h2>“winsorize”<a class="headerlink" href="#winsorize" title="Permalink to this headline">#</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.extensions.Scalers.Winsorizer</span></code></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“base winsorize”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">quantile_range</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">99</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>“winsorize gs”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">quantile_range</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">99</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">98</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">97</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">96</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">95</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">94</span><span class="p">),</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">93</span><span class="p">),</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">92</span><span class="p">),</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">91</span><span class="p">),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">90</span><span class="p">),</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">89</span><span class="p">),</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">88</span><span class="p">),</span> <span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">87</span><span class="p">),</span> <span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">86</span><span class="p">),</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">85</span><span class="p">),</span> <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">84</span><span class="p">),</span> <span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">83</span><span class="p">),</span> <span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">82</span><span class="p">),</span> <span class="p">(</span><span class="mi">19</span><span class="p">,</span> <span class="mi">81</span><span class="p">),</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">80</span><span class="p">),</span> <span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">79</span><span class="p">),</span> <span class="p">(</span><span class="mi">22</span><span class="p">,</span> <span class="mi">78</span><span class="p">),</span> <span class="p">(</span><span class="mi">23</span><span class="p">,</span> <span class="mi">77</span><span class="p">),</span> <span class="p">(</span><span class="mi">24</span><span class="p">,</span> <span class="mi">76</span><span class="p">),</span> <span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">75</span><span class="p">),</span> <span class="p">(</span><span class="mi">26</span><span class="p">,</span> <span class="mi">74</span><span class="p">),</span> <span class="p">(</span><span class="mi">27</span><span class="p">,</span> <span class="mi">73</span><span class="p">),</span> <span class="p">(</span><span class="mi">28</span><span class="p">,</span> <span class="mi">72</span><span class="p">),</span> <span class="p">(</span><span class="mi">29</span><span class="p">,</span> <span class="mi">71</span><span class="p">),</span> <span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">70</span><span class="p">),</span> <span class="p">(</span><span class="mi">31</span><span class="p">,</span> <span class="mi">69</span><span class="p">),</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">68</span><span class="p">),</span> <span class="p">(</span><span class="mi">33</span><span class="p">,</span> <span class="mi">67</span><span class="p">),</span> <span class="p">(</span><span class="mi">34</span><span class="p">,</span> <span class="mi">66</span><span class="p">),</span> <span class="p">(</span><span class="mi">35</span><span class="p">,</span> <span class="mi">65</span><span class="p">),</span> <span class="p">(</span><span class="mi">36</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span> <span class="p">(</span><span class="mi">37</span><span class="p">,</span> <span class="mi">63</span><span class="p">),</span> <span class="p">(</span><span class="mi">38</span><span class="p">,</span> <span class="mi">62</span><span class="p">),</span> <span class="p">(</span><span class="mi">39</span><span class="p">,</span> <span class="mi">61</span><span class="p">)])</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="quantile-norm">
+<h2>“quantile norm”<a class="headerlink" href="#quantile-norm" title="Permalink to this headline">#</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.QuantileTransformer.html#sklearn.preprocessing.QuantileTransformer" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.preprocessing.QuantileTransformer</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“base quant norm”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output_distribution</span><span class="p">:</span> <span class="s1">&#39;normal&#39;</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="quantile-uniform">
+<h2>“quantile uniform”<a class="headerlink" href="#quantile-uniform" title="Permalink to this headline">#</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.QuantileTransformer.html#sklearn.preprocessing.QuantileTransformer" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.preprocessing.QuantileTransformer</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“base quant uniform”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output_distribution</span><span class="p">:</span> <span class="s1">&#39;uniform&#39;</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="normalize">
+<h2>“normalize”<a class="headerlink" href="#normalize" title="Permalink to this headline">#</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.Normalizer.html#sklearn.preprocessing.Normalizer" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.preprocessing.Normalizer</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“default”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span> <span class="n">only</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</section>
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2020-2022.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

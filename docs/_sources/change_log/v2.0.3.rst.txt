@@ -1,0 +1,27 @@
+.. _whatsnew_203:
+
+.. currentmodule:: BPt
+
+Version 2.0.3
+---------------
+
+- New option for specifying model in :func:`evaluate`
+    - Can now pass the names of different default pipelines as a
+      str to the pipeline parameter. E.g., `evaluate(pipeline='elastic_pipe')`.
+
+- New Quick start Example
+    - Added to github frontpage README.md.
+
+- More Examples
+    - More examples and updated docstrings for different functions.
+
+- Fix bugs in eval
+    - Fixes some internal bugs when dataset has no test subjects, or
+      hasn't had any encoders set.
+
+- Change :func:`evaluate` small updates
+    - `eval_verbose` new default is now 1 instead of 0. Also
+      added optional `mute_warnings` flag independent of `eval_verbose`.
+
+- Custom objects tweak
+    - Custom passed objects will now be checked and updated if they have parameters n_jobs or random_state.

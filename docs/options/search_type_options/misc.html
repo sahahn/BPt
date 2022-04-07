@@ -1,0 +1,470 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Misc. &#8212; BPt 2.2.2 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Default Pipelines" href="../default_pipelines.html" />
+    <link rel="prev" title="Competence Maps" href="comp_maps.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../index.html">
+  <img src="../../_static/red_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../installation/index.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../reference/index.html">
+  API reference
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  Default Options
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../change_log/index.html">
+  Change Log
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../cite/index.html">
+  Cite BPt
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/sahahn/BPt" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/SageHahn11" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../pipeline_options/index.html">
+   Pipeline Options
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../pipeline_options/loaders.html">
+     Loaders
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../pipeline_options/imputers.html">
+     Imputers
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../pipeline_options/scalers.html">
+     Scalers
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../pipeline_options/transformers.html">
+     Transformers
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../pipeline_options/selectors.html">
+     Feat Selectors
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../pipeline_options/models.html">
+     Models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../pipeline_options/ensembles.html">
+     Ensemble Types
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../pipeline_options/scorers.html">
+     Scorers
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="index.html">
+   Search Type Options
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="random_search.html">
+     Random Search
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="one_shot.html">
+     One Shot Optimization
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="one_plus_one.html">
+     One Plus One
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="cma.html">
+     CMA
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ev_strats.html">
+     Evolution Strategies
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="dif_evolution.html">
+     Differential Evolution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="alg_selection.html">
+     Algorithm Selection
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="comp_maps.html">
+     Competence Maps
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Misc.
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../default_pipelines.html">
+   Default Pipelines
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#naiveisoemna">
+   ‘NaiveIsoEMNA’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#tbpsa">
+   ‘TBPSA’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#naivetbpsa">
+   ‘NaiveTBPSA’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#noisybandit">
+   ‘NoisyBandit’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#pbil">
+   ‘PBIL’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#pso">
+   ‘PSO’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#sqp">
+   ‘SQP’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#spsa">
+   ‘SPSA’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#splitoptimizer">
+   ‘SplitOptimizer’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#cga">
+   ‘cGA’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#chaincmapowell">
+   ‘chainCMAPowell’
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#experimental-variants">
+   Experimental Variants
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="misc">
+<span id="id1"></span><h1>Misc.<a class="headerlink" href="#misc" title="Permalink to this headline">#</a></h1>
+<p>These optimizers did not seem to naturally fall into a category. Brief descriptions are listed below.</p>
+<section id="naiveisoemna">
+<h2>‘NaiveIsoEMNA’<a class="headerlink" href="#naiveisoemna" title="Permalink to this headline">#</a></h2>
+<p>Estimation of Multivariate Normal Algorithm
+This algorithm is quite efficient in a parallel context, i.e. when
+the population size is large.</p>
+</section>
+<section id="tbpsa">
+<h2>‘TBPSA’<a class="headerlink" href="#tbpsa" title="Permalink to this headline">#</a></h2>
+<p>Test-based population-size adaptation, for noisy problems where the best points will be an
+average of the final population.</p>
+</section>
+<section id="naivetbpsa">
+<h2>‘NaiveTBPSA’<a class="headerlink" href="#naivetbpsa" title="Permalink to this headline">#</a></h2>
+<p>Test-based population-size adaptation
+Where the best point is the best point, no average across final population.</p>
+</section>
+<section id="noisybandit">
+<h2>‘NoisyBandit’<a class="headerlink" href="#noisybandit" title="Permalink to this headline">#</a></h2>
+<p>Noisy bandit simple optimization</p>
+</section>
+<section id="pbil">
+<h2>‘PBIL’<a class="headerlink" href="#pbil" title="Permalink to this headline">#</a></h2>
+<p>Population based incremental learning
+“Implementation of the discrete algorithm PBIL”
+<a class="reference external" href="https://www.ri.cmu.edu/pub_files/pub1/baluja_shumeet_1994_2/baluja_shumeet_1994_2.pdf">https://www.ri.cmu.edu/pub_files/pub1/baluja_shumeet_1994_2/baluja_shumeet_1994_2.pdf</a></p>
+</section>
+<section id="pso">
+<h2>‘PSO’<a class="headerlink" href="#pso" title="Permalink to this headline">#</a></h2>
+<p>Standard Particle Swarm Optimization, but no randomization of the population order.</p>
+</section>
+<section id="sqp">
+<h2>‘SQP’<a class="headerlink" href="#sqp" title="Permalink to this headline">#</a></h2>
+<p>Scipy Minimize Base
+See: <a class="reference external" href="https://docs.scipy.org/doc/scipy-1.1.0/reference/generated/scipy.optimize.minimize.html">https://docs.scipy.org/doc/scipy-1.1.0/reference/generated/scipy.optimize.minimize.html</a>
+Note: does not support multiple jobs at once.</p>
+</section>
+<section id="spsa">
+<h2>‘SPSA’<a class="headerlink" href="#spsa" title="Permalink to this headline">#</a></h2>
+<p>The First order SPSA algorithm, See: <a class="reference external" href="https://en.wikipedia.org/wiki/Simultaneous_perturbation_stochastic_approximation">https://en.wikipedia.org/wiki/Simultaneous_perturbation_stochastic_approximation</a>
+Note: does not support multiple jobs at once.</p>
+</section>
+<section id="splitoptimizer">
+<h2>‘SplitOptimizer’<a class="headerlink" href="#splitoptimizer" title="Permalink to this headline">#</a></h2>
+<p>Combines optimizers, each of them working on their own variables.
+By default uses CMA and RandomSearch’s</p>
+</section>
+<section id="cga">
+<h2>‘cGA’<a class="headerlink" href="#cga" title="Permalink to this headline">#</a></h2>
+<p>Implementation of the discrete Compact Genetic Algorithm (cGA)
+<a class="reference external" href="https://pdfs.semanticscholar.org/4b0b/5733894ffc0b2968ddaab15d61751b87847a.pdf">https://pdfs.semanticscholar.org/4b0b/5733894ffc0b2968ddaab15d61751b87847a.pdf</a></p>
+</section>
+<section id="chaincmapowell">
+<h2>‘chainCMAPowell’<a class="headerlink" href="#chaincmapowell" title="Permalink to this headline">#</a></h2>
+<p>A chaining consists in running algorithm 1 during T1, then algorithm 2 during T2, then algorithm 3 during T3, etc.
+Each algorithm is fed with what happened before it. This ‘chainCMAPowell’ chains first ‘CMA’ then the ‘Powell’ optimizers.
+Note: does not support multiple jobs at once.</p>
+</section>
+<section id="experimental-variants">
+<h2>Experimental Variants<a class="headerlink" href="#experimental-variants" title="Permalink to this headline">#</a></h2>
+<p>Nevergrad also comes with a number of Experimental variants, to see all of the different options run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">nevergrad</span> <span class="k">as</span> <span class="nn">ng</span>
+<span class="kn">import</span> <span class="nn">nevergrad.optimization.experimentalvariants</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">ng</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+</pre></div>
+</div>
+<p>Note: you do not have to run this import to select any of these options, this is just
+to see the different options.</p>
+</section>
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2020-2022.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

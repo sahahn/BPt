@@ -398,7 +398,7 @@ def test_subset_by():
 def test_subset_by_def():
 
     # Setup
-    results, _ = setup_subset()
+    results, ref_data = setup_subset()
 
     # Test w/ default
     subsets = results.subset_by('grp')
@@ -427,6 +427,14 @@ def test_subset_by_def():
 
     assert list(g1_preds[0]) == list(g2_preds[0])
     assert list(g1_preds[1]) == list(g2_preds[1])
+
+    # Should fail in case where changes
+    assert g1.n_subjects is None
+    assert g2.n_subjects is None
+
+    # Should keep full ref
+    assert g1._dataset.shape == ref_data.shape
+    assert g2._dataset.shape == ref_data.shape
 
 def test_subset_by_binary():
 

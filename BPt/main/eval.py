@@ -19,6 +19,7 @@ import pickle as pkl
 
 from matplotlib import cm
 from matplotlib import colors
+from numpy.random import default_rng
 
 from sklearn.metrics._scorer import _MultimetricScorer
 
@@ -546,7 +547,7 @@ class EvalResults():
 
         # Optionally store reference to dataset
         if self._store_data_ref:
-            self.dataset_ = dataset.copy(deep=False)
+            self._dataset = dataset.copy(deep=False)
 
         # If verbose is lower than -1,
         # then don't show any warnings no matter the source.
@@ -1006,11 +1007,11 @@ class EvalResults():
         if dataset is None:
             
             # Check for no saved
-            if not hasattr(self, 'dataset_') or getattr(self, 'dataset_') is None:
-                raise RuntimeError('No saved reference dataset, you must pass the dataset to use here.')
+            if not hasattr(self, '_dataset') or getattr(self, '_dataset') is None:
+                raise RuntimeError('No saved reference dataset, you must pass a dataset to use.')
 
             # Use saved
-            dataset = self.dataset_
+            dataset = self._dataset
 
         return dataset
 
@@ -1874,6 +1875,132 @@ class EvalResults():
         with open(loc, 'wb') as f:
             pkl.dump(self, f)
 
+    @doc(dataset=_base_docs['dataset'])
+    def run_permutation_test(self, n_perm=100, dataset=None, random_state=None,
+                             blocks=None, within_grp=True):
+        '''Compute signifigance values for the original results according to
+        a permutation test scheme. In this setup, we estimate the null model
+        by randomly permuting the target variable, and re-evaluating the same
+        pipeline according to the same CV. In this manner, a null distribution of
+        size `n_perm` is generated in which we can compare the real, unpermuted results
+        to. 
+
+        Note: If using a custom scorer, w/ no sign_ attribute, this method
+        will assume that higher values for metrics are better.
+
+        Parameters
+        ------------
+        n_perm : int, optional
+            The number of permutations to test.
+
+            ::
+
+                default = 100
+
+        {dataset}
+
+        | If left as default=None, then will try to use
+              a shallow copy of the dataset passed to the original
+              evaluate call (assuming evaluate was run with store_data_ref=True).
+
+            ::
+
+                default = None
+
+        random_state : int, or None, optional
+            Pseudo-random number generator to control the permutations
+            of each feature. If left as None, then initialize a new
+            random state for each permutation.
+
+            ::
+
+                default = None
+
+        '''
+
+        # Check dataset
+        dataset = self._dataset_check(dataset)
+
+        # Make sure cv is saved
+        if self.cv is None:
+            raise RuntimeError('The original call to evaluate must have had store_cv set to True to use this method.')
+
+        # Init rng
+        rng = default_rng(random_state)
+
+        # X stays the same
+        X, _ = dataset.get_Xy(self.ps)
+
+        p_scores = {}
+        for n in range(n_perm):
+            
+            # Get the random seed for this permutation
+            try:
+                rng_integers = rng.integers
+            except AttributeError:
+                rng_integers = rng.randint
+            rs = rng_integers(147483648)
+
+            # Get permuted y
+            y_perm = dataset._get_permuted_y(self.ps, random_state=rs,
+                                             blocks=blocks, within_grp=within_grp)
+
+
+            # Init silent copy to eval with
+            p_eval = EvalResults(estimator=self.estimator,
+                                 ps=self.ps,
+                                 encoders=self.encoders_,
+                                 progress_bar=False,
+                                 store_preds=False,
+                                 store_estimators=False,
+                                 store_timing=False,
+                                 store_cv=False,
+                                 store_data_ref=False,
+                                 eval_verbose=-2,
+                                 progress_loc=None,
+                                 mute_warnings=False,
+                                 compare_bars=None)
+
+            # Evaluate
+            p_eval._eval(X, y_perm, cv=deepcopy(self.cv))
+
+            # Extract scores and add to baseline
+            for metric in p_eval.mean_scores:
+                try:
+                    p_scores[metric].append(p_eval.mean_scores[metric])
+                except KeyError:
+                    p_scores[metric] = [p_eval.mean_scores[metric]]
+
+        # Convert to p-values
+        p_values, null_dist_means, null_dist_stds = {}, {}, {}
+        for metric in p_scores:
+
+            # Sort actual w/ null dist
+            actual = self.mean_scores[metric]
+            base = np.vstack(p_scores[metric] + [actual])
+            sorted_base = np.sort(base, axis=0)
+            
+            # Get ind in sorted
+            ind = np.where(sorted_base == actual)[0][0]
+
+            # Compute p-value, if no info on higher better,
+            # e.g., custom scorer, then we just assume higher better.
+            higher_better = True
+            if hasattr(self.ps.scorer[metric], '_sign'):
+                higher_better = bool(self.ps.scorer[metric]._sign)
+
+            # Use version based on if higher better
+            if higher_better:
+                p_values[metric] = (n_perm - ind + 1) / (n_perm + 1)
+            else:
+                p_values[metric] = (ind + 1) / (n_perm + 1)
+
+            # Add means and stds
+            null_dist_means[metric] = np.mean(p_scores[metric])
+            null_dist_stds[metric] = np.std(p_scores[metric])
+
+        return p_values, null_dist_means, null_dist_stds
+
 
 class EvalResultsSubset(EvalResults):
     '''This class represents a subset of :class:`EvalResults` and
@@ -1907,6 +2034,14 @@ class EvalResultsSubset(EvalResults):
 
         # Save name for display
         self.subset_name = subset_name
+
+        # If keeping track of dataset, we keep track of the whole dataset, based on
+        # the nature of how the subsetting works
+        self._store_data_ref = evaluator._store_data_ref
+        if self._store_data_ref:
+            self._dataset = evaluator._dataset
+        else:
+            self._dataset = None
 
         # Need to set val indices first
         self._set_val_subjects(subjects, evaluator)

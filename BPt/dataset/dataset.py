@@ -1,3 +1,4 @@
+from re import I
 import pandas as pd
 import numpy as np
 from .data_file import load_data_file_proxy
@@ -7,6 +8,7 @@ from pandas.util._decorators import doc
 import pandas.core.common as com
 from pandas.core.dtypes.generic import ABCMultiIndex
 from pandas.api.types import is_integer_dtype
+from sklearn.utils import check_random_state
 
 
 _shared_docs = {}
@@ -1567,19 +1569,21 @@ class Dataset(pd.DataFrame):
         Parameters
         -----------
         problem_spec : :class:`ProblemSpec` or 'default', optional
-            This argument accepts an instance of the
-            params class :class:`ProblemSpec`.
-            This object is essentially a wrapper around commonly used
-            parameters needs to define the context
-            the model pipeline should be evaluated in.
-            It includes parameters like problem_type, scorer, n_jobs,
-            random_state, etc...
-            See :class:`ProblemSpec` for more information
-            and for how to create an instance of this object.
+            | This argument accepts an instance of the
+              params class :class:`ProblemSpec`.
+              This object is essentially a wrapper around commonly used
+              parameters needs to define the context
+              the model pipeline should be evaluated in.
+              It includes parameters like problem_type, scorer, n_jobs,
+              random_state, etc...
 
-            If left as 'default', then will initialize a
-            ProblemSpec with default params.
+            | If left as 'default', then will initialize a
+              ProblemSpec with default params.
 
+            
+            | See :class:`ProblemSpec` for more information
+              and for how to create an instance of this object.
+              
             ::
 
                 default = 'default'
@@ -1590,7 +1594,7 @@ class Dataset(pd.DataFrame):
 
             ::
 
-                get_Xy(problem_spec=problem_spec, problem_type 'binary')
+                X, y = get_Xy(problem_spec=problem_spec, problem_type='binary')
 
             Any parameters passed here will override the original
             value in problem spec. This can be useful when using all default
@@ -1599,17 +1603,21 @@ class Dataset(pd.DataFrame):
 
             ::
 
-                get_Xy(random_state=5)
+                X, y = get_Xy(problem_spec='default', random_state=5)
 
         Returns
         --------
         X : pandas DataFrame
             DataFrame with the input data and columns as
             specified by the passed problem_spec.
+            Note: the index will be sorted in
+            identicially between X and y.
 
         y : pandas Series
             Series with the the target values as requested
             by the passed problem_spec.
+            Note: the index will be sorted in
+            identicially between X and y.
         '''
         from ..main.funcs import problem_spec_check
 
@@ -1618,14 +1626,14 @@ class Dataset(pd.DataFrame):
                                 **problem_spec_params)
 
         # Get sorted subjects from problem spec
-        subjects = sorted(self.get_subjects(ps.subjects, return_as='set'))
+        subjects = self.get_subjects(ps.subjects, return_as='index')
 
         # Get X cols
         X_cols = self._get_data_cols(ps.scope)
 
-        # Get X as pandas df subset, y as Series
+        # Get X as pandas df subset, y as Series, w/ fixed type float64
         X = pd.DataFrame(self.loc[subjects, X_cols]).astype(ps.base_dtype)
-        y = self.loc[subjects, ps.target].astype('float64')
+        y = pd.Series(self.loc[subjects, ps.target].astype('float64'))
 
         # Add warning for unique n subjs
         n_unique_index = len(pd.unique(X.index))
@@ -1637,6 +1645,127 @@ class Dataset(pd.DataFrame):
                         'There may be duplicate subjects / index.', level=0)
 
         return X, y
+    
+    def get_permuted_Xy(self, problem_spec='default',
+                        random_state=None, blocks=None,
+                        within_grp=True, **problem_spec_params):
+        '''This method is otherwise identical  to :func:`Dataset.get_Xy`, except
+        a version of X, y where the values in y are permuted is returned. Permutations
+        can further be customized if extra library neurotools
+        is installed: https://github.com/sahahn/neurotools
+
+        Parameters
+        -----------
+        problem_spec : :class:`ProblemSpec` or 'default', optional
+            | This argument accepts an instance of the
+              params class :class:`ProblemSpec`.
+              This object is essentially a wrapper around commonly used
+              parameters needs to define the context
+              the model pipeline should be evaluated in.
+              It includes parameters like problem_type, scorer, n_jobs,
+              random_state, etc...
+
+            | If left as 'default', then will initialize a
+              ProblemSpec with default params.
+
+            
+            | See :class:`ProblemSpec` for more information
+              and for how to create an instance of this object.
+              
+            ::
+
+                default = 'default'
+
+        random_state : None, int, optional
+            You may optionally specify that the permutation be conducted according
+            to a fixed random state. By default a new random seed which
+            be used each time, if this is left as None.
+
+            ::
+
+                default = None
+
+        blocks : None, array, pd.Series or pd.DataFrame, optional
+            This parameter is only avaliable when the neurotool library is installed.
+            See:  https://github.com/sahahn/neurotools
+
+            This parameter represents the underlying exchangability-block
+            structure of the data passed. It is also used to constrain the possible
+            permutations in some way.
+
+            See PALM's documentation for an introduction on how to format ExchangeabilityBlocks:
+            https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/PALM/ExchangeabilityBlocks
+
+            This parameter accepts the same style input as PALM, except it is passed
+            here as an array or DataFrame instead of as a file. The main requirement 
+            is that the shape of the structure match the number of subjects / data points
+            in the first dimension.
+
+            ::
+
+                default = None
+
+        within_grp : bool, optional
+            This parameter is only relevant when a permutation structure / blocks is passed, in that
+            case it describes how the left-most exchanability / permutation structure column should act.
+            Specifically, if True, then it specifies that the left-most column should be treated as groups
+            to act in a within group swap only manner. If False, then it will consider the left-most column
+            groups to only be able to swap at the group level with other groups of the same size.
+
+            ::
+
+                default = True
+
+        problem_spec_params : :class:`ProblemSpec` params, optional
+            You may also pass any valid keywords here,  which will override
+            any values passed in the problem spec argument itself.
+            
+            e.g.
+
+            ::
+
+                X, y = get_permuted_Xy(problem_spec=problem_spec, problem_type='binary')
+
+        Returns
+        --------
+        X : pandas DataFrame
+            DataFrame with the input data and columns as
+            specified by the passed problem_spec.
+            Note: the index will be sorted in
+            identicially between X and y.
+
+        y : pandas Series
+            Permuted series with the the target values as requested
+            by the passed problem_spec. Note: the index will be sorted in
+            identicially between X and y.
+        '''
+        
+        # Call base first
+        X, y = self.get_Xy(problem_spec=problem_spec, **problem_spec_params)
+
+        # Permute y
+        y = _permute_y(y=y, random_state=random_state,
+                       blocks=blocks, within_grp=within_grp)
+
+        # Return X and permuted y
+        return X, y
+
+    def _get_y(self, ps):
+        '''Must be already checked problem spec'''
+        
+        # Get sorted subjects from problem spec
+        subjects = self.get_subjects(ps.subjects, return_as='index')
+
+        return pd.Series(self.loc[subjects, ps.target].astype('float64'))
+
+    def _get_permuted_y(self, ps, random_state=None, blocks=None, within_grp=True):
+
+        # Get just y
+        y = self._get_y(ps)
+
+        # Then permute
+        return _permute_y(y, random_state=random_state,
+                          blocks=blocks, within_grp=within_grp)
 
     def split_by(self, scope, decode_values=True):
         '''TODO add docs'''
@@ -1846,3 +1975,25 @@ def cat_to_equiv_check(values):
         cat_dtype = 'float'
 
     return values.astype(cat_dtype)
+
+def _permute_y(y, random_state, blocks, within_grp):
+
+    # Base case, no block structure passed
+    if blocks is None:
+        rng = check_random_state(random_state)
+        y[:] = rng.permutation(y)
+        return y
+
+    # Otherwise, check for neurotools
+    try:
+        from neurotools.random.permute_blocks import block_permutation
+
+        # Permute y according to passed blocks + other params
+        y = block_permutation(y, blocks=blocks, 
+                                random_state=random_state,
+                                within_grp=within_grp)
+
+    except ImportError:
+        raise ImportError('In order to use block constrained permutations, you must have neurotools installed.')
+
+    return y

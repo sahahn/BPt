@@ -20,6 +20,8 @@ import pickle as pkl
 from matplotlib import cm
 from matplotlib import colors
 from numpy.random import default_rng
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 from sklearn.metrics._scorer import _MultimetricScorer
 
@@ -1877,7 +1879,7 @@ class EvalResults():
 
     @doc(dataset=_base_docs['dataset'])
     def run_permutation_test(self, n_perm=100, dataset=None, random_state=None,
-                             blocks=None, within_grp=True):
+                             blocks=None, within_grp=True, plot=False):
         '''Compute signifigance values for the original results according to
         a permutation test scheme. In this setup, we estimate the null model
         by randomly permuting the target variable, and re-evaluating the same
@@ -1998,6 +2000,44 @@ class EvalResults():
             # Add means and stds
             null_dist_means[metric] = np.mean(p_scores[metric])
             null_dist_stds[metric] = np.std(p_scores[metric])
+
+
+        # Optionally make plot
+        if plot:
+
+            if len(p_scores) == 1:
+                n_rows, n_cols = 1, 1
+            else:
+                n_rows, n_cols = (len(p_scores) // 2) + (len(p_scores) % 2), 2
+
+            # Init sub plots
+            _, ax = plt.subplots(n_rows, n_cols, figsize=(n_cols * 8, n_rows * 6))
+
+            # Plot each metric
+            for row in range(n_rows):
+                for col in range(n_cols):
+
+                    if n_rows == 1:
+                        a = ax[col]
+                    elif n_cols == 1:
+                        a = ax[row]
+                    else:
+                        a = ax[row][col]
+
+                    # Get current metric
+                    metric = list(p_scores)[col + (row * n_cols)]
+                    
+                    # Base hist
+                    sns.histplot(p_scores[metric], ax=a, kde=True,
+                                 label=f'Null Dist. (Mean) - {null_dist_means[metric]:.3f}')
+                    
+                    # Add vert line
+                    a.axvline(self.mean_scores[metric], color='Red', linewidth=10,
+                                         label=f'Baseline - {self.mean_scores[metric]:.3f} (pval={p_values[metric]:.3f})')
+                    
+                    # Add legend + title
+                    a.legend()
+                    a.set_title(metric)
 
         return p_values, null_dist_means, null_dist_stds
 

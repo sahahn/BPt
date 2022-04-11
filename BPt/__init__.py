@@ -14,7 +14,7 @@ from .main.input_operations import (Select, Duplicate, Pipe, ValueSubset,
                                     Intersection)
 from .main.compare import (Compare, Option, CompareDict,
                            compare_dict_from_existing)
-from .main.BPtEvaluator import BPtEvaluator, BPtEvaluatorSubset
+from .main.eval import EvalResults, EvalResultsSubset
 from . import p
 from .main.plotting import plot_roc
 
@@ -31,6 +31,6 @@ __all__ = ["Dataset", "Loader",
            "CV", "CVStrategy", "Intersection", "Sampler",
            "cross_validate", "cross_val_score", "evaluate",
            'p', "Feat_Selector", 'ModelPipeline', 'Pipeline',
-           'BPtEvaluator', 'BPtEvaluatorSubset', 'read_pickle',
+           'EvalResults', 'EvalResultsSubset', 'read_pickle',
            'Compare', 'Option', 'compare_dict_from_existing',
            'CompareDict', 'read_csv', 'concat', 'plot_roc']

@@ -27,8 +27,8 @@ def plot_roc(results, show_folds=True, n_std=1,
 
     Paramaters
     -----------
-    results : :class:`BPtEvaluator`
-        An instance of :class:`BPtEvaluator` as
+    results : :class:`EvalResults`
+        An instance of :class:`EvalResults` as
         returned from :func:`evaluate`, in which
         to plot the results of.
 

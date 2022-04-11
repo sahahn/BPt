@@ -2,7 +2,7 @@ from .test_evaluate import get_fake_dataset
 from ..input import Model, Pipeline, Scaler, CV
 from ...dataset.dataset import Dataset
 from ..funcs import evaluate
-from ..BPtEvaluator import is_notebook
+from ..eval import is_notebook
 import pytest
 import numpy as np
 from tempfile import gettempdir
@@ -38,7 +38,7 @@ def test_bpt_evaluator_repr():
                        cv=2)
 
     rr = repr(results)
-    assert 'BPtEvaluator' in rr
+    assert 'EvalResults' in rr
     assert 'all_train_subjects' not in rr
     assert 'all_val_subjects' not in rr
     assert 'coef_' not in rr
@@ -528,8 +528,8 @@ def test_subset_by_categorical():
     assert list(g1_preds[0]) == list(g2_preds[0])
     assert list(g1_preds[1]) == list(g2_preds[1])
 
-    assert 'BPtEvaluatorSubset(grp=1)' in repr(g1)
-    assert 'BPtEvaluatorSubset(grp=2)' in repr(g2)
+    assert 'EvalResultsSubset(grp=1)' in repr(g1)
+    assert 'EvalResultsSubset(grp=2)' in repr(g2)
 
 
 def test_bpt_evaluator_to_pickle():

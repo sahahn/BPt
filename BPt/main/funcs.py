@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from ..pipeline.BPtPipelineConstructor import get_pipe
 from ..default.options.scorers import process_scorers
-from .BPtEvaluator import BPtEvaluator, _refresh_bar
+from .eval import EvalResults, _refresh_bar
 from sklearn.model_selection import check_cv
 from .input_operations import Intersection
 from pandas.util._decorators import doc
@@ -1007,8 +1007,8 @@ def evaluate(pipeline, dataset,
             default = True
 
     store_preds : bool, optional
-        If set to True, the returned :class:`BPtEvaluator` will store
-        the saved predictions under :data:`BPt.BPtEvaluator.preds`.
+        If set to True, the returned :class:`EvalResults` will store
+        the saved predictions under :data:`BPt.EvalResults.preds`.
         This includes a saved copy of the true target values as well.
 
         If False, the `preds` parameter will be empty and it
@@ -1019,9 +1019,9 @@ def evaluate(pipeline, dataset,
             default = True
 
     store_estimators : bool, optional
-        If True, then the returned :class:`BPtEvaluator`
+        If True, then the returned :class:`EvalResults`
         will store the fitted estimators from evaluation
-        under :data:`BPt.BPtEvaluator.estimators`.
+        under :data:`BPt.EvalResults.estimators`.
 
         If False, the `estimators` parameter will be empty,
         and it will not be possible to access measures of
@@ -1033,16 +1033,16 @@ def evaluate(pipeline, dataset,
             default = True
 
     store_timing : bool, optional
-        If True, then the returned :class:`BPtEvaluator`
+        If True, then the returned :class:`EvalResults`
         will store the time it took to fit and score the pipeline
-        under :data:`BPt.BPtEvaluator.timing`.
+        under :data:`BPt.EvalResults.timing`.
 
         ::
 
             default = True
 
     store_cv : bool, optional
-        If True, then the returned :class:`BPtEvaluator`
+        If True, then the returned :class:`EvalResults`
         will store a copy of the exact CV splitter object
         used during evaluation.
 
@@ -1060,7 +1060,7 @@ def evaluate(pipeline, dataset,
             default = True
 
     decode_feat_names : bool, optional
-        If True, then the :data:`BPt.BPtEvaluator.feat_names`
+        If True, then the :data:`BPt.EvalResults.feat_names`
         as computed during evaluation will try to use the original
         values as first loaded to inform their naming. Note that
         this is only relevant assuming that :class:`Dataset` was
@@ -1112,8 +1112,8 @@ def evaluate(pipeline, dataset,
 
     Returns
     ---------
-    evaluator : :class:`BPtEvaluator`
-        Returns an instance of the :class:`BPtEvaluator`
+    evaluator : :class:`EvalResults`
+        Returns an instance of the :class:`EvalResults`
         class. This object stores a wealth of information,
         including the scores from this evaluation as well
         as other utilities including functions for calculating
@@ -1223,7 +1223,7 @@ def _evaluate(estimator, dataset, ps, cv,
         encoders = dataset._get_encoders()
 
     # Init evaluator
-    evaluator = BPtEvaluator(estimator=estimator, ps=ps,
+    evaluator = EvalResults(estimator=estimator, ps=ps,
                              encoders=encoders,
                              compare_bars=compare_bars,
                              **verbose_args)
@@ -1231,5 +1231,5 @@ def _evaluate(estimator, dataset, ps, cv,
     # Call eval on the evaluator
     evaluator._eval(X, y, sk_cv, dataset)
 
-    # Return the BPtEvaluator object
+    # Return the EvalResults object
     return evaluator

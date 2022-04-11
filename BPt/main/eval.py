@@ -148,7 +148,7 @@ def mean_no_zeros(df):
     return mean[mean != 0]
 
 
-class BPtEvaluator():
+class EvalResults():
     '''This class is returned from calls to :func:`evaluate`,
     and can be used to store information from evaluate, or
     compute additional feature importances. It should typically not be
@@ -265,7 +265,7 @@ class BPtEvaluator():
     def weighted_mean_scores(self):
         '''This property stores the mean scores
         across evaluation folds (simmilar to
-        :data:`mean_scores<BPtEvaluator.mean_scores>`),
+        :data:`mean_scores<EvalResults.mean_scores>`),
         but weighted by the
         number of subjects / datapoints in each fold.
 
@@ -356,7 +356,7 @@ class BPtEvaluator():
 
         | This parameter
           differs from
-          :data:`all_val_subjects<BPtEvaluator.all_val_subjects>`
+          :data:`all_val_subjects<EvalResults.all_val_subjects>`
           in that even subjects with missing target values are not included.
 
         '''
@@ -375,7 +375,7 @@ class BPtEvaluator():
 
         | This parameter
           differs from
-          :data:`all_train_subjects<BPtEvaluator.all_train_subjects>`
+          :data:`all_train_subjects<EvalResults.all_train_subjects>`
           in that even subjects with missing target values are not included.
 
         '''
@@ -391,7 +391,7 @@ class BPtEvaluator():
           used in every fold of the cross-validation.
 
         | This parameter
-          differs from :data:`val_subjects<BPtEvaluator.val_subjects>`
+          differs from :data:`val_subjects<EvalResults.val_subjects>`
           in that even subjects with missing target values are included.
 
         '''
@@ -407,7 +407,7 @@ class BPtEvaluator():
           used in every fold of the cross-validation.
 
         | This parameter
-          differs from :data:`train_subjects<BPtEvaluator.train_subjects>`
+          differs from :data:`train_subjects<EvalResults.train_subjects>`
           in that even subjects with missing target values are included.
         '''
         return self._all_train_subjects
@@ -419,8 +419,8 @@ class BPtEvaluator():
     @property
     def n_subjects(self):
         '''A quicker helper property to get
-        the sum of the length of :data:`train_subjects<BPtEvaluator.train_subjects>`
-        and :data:`val_subjects<BPtEvaluator.val_subjects>`. If this number varies by fold,
+        the sum of the length of :data:`train_subjects<EvalResults.train_subjects>`
+        and :data:`val_subjects<EvalResults.val_subjects>`. If this number varies by fold,
         it will be set to None.
 
         This number is supposed to represent the number of subjects with non NaN targets
@@ -954,7 +954,8 @@ class BPtEvaluator():
         if self.timing is not None:
             saved_attrs.append('timing')
 
-        saved_attrs += ['train_subjects', 'val_subjects', 'feat_names', 'ps',
+        saved_attrs += ['estimator', 'train_subjects', 'val_subjects',
+                        'feat_names', 'ps',
                         'mean_scores', 'std_scores',
                         'weighted_mean_scores', 'scores']
 
@@ -1600,7 +1601,7 @@ class BPtEvaluator():
     def compare(self, other, rope_interval=[-0.01, 0.01]):
         '''This method is designed to perform a statistical comparison
         between the results from the evaluation stored in this object
-        and another instance of :class:`BPtEvaluator`. The statistics
+        and another instance of :class:`EvalResults`. The statistics
         produced here are explained in:
         https://scikit-learn.org/stable/auto_examples/model_selection/plot_grid_search_stats.html
 
@@ -1613,8 +1614,8 @@ class BPtEvaluator():
 
         Parameters
         ------------
-        other : :class:`BPtEvaluator`
-            Another instance of :class:`BPtEvaluator` in which
+        other : :class:`EvalResults`
+            Another instance of :class:`EvalResults` in which
             to compare which. The cross-validation used
             should be the same in both instances, otherwise
             statistics will not be generated.
@@ -1771,7 +1772,7 @@ class BPtEvaluator():
 
     @doc(dataset=_base_docs['dataset'])
     def subset_by(self, group, dataset=None, decode_values=True):
-        '''Generate instances of :class:`BPtEvaluatorSubset` based
+        '''Generate instances of :class:`EvalResultsSubset` based
         on subsets of subjects based on different unique groups.
 
         This method is used to analyze results
@@ -1814,17 +1815,17 @@ class BPtEvaluator():
 
         Returns
         ---------
-        subsets : dict of :class:`BPtEvaluatorSubset`
-            | Returns a dictionary of :class:`BPtEvaluatorSubset`,
+        subsets : dict of :class:`EvalResultsSubset`
+            | Returns a dictionary of :class:`EvalResultsSubset`,
               where keys are generated as a representation of
               the value stored for each unique group. If decode_values
               is True, then these values are the original names
               otherwise they are the internal names.
 
             | Saved under each key is an instance of
-              :class:`BPtEvaluatorSubset`, which can be
+              :class:`EvalResultsSubset`, which can be
               treated the same as an instance of
-              :class:`BPtEvaluator`, except it has a subset
+              :class:`EvalResults`, except it has a subset
               of values for val_subjects, and different
               preds and scores representing this subset.
         '''
@@ -1856,7 +1857,7 @@ class BPtEvaluator():
 
             # Get evaluator subset
             subsets[clean_str(value)] =\
-                BPtEvaluatorSubset(self, subjs, subset_name=subset_name)
+                EvalResultsSubset(self, subjs, subset_name=subset_name)
         
         # Return as compare dict, so we have access to the summary function
         return compare_dict_from_existing(subsets)
@@ -1874,13 +1875,13 @@ class BPtEvaluator():
             pkl.dump(self, f)
 
 
-class BPtEvaluatorSubset(BPtEvaluator):
-    '''This class represents a subset of :class:`BPtEvaluator` and
-    is returned as a result of calling :func:`BPtEvaluator.subset_by`.
+class EvalResultsSubset(EvalResults):
+    '''This class represents a subset of :class:`EvalResults` and
+    is returned as a result of calling :func:`EvalResults.subset_by`.
 
     This class specifically updates values for a subset of val_subjects,
     which mean only the following attributes are re-calculated / will be
-    different from the source :class:`BPtEvaluator` ::
+    different from the source :class:`EvalResults` ::
 
         val_subjects
         all_val_subjects
@@ -1985,7 +1986,7 @@ class BPtEvaluatorSubset(BPtEvaluator):
                 self.scores[scorer_str].append(score)
 
 # TODO - 
-class BPtEvaluatorFold():
+class EvalResultsFold():
 
     def __init__(self, evaluator, fold):
 

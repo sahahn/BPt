@@ -4,3 +4,7 @@
 
 Version 2.2.3
 ---------------
+
+- Updates to previous class BPtEvaluator, now called :class:`EvalResults`
+  - Now saves shallow copy of reference :class:`Dataset` by default.
+  - Refactor name from BPtEvaluator to :class:`EvalResults`

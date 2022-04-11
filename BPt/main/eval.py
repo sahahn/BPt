@@ -2032,7 +2032,7 @@ class EvalResults():
                                  label=f'Null Dist. (Mean) - {null_dist_means[metric]:.3f}')
                     
                     # Add vert line
-                    a.axvline(self.mean_scores[metric], color='Red', linewidth=10,
+                    a.axvline(self.mean_scores[metric], color='Red', linewidth=6,
                                          label=f'Baseline - {self.mean_scores[metric]:.3f} (pval={p_values[metric]:.3f})')
                     
                     # Add legend + title

@@ -35,7 +35,7 @@ setup(name='brain-pred-toolbox',
       extras_require={
           'extra': ['lightgbm>=3.3.0',
                     'sweetviz>2',
-                    'nilearn>=0.7',
+                    'nilearn>=0.9',
                     'python-docx',
                     'mvlearn',
                     'imblearn',

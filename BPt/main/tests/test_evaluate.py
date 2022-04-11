@@ -876,6 +876,19 @@ def test_evaluator_get_X_transform_df():
         assert len(X_tr_trans) + len(X_val_trans) == len(dataset)
 
 
+def test_evaluator_get_X_transform_df_def_all():
+
+    pipe = Pipeline([Scaler('standard'), Model('dt')])
+    dataset = get_fake_dataset()
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         progress_bar=False,
+                         cv=3)
+
+    X_df = evaluator.get_X_transform_df(subjects='all')
+    assert X_df.shape == (20, 2)
+                
+
 def test_evaluate_pipeline_with_select():
 
     select_scaler = Select([Scaler('standard'), Scaler('robust')])

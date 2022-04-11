@@ -92,11 +92,6 @@ def is_notebook():
 # 1. Store permutation FI's in object after call
 # 2. Add methods for plot feature importance's ?
 
-# @Possible TODO
-# store a shallow copy of the passed Dataset???
-# or some sort of hash to make sure / some way of making sure
-# functions that need a dataset are not passed some wrong input
-
 # TODO - function to easily export saved results in different formats.
 
 
@@ -169,6 +164,7 @@ class BPtEvaluator():
                  store_estimators=False,
                  store_timing=False,
                  store_cv=True,
+                 store_data_ref=True,
                  eval_verbose=0,
                  progress_loc=None,
                  mute_warnings=False,
@@ -201,6 +197,11 @@ class BPtEvaluator():
         self._store_cv = store_cv
         if not self._store_cv:
             self.cv = None
+
+        # If store reference to data
+        self._store_data_ref = store_data_ref
+        if not self._store_data_ref:
+            self._dataset = None
 
         self.progress_loc = progress_loc
         self.verbose = eval_verbose
@@ -541,7 +542,11 @@ class BPtEvaluator():
         else:
             self.progress_bar = tqdm
 
-    def _eval(self, X, y, cv):
+    def _eval(self, X, y, cv, dataset=None):
+
+        # Optionally store reference to dataset
+        if self._store_data_ref:
+            self.dataset_ = dataset.copy(deep=False)
 
         # If verbose is lower than -1,
         # then don't show any warnings no matter the source.
@@ -994,6 +999,20 @@ class BPtEvaluator():
             raise RuntimeError('This method is not avaliable unless '
                                'evaluate is run with store_estimators=True!')
 
+    def _dataset_check(self, dataset=None):
+
+        # If dataset not passed, try to use saved dataset ref
+        if dataset is None:
+            
+            # Check for no saved
+            if not hasattr(self, 'dataset_') or getattr(self, 'dataset_') is None:
+                raise RuntimeError('No saved reference dataset, you must pass the dataset to use here.')
+
+            # Use saved
+            dataset = self.dataset_
+
+        return dataset
+
     @property
     def feature_importances_(self):
         '''This property stores the mean values
@@ -1284,7 +1303,7 @@ class BPtEvaluator():
         return estimator, X_trans, np.array(y_val_df), feat_names
 
     @doc(dataset=_base_docs['dataset'])
-    def permutation_importance(self, dataset,
+    def permutation_importance(self, dataset=None,
                                n_repeats=10, scorer='default',
                                just_model=True, nested_model=True,
                                return_as='dfs', n_jobs=1, random_state='default'):
@@ -1295,6 +1314,14 @@ class BPtEvaluator():
         Parameters
         -----------
         {dataset}
+
+            | If left as default=None, then will try to use
+              a shallow copy of the dataset passed to the original
+              evaluate call (assuming evaluate was run with store_data_ref=True).
+
+            ::
+
+                default = None
 
         n_repeats : int, optional
             The number of times to randomly permute each feature.
@@ -1398,6 +1425,10 @@ class BPtEvaluator():
 
         from sklearn.inspection import permutation_importance
 
+        # Check dataset
+        dataset = self._dataset_check(dataset)
+
+        # Check estimators
         self._estimators_check()
 
         # If default scorer, take the first one
@@ -1450,13 +1481,22 @@ class BPtEvaluator():
                      importances_std=fis_to_df(std_series))
 
     @doc(dataset=_base_docs['dataset'])
-    def get_X_transform_df(self, dataset, fold=0, subjects='tr', nested_model=True, trans_y=False):
+    def get_X_transform_df(self, dataset=None, fold=0, subjects='tr',
+                           nested_model=True, trans_y=False):
         '''This method is used as a helper for getting the transformed
         input data for one of the saved models run during evaluate.
 
         Parameters
         -----------
         {dataset}
+        
+            | If left as default=None, then will try to use
+              a shallow copy of the dataset passed to the original
+              evaluate call (assuming evaluate was run with store_data_ref=True).
+
+            ::
+
+                default = None
 
         fold : int, optional
             The corresponding fold of the trained
@@ -1511,6 +1551,9 @@ class BPtEvaluator():
             of the pipeline.
         '''
 
+        # Check dataset
+        dataset = self._dataset_check(dataset)
+
         # This method requires that the fitted estimators
         # were saved.
         self._estimators_check()
@@ -1553,10 +1596,6 @@ class BPtEvaluator():
         
         # Put the data in a dataframe with associated feature names, and index then return
         return pd.DataFrame(X_trans_fold, columns=feat_names,  index=X_fold.index)
-
-
-
-
 
     def compare(self, other, rope_interval=[-0.01, 0.01]):
         '''This method is designed to perform a statistical comparison
@@ -1731,7 +1770,7 @@ class BPtEvaluator():
         return dif_df
 
     @doc(dataset=_base_docs['dataset'])
-    def subset_by(self, group, dataset, decode_values=True):
+    def subset_by(self, group, dataset=None, decode_values=True):
         '''Generate instances of :class:`BPtEvaluatorSubset` based
         on subsets of subjects based on different unique groups.
 
@@ -1751,6 +1790,14 @@ class BPtEvaluator():
             values.
 
         {dataset}
+
+        | If left as default=None, then will try to use
+              a shallow copy of the dataset passed to the original
+              evaluate call (assuming evaluate was run with store_data_ref=True).
+
+            ::
+
+                default = None
 
         decode_values : bool
             If the original values of the group column
@@ -1783,6 +1830,9 @@ class BPtEvaluator():
         '''
 
         from .compare import compare_dict_from_existing
+
+        # Check dataset
+        dataset = self._dataset_check(dataset)
 
         if self.preds is None:
             raise RuntimeError('store_preds must have been set '
@@ -1934,7 +1984,7 @@ class BPtEvaluatorSubset(BPtEvaluator):
                 score *= scorer._sign
                 self.scores[scorer_str].append(score)
 
-
+# TODO - 
 class BPtEvaluatorFold():
 
     def __init__(self, evaluator, fold):

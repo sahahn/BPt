@@ -977,6 +977,7 @@ def evaluate(pipeline, dataset,
              store_estimators=True,
              store_timing=True,
              store_cv=True,
+             store_data_ref=True,
              decode_feat_names=True,
              eval_verbose=1,
              progress_loc=None,
@@ -1044,6 +1045,15 @@ def evaluate(pipeline, dataset,
         If True, then the returned :class:`BPtEvaluator`
         will store a copy of the exact CV splitter object
         used during evaluation.
+
+        ::
+
+            default = True
+
+    store_data_ref : bool, optional
+        If True, then will store a shallow copy of the dataset used
+        in evaluate, that can be re-used to calculate different post
+        evaluate attributes.
 
         ::
 
@@ -1140,6 +1150,7 @@ def evaluate(pipeline, dataset,
               'store_estimators': store_estimators,
               'store_timing': store_timing,
               'store_cv': store_cv,
+              'store_data_ref': store_data_ref,
               'eval_verbose': eval_verbose,
               'progress_loc': progress_loc,
               'mute_warnings': mute_warnings
@@ -1218,7 +1229,7 @@ def _evaluate(estimator, dataset, ps, cv,
                              **verbose_args)
 
     # Call eval on the evaluator
-    evaluator._eval(X, y, sk_cv)
+    evaluator._eval(X, y, sk_cv, dataset)
 
     # Return the BPtEvaluator object
     return evaluator

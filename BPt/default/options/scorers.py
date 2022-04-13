@@ -128,7 +128,7 @@ def process_scorers(in_scorers, problem_type):
             scorer, _, _ = _proc_scorer(in_scorers[key], problem_type)
             scorers[key] = scorer
 
-        return in_scorers
+        return scorers
 
     # Check for default case
     if in_scorers == 'default':

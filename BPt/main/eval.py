@@ -2017,7 +2017,9 @@ class EvalResults():
             for row in range(n_rows):
                 for col in range(n_cols):
 
-                    if n_rows == 1:
+                    if len(p_scores) == 1:
+                        a = ax
+                    elif n_rows == 1:
                         a = ax[col]
                     elif n_cols == 1:
                         a = ax[row]
@@ -2025,7 +2027,10 @@ class EvalResults():
                         a = ax[row][col]
 
                     # Get current metric
-                    metric = list(p_scores)[col + (row * n_cols)]
+                    try:
+                        metric = list(p_scores)[col + (row * n_cols)]
+                    except IndexError:
+                        continue
                     
                     # Base hist
                     sns.histplot(p_scores[metric], ax=a, kde=True,

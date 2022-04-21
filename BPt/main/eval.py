@@ -1797,7 +1797,7 @@ class EvalResults():
 
         {dataset}
 
-        | If left as default=None, then will try to use
+            | If left as default=None, then will try to use
               a shallow copy of the dataset passed to the original
               evaluate call (assuming evaluate was run with store_data_ref=True).
 
@@ -1903,7 +1903,7 @@ class EvalResults():
 
         {dataset}
 
-        | If left as default=None, then will try to use
+            | If left as default=None, then will try to use
               a shallow copy of the dataset passed to the original
               evaluate call (assuming evaluate was run with store_data_ref=True).
 
@@ -1919,6 +1919,45 @@ class EvalResults():
             ::
 
                 default = None
+
+        blocks : None, array, pd.Series or pd.DataFrame, optional
+            This parameter is only avaliable when the neurotool library is installed.
+            See: https://github.com/sahahn/neurotools
+
+            This parameter represents the underlying exchangability-block
+            structure of the data passed. It is also used to constrain the possible
+            permutations in some way.
+
+            See PALM's documentation for an introduction on how to format ExchangeabilityBlocks:
+            https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/PALM/ExchangeabilityBlocks
+
+            This parameter accepts the same style input as PALM, except it is passed
+            here as an array or DataFrame instead of as a file. The main requirement 
+            is that the shape of the structure match the number of subjects / data points
+            in the first dimension.
+
+            ::
+
+                default = None
+
+        within_grp : bool, optional
+            This parameter is only relevant when a permutation structure / blocks is passed, in that
+            case it describes how the left-most exchanability / permutation structure column should act.
+            Specifically, if True, then it specifies that the left-most column should be treated as groups
+            to act in a within group swap only manner. If False, then it will consider the left-most column
+            groups to only be able to swap at the group level with other groups of the same size.
+
+            ::
+
+                default = True
+
+        plot : bool, optional
+            Can optionally add a plot visualizing the true result in comparison
+            to the generated null distribution.
+
+            ::
+
+                default = False
 
         '''
 

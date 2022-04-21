@@ -19,6 +19,9 @@ import pickle as pkl
 
 from matplotlib import cm
 from matplotlib import colors
+from numpy.random import default_rng
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 from sklearn.metrics._scorer import _MultimetricScorer
 
@@ -92,11 +95,6 @@ def is_notebook():
 # 1. Store permutation FI's in object after call
 # 2. Add methods for plot feature importance's ?
 
-# @Possible TODO
-# store a shallow copy of the passed Dataset???
-# or some sort of hash to make sure / some way of making sure
-# functions that need a dataset are not passed some wrong input
-
 # TODO - function to easily export saved results in different formats.
 
 
@@ -153,7 +151,7 @@ def mean_no_zeros(df):
     return mean[mean != 0]
 
 
-class BPtEvaluator():
+class EvalResults():
     '''This class is returned from calls to :func:`evaluate`,
     and can be used to store information from evaluate, or
     compute additional feature importances. It should typically not be
@@ -169,6 +167,7 @@ class BPtEvaluator():
                  store_estimators=False,
                  store_timing=False,
                  store_cv=True,
+                 store_data_ref=True,
                  eval_verbose=0,
                  progress_loc=None,
                  mute_warnings=False,
@@ -201,6 +200,11 @@ class BPtEvaluator():
         self._store_cv = store_cv
         if not self._store_cv:
             self.cv = None
+
+        # If store reference to data
+        self._store_data_ref = store_data_ref
+        if not self._store_data_ref:
+            self._dataset = None
 
         self.progress_loc = progress_loc
         self.verbose = eval_verbose
@@ -264,7 +268,7 @@ class BPtEvaluator():
     def weighted_mean_scores(self):
         '''This property stores the mean scores
         across evaluation folds (simmilar to
-        :data:`mean_scores<BPtEvaluator.mean_scores>`),
+        :data:`mean_scores<EvalResults.mean_scores>`),
         but weighted by the
         number of subjects / datapoints in each fold.
 
@@ -355,7 +359,7 @@ class BPtEvaluator():
 
         | This parameter
           differs from
-          :data:`all_val_subjects<BPtEvaluator.all_val_subjects>`
+          :data:`all_val_subjects<EvalResults.all_val_subjects>`
           in that even subjects with missing target values are not included.
 
         '''
@@ -374,7 +378,7 @@ class BPtEvaluator():
 
         | This parameter
           differs from
-          :data:`all_train_subjects<BPtEvaluator.all_train_subjects>`
+          :data:`all_train_subjects<EvalResults.all_train_subjects>`
           in that even subjects with missing target values are not included.
 
         '''
@@ -390,7 +394,7 @@ class BPtEvaluator():
           used in every fold of the cross-validation.
 
         | This parameter
-          differs from :data:`val_subjects<BPtEvaluator.val_subjects>`
+          differs from :data:`val_subjects<EvalResults.val_subjects>`
           in that even subjects with missing target values are included.
 
         '''
@@ -406,7 +410,7 @@ class BPtEvaluator():
           used in every fold of the cross-validation.
 
         | This parameter
-          differs from :data:`train_subjects<BPtEvaluator.train_subjects>`
+          differs from :data:`train_subjects<EvalResults.train_subjects>`
           in that even subjects with missing target values are included.
         '''
         return self._all_train_subjects
@@ -418,8 +422,8 @@ class BPtEvaluator():
     @property
     def n_subjects(self):
         '''A quicker helper property to get
-        the sum of the length of :data:`train_subjects<BPtEvaluator.train_subjects>`
-        and :data:`val_subjects<BPtEvaluator.val_subjects>`. If this number varies by fold,
+        the sum of the length of :data:`train_subjects<EvalResults.train_subjects>`
+        and :data:`val_subjects<EvalResults.val_subjects>`. If this number varies by fold,
         it will be set to None.
 
         This number is supposed to represent the number of subjects with non NaN targets
@@ -541,7 +545,11 @@ class BPtEvaluator():
         else:
             self.progress_bar = tqdm
 
-    def _eval(self, X, y, cv):
+    def _eval(self, X, y, cv, dataset=None):
+
+        # Optionally store reference to dataset
+        if self._store_data_ref:
+            self._dataset = dataset.copy(deep=False)
 
         # If verbose is lower than -1,
         # then don't show any warnings no matter the source.
@@ -949,7 +957,8 @@ class BPtEvaluator():
         if self.timing is not None:
             saved_attrs.append('timing')
 
-        saved_attrs += ['train_subjects', 'val_subjects', 'feat_names', 'ps',
+        saved_attrs += ['estimator', 'train_subjects', 'val_subjects',
+                        'feat_names', 'ps',
                         'mean_scores', 'std_scores',
                         'weighted_mean_scores', 'scores']
 
@@ -993,6 +1002,20 @@ class BPtEvaluator():
         if self.estimators is None:
             raise RuntimeError('This method is not avaliable unless '
                                'evaluate is run with store_estimators=True!')
+
+    def _dataset_check(self, dataset=None):
+
+        # If dataset not passed, try to use saved dataset ref
+        if dataset is None:
+            
+            # Check for no saved
+            if not hasattr(self, '_dataset') or getattr(self, '_dataset') is None:
+                raise RuntimeError('No saved reference dataset, you must pass a dataset to use.')
+
+            # Use saved
+            dataset = self._dataset
+
+        return dataset
 
     @property
     def feature_importances_(self):
@@ -1284,7 +1307,7 @@ class BPtEvaluator():
         return estimator, X_trans, np.array(y_val_df), feat_names
 
     @doc(dataset=_base_docs['dataset'])
-    def permutation_importance(self, dataset,
+    def permutation_importance(self, dataset=None,
                                n_repeats=10, scorer='default',
                                just_model=True, nested_model=True,
                                return_as='dfs', n_jobs=1, random_state='default'):
@@ -1295,6 +1318,14 @@ class BPtEvaluator():
         Parameters
         -----------
         {dataset}
+
+            | If left as default=None, then will try to use
+              a shallow copy of the dataset passed to the original
+              evaluate call (assuming evaluate was run with store_data_ref=True).
+
+            ::
+
+                default = None
 
         n_repeats : int, optional
             The number of times to randomly permute each feature.
@@ -1398,6 +1429,10 @@ class BPtEvaluator():
 
         from sklearn.inspection import permutation_importance
 
+        # Check dataset
+        dataset = self._dataset_check(dataset)
+
+        # Check estimators
         self._estimators_check()
 
         # If default scorer, take the first one
@@ -1450,13 +1485,22 @@ class BPtEvaluator():
                      importances_std=fis_to_df(std_series))
 
     @doc(dataset=_base_docs['dataset'])
-    def get_X_transform_df(self, dataset, fold=0, subjects='tr', nested_model=True, trans_y=False):
+    def get_X_transform_df(self, dataset=None, fold=0, subjects='tr',
+                           nested_model=True, trans_y=False):
         '''This method is used as a helper for getting the transformed
         input data for one of the saved models run during evaluate.
 
         Parameters
         -----------
         {dataset}
+        
+            | If left as default=None, then will try to use
+              a shallow copy of the dataset passed to the original
+              evaluate call (assuming evaluate was run with store_data_ref=True).
+
+            ::
+
+                default = None
 
         fold : int, optional
             The corresponding fold of the trained
@@ -1511,6 +1555,9 @@ class BPtEvaluator():
             of the pipeline.
         '''
 
+        # Check dataset
+        dataset = self._dataset_check(dataset)
+
         # This method requires that the fitted estimators
         # were saved.
         self._estimators_check()
@@ -1554,14 +1601,10 @@ class BPtEvaluator():
         # Put the data in a dataframe with associated feature names, and index then return
         return pd.DataFrame(X_trans_fold, columns=feat_names,  index=X_fold.index)
 
-
-
-
-
     def compare(self, other, rope_interval=[-0.01, 0.01]):
         '''This method is designed to perform a statistical comparison
         between the results from the evaluation stored in this object
-        and another instance of :class:`BPtEvaluator`. The statistics
+        and another instance of :class:`EvalResults`. The statistics
         produced here are explained in:
         https://scikit-learn.org/stable/auto_examples/model_selection/plot_grid_search_stats.html
 
@@ -1574,8 +1617,8 @@ class BPtEvaluator():
 
         Parameters
         ------------
-        other : :class:`BPtEvaluator`
-            Another instance of :class:`BPtEvaluator` in which
+        other : :class:`EvalResults`
+            Another instance of :class:`EvalResults` in which
             to compare which. The cross-validation used
             should be the same in both instances, otherwise
             statistics will not be generated.
@@ -1731,8 +1774,8 @@ class BPtEvaluator():
         return dif_df
 
     @doc(dataset=_base_docs['dataset'])
-    def subset_by(self, group, dataset, decode_values=True):
-        '''Generate instances of :class:`BPtEvaluatorSubset` based
+    def subset_by(self, group, dataset=None, decode_values=True):
+        '''Generate instances of :class:`EvalResultsSubset` based
         on subsets of subjects based on different unique groups.
 
         This method is used to analyze results
@@ -1752,6 +1795,14 @@ class BPtEvaluator():
 
         {dataset}
 
+        | If left as default=None, then will try to use
+              a shallow copy of the dataset passed to the original
+              evaluate call (assuming evaluate was run with store_data_ref=True).
+
+            ::
+
+                default = None
+
         decode_values : bool
             If the original values of the group column
             were encoded via a :class:`Dataset` function,
@@ -1767,22 +1818,25 @@ class BPtEvaluator():
 
         Returns
         ---------
-        subsets : dict of :class:`BPtEvaluatorSubset`
-            | Returns a dictionary of :class:`BPtEvaluatorSubset`,
+        subsets : dict of :class:`EvalResultsSubset`
+            | Returns a dictionary of :class:`EvalResultsSubset`,
               where keys are generated as a representation of
               the value stored for each unique group. If decode_values
               is True, then these values are the original names
               otherwise they are the internal names.
 
             | Saved under each key is an instance of
-              :class:`BPtEvaluatorSubset`, which can be
+              :class:`EvalResultsSubset`, which can be
               treated the same as an instance of
-              :class:`BPtEvaluator`, except it has a subset
+              :class:`EvalResults`, except it has a subset
               of values for val_subjects, and different
               preds and scores representing this subset.
         '''
 
         from .compare import compare_dict_from_existing
+
+        # Check dataset
+        dataset = self._dataset_check(dataset)
 
         if self.preds is None:
             raise RuntimeError('store_preds must have been set '
@@ -1806,7 +1860,7 @@ class BPtEvaluator():
 
             # Get evaluator subset
             subsets[clean_str(value)] =\
-                BPtEvaluatorSubset(self, subjs, subset_name=subset_name)
+                EvalResultsSubset(self, subjs, subset_name=subset_name)
         
         # Return as compare dict, so we have access to the summary function
         return compare_dict_from_existing(subsets)
@@ -1823,14 +1877,183 @@ class BPtEvaluator():
         with open(loc, 'wb') as f:
             pkl.dump(self, f)
 
+    @doc(dataset=_base_docs['dataset'])
+    def run_permutation_test(self, n_perm=100, dataset=None, random_state=None,
+                             blocks=None, within_grp=True, plot=False):
+        '''Compute signifigance values for the original results according to
+        a permutation test scheme. In this setup, we estimate the null model
+        by randomly permuting the target variable, and re-evaluating the same
+        pipeline according to the same CV. In this manner, a null distribution of
+        size `n_perm` is generated in which we can compare the real, unpermuted results
+        to. 
 
-class BPtEvaluatorSubset(BPtEvaluator):
-    '''This class represents a subset of :class:`BPtEvaluator` and
-    is returned as a result of calling :func:`BPtEvaluator.subset_by`.
+        Note: If using a custom scorer, w/ no sign_ attribute, this method
+        will assume that higher values for metrics are better.
+
+        Parameters
+        ------------
+        n_perm : int, optional
+            The number of permutations to test.
+
+            ::
+
+                default = 100
+
+        {dataset}
+
+        | If left as default=None, then will try to use
+              a shallow copy of the dataset passed to the original
+              evaluate call (assuming evaluate was run with store_data_ref=True).
+
+            ::
+
+                default = None
+
+        random_state : int, or None, optional
+            Pseudo-random number generator to control the permutations
+            of each feature. If left as None, then initialize a new
+            random state for each permutation.
+
+            ::
+
+                default = None
+
+        '''
+
+        # Check dataset
+        dataset = self._dataset_check(dataset)
+
+        # Make sure cv is saved
+        if self.cv is None:
+            raise RuntimeError('The original call to evaluate must have had store_cv set to True to use this method.')
+
+        # Init rng
+        rng = default_rng(random_state)
+
+        # X stays the same
+        X, _ = dataset.get_Xy(self.ps)
+
+        p_scores = {}
+        for n in range(n_perm):
+            
+            # Get the random seed for this permutation
+            try:
+                rng_integers = rng.integers
+            except AttributeError:
+                rng_integers = rng.randint
+            rs = rng_integers(147483648)
+
+            # Get permuted y
+            y_perm = dataset._get_permuted_y(self.ps, random_state=rs,
+                                             blocks=blocks, within_grp=within_grp)
+
+
+            # Init silent copy to eval with
+            p_eval = EvalResults(estimator=self.estimator,
+                                 ps=self.ps,
+                                 encoders=self.encoders_,
+                                 progress_bar=False,
+                                 store_preds=False,
+                                 store_estimators=False,
+                                 store_timing=False,
+                                 store_cv=False,
+                                 store_data_ref=False,
+                                 eval_verbose=-2,
+                                 progress_loc=None,
+                                 mute_warnings=False,
+                                 compare_bars=None)
+
+            # Evaluate
+            p_eval._eval(X, y_perm, cv=deepcopy(self.cv))
+
+            # Extract scores and add to baseline
+            for metric in p_eval.mean_scores:
+                try:
+                    p_scores[metric].append(p_eval.mean_scores[metric])
+                except KeyError:
+                    p_scores[metric] = [p_eval.mean_scores[metric]]
+
+        # Convert to p-values
+        p_values, null_dist_means, null_dist_stds = {}, {}, {}
+        for metric in p_scores:
+
+            # Sort actual w/ null dist
+            actual = self.mean_scores[metric]
+            base = np.vstack(p_scores[metric] + [actual])
+            sorted_base = np.sort(base, axis=0)
+            
+            # Get ind in sorted
+            ind = np.where(sorted_base == actual)[0][0]
+
+            # Compute p-value, if no info on higher better,
+            # e.g., custom scorer, then we just assume higher better.
+            higher_better = True
+            if hasattr(self.ps.scorer[metric], '_sign'):
+                higher_better = bool(self.ps.scorer[metric]._sign)
+
+            # Use version based on if higher better
+            if higher_better:
+                p_values[metric] = (n_perm - ind + 1) / (n_perm + 1)
+            else:
+                p_values[metric] = (ind + 1) / (n_perm + 1)
+
+            # Add means and stds
+            null_dist_means[metric] = np.mean(p_scores[metric])
+            null_dist_stds[metric] = np.std(p_scores[metric])
+
+
+        # Optionally make plot
+        if plot:
+
+            if len(p_scores) == 1:
+                n_rows, n_cols = 1, 1
+            else:
+                n_rows, n_cols = (len(p_scores) // 2) + (len(p_scores) % 2), 2
+
+            # Init sub plots
+            _, ax = plt.subplots(n_rows, n_cols, figsize=(n_cols * 8, n_rows * 6))
+
+            # Plot each metric
+            for row in range(n_rows):
+                for col in range(n_cols):
+
+                    if len(p_scores) == 1:
+                        a = ax
+                    elif n_rows == 1:
+                        a = ax[col]
+                    elif n_cols == 1:
+                        a = ax[row]
+                    else:
+                        a = ax[row][col]
+
+                    # Get current metric
+                    try:
+                        metric = list(p_scores)[col + (row * n_cols)]
+                    except IndexError:
+                        continue
+                    
+                    # Base hist
+                    sns.histplot(p_scores[metric], ax=a, kde=True,
+                                 label=f'Null Dist. (Mean) - {null_dist_means[metric]:.3f}')
+                    
+                    # Add vert line
+                    a.axvline(self.mean_scores[metric], color='Red', linewidth=6,
+                                         label=f'Baseline - {self.mean_scores[metric]:.3f} (pval={p_values[metric]:.3f})')
+                    
+                    # Add legend + title
+                    a.legend()
+                    a.set_title(metric)
+
+        return p_values, null_dist_means, null_dist_stds
+
+
+class EvalResultsSubset(EvalResults):
+    '''This class represents a subset of :class:`EvalResults` and
+    is returned as a result of calling :func:`EvalResults.subset_by`.
 
     This class specifically updates values for a subset of val_subjects,
     which mean only the following attributes are re-calculated / will be
-    different from the source :class:`BPtEvaluator` ::
+    different from the source :class:`EvalResults` ::
 
         val_subjects
         all_val_subjects
@@ -1856,6 +2079,14 @@ class BPtEvaluatorSubset(BPtEvaluator):
 
         # Save name for display
         self.subset_name = subset_name
+
+        # If keeping track of dataset, we keep track of the whole dataset, based on
+        # the nature of how the subsetting works
+        self._store_data_ref = evaluator._store_data_ref
+        if self._store_data_ref:
+            self._dataset = evaluator._dataset
+        else:
+            self._dataset = None
 
         # Need to set val indices first
         self._set_val_subjects(subjects, evaluator)
@@ -1934,8 +2165,8 @@ class BPtEvaluatorSubset(BPtEvaluator):
                 score *= scorer._sign
                 self.scores[scorer_str].append(score)
 
-
-class BPtEvaluatorFold():
+# TODO - 
+class EvalResultsFold():
 
     def __init__(self, evaluator, fold):
 

@@ -102,13 +102,33 @@ def get_scorers_by_type(problem_type):
     return objs
 
 
+def _proc_scorer(scorer_str, problem_type, cnt=0):
+
+    if isinstance(scorer_str, str):
+        name = proc_type_dep_str(scorer_str, AVALIABLE, problem_type)
+        return get_scorer_from_str(name), name, cnt
+    else:
+        name = 'Custom Scorer ' + str(cnt)
+        cnt += 1
+        return wrap_non_picklable_objects(scorer_str), name, cnt
+        
+
 def process_scorers(in_scorers, problem_type):
 
     # TODO add sklean style check scorer?
 
     # If already correct scorers dict.
+    # Check each item in dict
     if isinstance(in_scorers, dict):
-        return in_scorers
+
+        scorers = {}
+        for key in in_scorers:
+
+            # Use passed name
+            scorer, _, _ = _proc_scorer(in_scorers[key], problem_type)
+            scorers[key] = scorer
+
+        return scorers
 
     # Check for default case
     if in_scorers == 'default':
@@ -119,18 +139,8 @@ def process_scorers(in_scorers, problem_type):
 
     scorers, cnt = {}, 0
     for m in range(len(scorer_strs)):
-
-        if isinstance(scorer_strs[m], str):
-            name = proc_type_dep_str(scorer_strs[m], AVALIABLE,
-                                     problem_type)
-            scorers[name] = get_scorer_from_str(name)
-
-        else:
-            name = 'Custom Scorer ' + str(cnt)
-            scorers[name] = wrap_non_picklable_objects(scorer_strs[m])
-            cnt += 1
-
-    
+        scorer, name, cnt = _proc_scorer(scorer_strs[m], problem_type, cnt=cnt)
+        scorers[name] = scorer
 
     return scorers
 

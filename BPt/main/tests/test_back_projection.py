@@ -106,17 +106,22 @@ def standard_check(results):
     assert len(inverse_fis[1].loc['d_files']) == SZ
 
 
-def run_permutation(results):
+def run_permutation(results, use_def=False):
 
-    return results.permutation_importance(dataset=setup_dataset(),
+    if use_def:
+        dataset = None
+    else:
+        dataset = setup_dataset()
+
+    return results.permutation_importance(dataset=dataset,
                                           n_repeats=1,
                                           just_model=True,
                                           nested_model=True,
                                           return_as='dfs')['importances_mean']
 
-def permutation_check(results):
+def permutation_check(results, use_def=False):
 
-    fis = run_permutation(results)
+    fis = run_permutation(results, use_def=use_def)
 
     assert fis.shape == (2, SZ//2)
     assert 'd_files_0' in list(fis)
@@ -160,6 +165,11 @@ def test_permutation_svm_r():
     results = run_eval(pipe='svm_pipe', target='r')
     permutation_check(results)
 
+def test_permutation_svm_r_def():
+
+    results = run_eval(pipe='svm_pipe', target='r')
+    permutation_check(results, use_def=True)
+
 def test_permutation_svm_b():
 
     results = run_eval(pipe='svm_pipe', target='b')
@@ -169,6 +179,11 @@ def test_permutation_elastic_r():
 
     results = run_eval(pipe='elastic_pipe', target='r')
     permutation_check(results)
+
+def test_permutation_elastic_r_def():
+
+    results = run_eval(pipe='elastic_pipe', target='r')
+    permutation_check(results, use_def=True)
 
 def test_permutation_elastic_b():
 
@@ -189,9 +204,9 @@ def voting_base_check(results):
     # Make sure permutations work too
     voting_permutation_check(results)
 
-def voting_permutation_check(results):
+def voting_permutation_check(results, use_def=False):
 
-    fis = run_permutation(results)
+    fis = run_permutation(results, use_def=use_def)
     assert fis.shape ==  (2, SZ)
     
     inverse_fis = results.get_inverse_fis(fis)
@@ -229,14 +244,19 @@ def test_voting_permutation_svm_r():
     results = run_eval(pipe='svm_pipe', target='r', ensemble='voting')
     voting_permutation_check(results)
 
+def test_voting_permutation_svm_r_def():
+    
+    results = run_eval(pipe='svm_pipe', target='r', ensemble='voting')
+    voting_permutation_check(results, use_def=True)
+
 def test_voting_permutation_svm_b():
     
     results = run_eval(pipe='svm_pipe', target='b', ensemble='voting')
     voting_permutation_check(results)
 
-def fs_permutation_check(results):
+def fs_permutation_check(results, use_def=False):
 
-    fis = run_permutation(results)
+    fis = run_permutation(results, use_def=use_def)
     inverse_fis = results.get_inverse_fis(fis)
     assert len(inverse_fis[0].loc['d_files']) == SZ
     assert len(inverse_fis[1].loc['d_files']) == SZ
@@ -245,6 +265,11 @@ def test_permutation_svm_fs_r():
 
     results = run_eval(pipe='svm_fs_pipe', target='r')
     fs_permutation_check(results)
+
+def test_permutation_svm_fs_r_def():
+
+    results = run_eval(pipe='svm_fs_pipe', target='r')
+    fs_permutation_check(results, use_def=True)
 
 def test_permutation_svm_fs_b():
 
@@ -303,6 +328,11 @@ def test_stacking_permutation_svm_r():
 
     results = run_eval(pipe='svm_pipe', target='r', ensemble='stacking')
     voting_permutation_check(results)
+
+def test_stacking_permutation_svm_r_def():
+
+    results = run_eval(pipe='svm_pipe', target='r', ensemble='stacking')
+    voting_permutation_check(results, use_def=True)
 
 def test_stacking_permutation_svm_b():
 

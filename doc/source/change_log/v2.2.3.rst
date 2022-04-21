@@ -1,0 +1,17 @@
+.. _whatsnew_223:
+
+.. currentmodule:: BPt
+
+Version 2.2.3
+---------------
+
+- Updates to previous class BPtEvaluator, now called :class:`EvalResults`
+  - Now saves shallow copy of reference :class:`Dataset` by default.
+  - Refactor name from BPtEvaluator to :class:`EvalResults`
+
+- New function :func:`Dataset.get_permuted_Xy`
+  - This function allows for easily permuting a target y value when calculating
+    X and y.
+
+- Small updates to scores
+  Now supports when passing custom scorers, the abbilitity to provide a name.

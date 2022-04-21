@@ -27,8 +27,8 @@ def plot_roc(results, show_folds=True, n_std=1,
 
     Paramaters
     -----------
-    results : :class:`BPtEvaluator`
-        An instance of :class:`BPtEvaluator` as
+    results : :class:`EvalResults`
+        An instance of :class:`EvalResults` as
         returned from :func:`evaluate`, in which
         to plot the results of.
 
@@ -131,9 +131,12 @@ def _get_top_global(df, top_n, get_abs):
     wide['mean'] = wide['variable'].copy()
     wide['mean'] = wide['mean'].replace(top.to_dict())
 
-
     # Normalize to special range if pos and neg
     p_min, p_max = wide['mean'].min(), wide['mean'].max()
+
+    # Small number to add to each side, so that max doesn't plot directly
+    # at max colorbar value
+    s = np.max([np.abs(p_min), np.abs(p_max)]) / 25
 
     # Only need in this case
     if p_min < 0 and p_max > 0:
@@ -142,10 +145,11 @@ def _get_top_global(df, top_n, get_abs):
         else:
             vmin, vmax = p_min, -p_min
             
-        norm = Normalize(vmin=vmin, vmax=vmax)
+        norm = Normalize(vmin=vmin-s, vmax=vmax+s)
         wide['mean'] = wide['mean'].apply(norm)
 
     return wide
+
 
 def plot_feat_importances(df,
                           xlabel='Feature Importances',

@@ -1,5 +1,5 @@
 from BPt.pipeline.BPtPipeline import BPtPipeline
-from BPt.main.BPtEvaluator import BPtEvaluator
+from BPt.main.eval import EvalResults
 from ...pipeline.BPtSearchCV import BPtGridSearchCV, NevergradSearchCV
 from ..input import (Loader, ModelPipeline, Model, Pipeline, Scaler,
                      ParamSearch, FeatSelector, Transformer, CV, CVStrategy)
@@ -718,7 +718,7 @@ def test_evaluate_compare():
     assert isinstance(evaluator, CompareDict)
 
     e1 = evaluator['pipe1']
-    assert isinstance(e1, BPtEvaluator)
+    assert isinstance(e1, EvalResults)
     e1_model = e1.estimators[0].steps[-1][1].estimator
     assert isinstance(e1_model, DecisionTreeClassifier)
 
@@ -876,6 +876,19 @@ def test_evaluator_get_X_transform_df():
         assert len(X_tr_trans) + len(X_val_trans) == len(dataset)
 
 
+def test_evaluator_get_X_transform_df_def_all():
+
+    pipe = Pipeline([Scaler('standard'), Model('dt')])
+    dataset = get_fake_dataset()
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         progress_bar=False,
+                         cv=3)
+
+    X_df = evaluator.get_X_transform_df(subjects='all')
+    assert X_df.shape == (20, 2)
+                
+
 def test_evaluate_pipeline_with_select():
 
     select_scaler = Select([Scaler('standard'), Scaler('robust')])
@@ -892,7 +905,7 @@ def test_evaluate_pipeline_with_select():
                              progress_bar=False,
                              cv=3)
 
-        assert isinstance(evaluator, BPtEvaluator)
+        assert isinstance(evaluator, EvalResults)
         search_est = evaluator.estimators[0]
         assert isinstance(search_est, NevergradSearchCV)
         best_est = search_est.best_estimator_
@@ -940,7 +953,7 @@ def test_evaluate_modelpipeline_with_select():
                              progress_bar=False,
                              cv=3)
 
-        assert isinstance(evaluator, BPtEvaluator)
+        assert isinstance(evaluator, EvalResults)
         search_est = evaluator.estimators[0]
         assert isinstance(search_est, NevergradSearchCV)
         best_est = search_est.best_estimator_
@@ -1057,7 +1070,7 @@ def test_evaluate_nan_targets():
                        cv=2)
 
     rr = repr(results)
-    assert 'BPtEvaluator' in rr
+    assert 'EvalResults' in rr
     assert 'all_train_subjects' in rr
     assert 'all_val_subjects' in rr
 
@@ -1076,7 +1089,7 @@ def test_evaluate_nan_targets_named_index():
                        cv=2)
 
     rr = repr(results)
-    assert 'BPtEvaluator' in rr
+    assert 'EvalResults' in rr
     assert 'all_train_subjects' in rr
     assert 'all_val_subjects' in rr
 

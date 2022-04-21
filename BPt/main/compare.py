@@ -1,5 +1,5 @@
 from numpy.lib.shape_base import split
-from .BPtEvaluator import BPtEvaluator
+from .eval import EvalResults
 from .input_operations import BPtInputMixIn
 from copy import deepcopy, copy
 import pandas as pd
@@ -420,7 +420,7 @@ class CompareDict(dict):
         # @TODO make sure all of same type
 
         # if Evaluation results
-        if isinstance(ex, BPtEvaluator):
+        if isinstance(ex, EvalResults):
             if self._check_multiple_problem_types():
                 return self._split_evaluator_summary(by='problem_type', **kwargs)
             return self._evaluator_summary(**kwargs)
@@ -540,7 +540,7 @@ class CompareDict(dict):
     def pairwise_t_stats(self, metric='first'):
         '''This method performs pair-wise t-test
         comparisons between all different options,
-        assuming this object holds instances of :class:`BPtEvaluator`.
+        assuming this object holds instances of :class:`EvalResults`.
         The method used to generate t-test comparisons here is based off the
         example code from:
         https://scikit-learn.org/stable/auto_examples/model_selection/plot_grid_search_stats.html
@@ -558,7 +558,7 @@ class CompareDict(dict):
             This method compares the metrics
             produced for only one valid
             metric / scorer. Notably
-            all :class:`BPtEvaluator` must have
+            all :class:`EvalResults` must have
             been evaluated with respect to this
             scorer. By default the reserved key, 'first'
             indicates that just whatever scorer is first
@@ -704,7 +704,7 @@ class MultipleSummary():
 
 def compare_dict_from_existing(results):
     '''Load in a :class:`CompareDict` from some combination
-    of already run instances of :class:`BPtEvaluator`.
+    of already evaluated instances of :class:`EvalResults`.
 
     Parameters
     -----------
@@ -714,16 +714,16 @@ def compare_dict_from_existing(results):
 
         1. As a dictionary, where key-values
            correspond to either an instance of
-           :class:`BPtEvaluator` or the str location
-           of a pickle saved :class:`BPtEvaluator`.
+           :class:`EvalResults` or the str location
+           of a pickle saved :class:`EvalResults`.
 
-        2. As a list, of either :class:`BPtEvaluator`
+        2. As a list, of either :class:`EvalResults`
            instances, str file locations where they are
            saved, or a mix.
 
         3. As a str, corresponding to the location of
            a directory, where every file in the directory
-           is a pickle saved instance of :class:`BPtEvaluator`.
+           is a pickle saved instance of :class:`EvalResults`.
 
         Note: The key values in the compare dictionary
         will be in the case that a dictionary is passed, the
@@ -739,7 +739,7 @@ def compare_dict_from_existing(results):
     def _add_element(key, element):
 
         # If result, add directly
-        if isinstance(element, BPtEvaluator):
+        if isinstance(element, EvalResults):
             compare_dict[key] = element
 
         # If str, load as pickle

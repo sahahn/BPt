@@ -1368,6 +1368,9 @@ class ParamSearch(Params):
             be careful to make sure to select an appropriate scorer for
             the underlying problem type.
 
+        | When passing a custom scorer, you may optionally pass it within
+          a dictionary, where the key is the name that will be used to represent that scorer.
+
         | If left as 'default', a reasonable scorer based on the
             problem type is used.
 

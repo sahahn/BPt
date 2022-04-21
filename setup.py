@@ -6,9 +6,9 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='brain-pred-toolbox',
+      version='2.2.3',
       long_description=long_description,
       long_description_content_type='text/markdown',
-      version='2.2.3',
       description='The Brain Predictability toolbox (BPt) is a ' +
       'Python based machine learning library designed to work with ' +
       'a range of neuroimaging data.',

@@ -1934,6 +1934,7 @@ class Dataset(pd.DataFrame):
                               _get_next_ind)
 
     from ._plotting import (plot,
+                            plots,
                             nan_info,
                             _cont_info,
                             _cat_info,

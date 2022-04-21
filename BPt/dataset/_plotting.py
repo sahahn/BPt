@@ -26,6 +26,41 @@ _plot_docs['decode_values'] = '''decode_values : bool, optional
 '''
 
 
+def _show_values(axs, count=True, space=0):
+    '''code from https://www.statology.org/seaborn-barplot-show-values/'''
+
+    def _single(ax):
+
+        longest = 0
+
+        for p in ax.patches:
+            _x = p.get_x() + p.get_width() + float(space)
+            _y = p.get_y() + p.get_height() - (p.get_height()*0.5)
+
+            if count:
+                value = f'{int(p.get_width())}'
+            else:
+                value = f'{p.get_width():.2f}'
+
+            # Keep track of longest label
+            if len(value) > longest:
+                longest = len(value)
+
+            ax.text(_x, _y, value, ha="left")
+
+        # Scale x lim a bit to compensate for adding extra text
+        # Specifically by longest value
+        scale =  1  + (longest / 100)
+        ax.set_xlim([scale*x for x in ax.get_xlim()])
+
+    if isinstance(axs, np.ndarray):
+        for ax in axs:
+            _single(ax)
+
+    else:
+        _single(axs)
+
+
 def nan_info(self, scope='all'):
 
     # Get data based on passed scope
@@ -364,7 +399,6 @@ def summary(self, scope,
 
     return cont_info_df, cat_info_df
 
-
 @doc(**_plot_docs)
 def plot(self, scope,
          subjects='all',
@@ -373,7 +407,9 @@ def plot(self, scope,
          count=True,
          show=True,
          reduce_func=np.mean,
-         n_jobs=-1):
+         n_jobs=-1,
+         axes=None,
+         ax=None):
     '''This function creates plots for each of the passed
     columns (as specified by scope) seperately.
 
@@ -405,7 +441,7 @@ def plot(self, scope,
 
             default = True
 
-    show : bool, optional
+    show : bool or 'default', optional
         If plt.show() from matplotlib should
         be called after plotting each column within
         the passed scope. You will typically
@@ -419,13 +455,34 @@ def plot(self, scope,
         and you can make changes to the figure
         via matplotlib's global state system.
 
+        Note: If axes or ax is passed as non-null,
+        then default swaps to False. Otherwise default
+        is True.
+
         ::
 
-            default = True
+            default = 'default'
 
     {reduce_func}
 
     {n_jobs}
+
+    axes : list of Axes or None, optional
+        Can optionally pass a list of axes in which
+        to add each  plot to. By default plot each seperate
+
+        ::
+
+            default = None
+
+    ax : Axes or None, optional
+        Simmilar to axes, but in the case of only
+        plotting a single column, this parameter can also be
+        used.
+
+        ::
+
+            default = None
 
     Examples
     ---------
@@ -451,44 +508,185 @@ def plot(self, scope,
     # Get cols will call check scope.
     cols = self.get_cols(scope)
 
+    # Handle axes / ax / show defalt
+    if axes is None:
+        axes = [None for _ in range(len(cols))]
+    elif show == 'default':
+        show = False
+
+    if ax is not None:
+        axes = [ax]
+        
+        if show == 'default':
+            show = False
+
+    # If show still default, set to True
+    if show == 'default':
+        show = True
+
     # Grab subjs to plot
     subjs = self.get_subjects(subjects, return_as='flat index')
 
     # Plot each column
-    for col in cols:
-        self._plot_col(col=col, subjs=subjs, **plot_args)
+    for col, ax in zip(cols, axes):
+        self._plot_col(col=col, subjs=subjs, ax=ax, **plot_args)
 
+
+@doc(**_plot_docs)
+def plots(self, scope,
+          subjects='all',
+          ncols=3,
+          figsize='default',
+          cut=0, decode_values=True,
+          count=True, show=True,
+          reduce_func=np.mean, n_jobs=-1):
+    '''This function creates a multi-figure plot containing all
+    of the passed columns (as specified by scope) in their own axes.
+
+    Parameters
+    -----------
+    {scope}
+
+    {subjects}
+
+    ncols : int, optional
+        Number of columns to plot by.
+
+        ::
+
+            default =  3
+
+    figsize : 'default' or tuple, optional
+        The size of the subplot to initialize.
+
+        Default will try to scale to number of rows and cols
+
+        ::
+
+            default = 'default'
+
+    {decode_values}
+
+    cut : float, optional
+        Only for plotting non-categorical variables.
+        Factor, multiplied by the smoothing bandwidth,
+        that determines how far the evaluation grid
+        extends past the extreme datapoints.
+        When set to 0, truncate the curve at the data limits.
+
+        ::
+
+            default = 0
+
+    count : bool, optional
+        Only for plotting categorical variables.
+        If True, then display the counts, if
+        False, then display the frequency out of 1.
+
+        ::
+
+            default = True
+
+    show : bool, optional
+        If plt.show() from matplotlib should
+        be called after plotting each column within
+        the passed scope. You will typically
+        want this parameter to be the default True,
+        as when plotting multiple columns, they might
+        otherwise overlap.
+
+        If False, return (fig, axes), otherwise
+        if True, return None.
+
+        ::
+
+            default = True
+
+    {reduce_func}
+
+    {n_jobs}
+
+    Returns
+    -----------
+    fig, axes : Figure and Axes or None
+        If show is True, None is returned, otherwise
+        the subplot figure + its Axes are returned.
+
+    Examples
+    ---------
+    This example shows plotting a simple collage over three fake features.
+
+    .. plot::
+        :context: close-figs
+
+        data = bp.Dataset([[1, 2, 3], [2,  2, 2], [3, 3, 3]], columns=['f1', 'f2', 'f3'])
+        data.plots(scope='all')
+    '''
+
+    # Fix show False
+    plot_args = {'cut': cut,
+                 'decode_values': decode_values,
+                 'count': count,
+                 'show': False,
+                 'reduce_func': reduce_func,
+                 'n_jobs': n_jobs}
+    
+    # Get cols + subjs
+    cols = self.get_cols(scope)
+    subjs = self.get_subjects(subjects, return_as='flat index')
+
+    # Determine n_rows + figsize
+    if len(cols) == 1:
+        nrows = 1
+    else:
+        nrows = (len(cols) // ncols) + (len(cols) % ncols)
+
+    if figsize == 'default':
+        figsize =  (8 * ncols, 6 * nrows)
+    
+    # Init subplots
+    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
+
+    # Single figure case
+    if nrows == 1 and ncols == 1:
+        axes = np.array([axes])
+
+    # Plot each column
+    for col, ax in zip(cols, axes.reshape(-1)):
+        self._plot_col(col=col, subjs=subjs, ax=ax, **plot_args)
+
+    # Set any remainder blank
+    for ax in axes.reshape(-1)[len(cols):]:
+        ax.axis('off')
+
+    # Lastly call show if needed
+    if show:
+        plt.show()
+    else:
+        return fig, axes
+        
 
 def _plot_col(self, col, subjs,
-              print_info=True, **plot_args):
+              print_info=True, ax=None,
+              **plot_args):
 
     # If categorical
     if 'category' in self.scopes[col]:
         return self._plot_category(col=col,
                                    subjs=subjs,
                                    print_info=print_info,
+                                   ax=ax,
                                    **plot_args)
 
     # Otherwise float
-    try:
-        return self._plot_float(col=col, subjs=subjs,
-                                print_info=print_info, **plot_args)
-
-    # If type error when plotting float, try category instead
-    except TypeError:
-
-        # Clear previous
-        plt.clf()
-        self._print('Failed plotting as float, trying as categorical')
-
-        # Then try plot as category
-        return self._plot_category(col=col,
-                                   subjs=subjs,
-                                   print_info=print_info,
-                                   **plot_args)
+    return self._plot_float(col=col, subjs=subjs,
+                            print_info=print_info,
+                            ax=ax, **plot_args)
 
 
-def _plot_float(self, col, subjs, print_info=True, **plot_args):
+def _plot_float(self, col, subjs,
+                print_info=True, ax=None,
+                **plot_args):
 
     # Get values to plot
     values, info = self._get_plot_values(col, subjs,
@@ -496,9 +694,11 @@ def _plot_float(self, col, subjs, print_info=True, **plot_args):
                                          **plot_args)
 
     # Plot values
-    sns.kdeplot(values, cut=plot_args['cut'])
-    plt.xlabel('Values')
-    plt.title(str(col) + ' Distribution')
+    axes = sns.kdeplot(values, cut=plot_args['cut'], ax=ax)
+
+    # Set axes labels
+    axes.set_xlabel('Values')
+    axes.set_title(str(col) + ' Distribution')
 
     if plot_args['show']:
         plt.show()
@@ -506,7 +706,8 @@ def _plot_float(self, col, subjs, print_info=True, **plot_args):
     return info
 
 
-def _plot_category(self, col, subjs, print_info=True, **plot_args):
+def _plot_category(self, col, subjs, print_info=True,
+                   ax=None, **plot_args):
 
     # Get plot values
     values, info = self._get_plot_values(col, subjs,
@@ -527,25 +728,27 @@ def _plot_category(self, col, subjs, print_info=True, **plot_args):
     # Reset index
     counts = counts.reset_index()
 
-    # Plot
-    g = sns.catplot(x=col, y='index', data=counts,
-                kind='bar', orient='h', ci=None)
+    # Plot w/ axes level box plot arg
+    axes = sns.barplot(x=col, y="index", data=counts,
+                       orient='h', ci=None, ax=ax)
 
     # Add the raw value also as label
     # might fail w/ some library versions, if so, just skip
     try:
-        ax = g.facet_axis(0, 0)
-        ax.bar_label(ax.containers[0])
+        _show_values(axes, count=plot_args['count'])
     except AttributeError:
         pass
 
+    # Set axes label
     if plot_args['count']:
-        plt.xlabel('Counts')
+        axes.set_xlabel('Counts')
     else:
-        plt.xlabel('Frequency')
+        axes.set_xlabel('Frequency')
 
-    plt.ylabel('Categories')
-    plt.title(str(col) + ' Distribution')
+    axes.set_ylabel('Categories')
+
+    # Add title w/ col name + distribution tag
+    axes.set_title(str(col) + ' Distribution')
 
     # If show, call show
     if plot_args['show']:
@@ -580,13 +783,13 @@ def _get_plot_values(self, col, subjs,
 
 def _print_plot_info(self, col, info):
 
-    self._print(str(col) + ':', str(info['n']), 'rows', end='', level=1)
+    self._print(str(col) + ':', str(info['n']), 'rows', end='', level=2)
 
     if info['n_nan'] > 0:
         self._print(' (' + str(info['n_nan']), 'NaN)',
-                    end='', level=1)
+                    end='', level=2)
 
-    self._print(level=1)
+    self._print(level=2)
 
 
 @doc(**_file_docs, subjects=_shared_docs['subjects'],
@@ -677,7 +880,7 @@ def _plot_cat_cat(self, col1, col2, subjs, **plot_args):
 
     # Get overlap
     overlap = values1.index.intersection(values2.index)
-    self._print('Plotting', len(overlap), 'overlap valid subjects.', level=1)
+    self._print('Plotting', len(overlap), 'overlap valid subjects.', level=2)
 
     values1 = values1.loc[overlap]
     values2 = values2.loc[overlap]
@@ -701,7 +904,7 @@ def _plot_float_float(self, col1, col2, subjs, **plot_args):
 
     # Get overlap
     overlap = values1.index.intersection(values2.index)
-    self._print('Plotting', len(overlap), 'overlap valid subjects', level=1)
+    self._print('Plotting', len(overlap), 'overlap valid subjects', level=2)
 
     values1 = values1.loc[overlap]
     values2 = values2.loc[overlap]
@@ -718,7 +921,7 @@ def _plot_cat_float(self, cat_col, float_col, subjs, **plot_args):
 
     # Get overlap
     overlap = cat_values.index.intersection(float_values.index)
-    self._print('Plotting', len(overlap), 'overlap valid subjects.', level=1)
+    self._print('Plotting', len(overlap), 'overlap valid subjects.', level=2)
 
     sns.displot(x=float_values.loc[overlap], hue=cat_values.loc[overlap],
                 kind="kde")

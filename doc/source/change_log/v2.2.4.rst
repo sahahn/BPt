@@ -1,0 +1,10 @@
+.. _whatsnew_224:
+
+.. currentmodule:: BPt
+
+Version 2.2.4
+---------------
+
+- Updates to plotting
+  - New :func:`Dataset.plots` for making easy collages of figure plots
+  - the base :func:`Dataset.plot` now uses axes level plots from seaborn.

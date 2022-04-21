@@ -8,9 +8,17 @@ def read_csv(*args, **kwargs):
     :func:`pandas.read_csv` then casts to :class:`Dataset`.
 
     This method is just a helper wrapper function.
+
+    You can also pass args for init'ing the Dataset, like roles or targets.
     '''
 
-    return Dataset(pd.read_csv(*args, **kwargs))
+    # Extract any dataset specific init args
+    dataset_kwargs = {}
+    for arg in ['roles', 'scopes', 'targets', 'non_inputs', 'verbose']:
+        if arg in kwargs:
+            dataset_kwargs[arg] = kwargs.pop(arg)
+    
+    return Dataset(pd.read_csv(*args, **kwargs), **dataset_kwargs)
 
 
 def _is_equiv(a, b):

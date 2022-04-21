@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>BPt.Dataset.split_by &#8212; BPt 2.2.2 documentation</title>
+    <title>BPt.Dataset.split_by &#8212; BPt 2.2.3 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -219,6 +219,16 @@
    <li class="toctree-l2">
     <a class="reference internal" href="BPt.Dataset.get_Xy.html">
      BPt.Dataset.get_Xy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_permuted_Xy.html">
+     BPt.Dataset.get_permuted_Xy
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     BPt.Dataset.split_by
     </a>
    </li>
    <li class="toctree-l2">
@@ -662,16 +672,6 @@
      BPt.cross_val_score
     </a>
    </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="BPt.BPtEvaluator.html">
-     BPt.BPtEvaluator
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="BPt.BPtEvaluatorSubset.html">
-     BPt.BPtEvaluatorSubset
-    </a>
-   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -766,8 +766,42 @@
 <h1>BPt.Dataset.split_by<a class="headerlink" href="#bpt-dataset-split-by" title="Permalink to this headline">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="BPt.Dataset.split_by">
-<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">split_by</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decode_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/dataset.py#L1641-L1662"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.split_by" title="Permalink to this definition">#</a></dt>
-<dd><p>TODO add docs</p>
+<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">split_by</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decode_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/dataset.py#L1769-L1821"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.split_by" title="Permalink to this definition">#</a></dt>
+<dd><p>This method allows splitting the dataset into sub datasets
+by the different unique values of a passed scope. A dictionary is
+returned with the different splits. Note this method is simmilar to
+the native <code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.DataFrame.groupby()</span></code>, but difers slightly in practice.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a></span></dt><dd><div class="line-block">
+<div class="line">Any valid BPt style <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> used to select the combinition of
+columns, or a single column, in which the dataset should be
+split by. If multiple columns, the unique overlap
+will be created, and that used to split by.</div>
+</div>
+<div class="line-block">
+<div class="line">Note that any column(s) selected should be categorical.</div>
+</div>
+</dd>
+<dt><strong>decode_values</strong><span class="classifier">bool, optional</span></dt><dd><p>Boolean argument, if True, then when splitting
+try to use the original value names before any encoding
+for the names in the returned dictionary.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl>
+<dt><strong>splits</strong><span class="classifier">dict of <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a></span></dt><dd><p>Returned from this method is a dictionary of
+splits from the original Dataset, where each element
+is index’ed by the unique value.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

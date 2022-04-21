@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>BPt.evaluate &#8212; BPt 2.2.2 documentation</title>
+    <title>BPt.evaluate &#8212; BPt 2.2.3 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -219,6 +219,16 @@
    <li class="toctree-l2">
     <a class="reference internal" href="BPt.Dataset.get_Xy.html">
      BPt.Dataset.get_Xy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_permuted_Xy.html">
+     BPt.Dataset.get_permuted_Xy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.split_by.html">
+     BPt.Dataset.split_by
     </a>
    </li>
    <li class="toctree-l2">
@@ -662,16 +672,6 @@
      BPt.cross_val_score
     </a>
    </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="BPt.BPtEvaluator.html">
-     BPt.BPtEvaluator
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="BPt.BPtEvaluatorSubset.html">
-     BPt.BPtEvaluatorSubset
-    </a>
-   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -766,7 +766,7 @@
 <h1>BPt.evaluate<a class="headerlink" href="#bpt-evaluate" title="Permalink to this headline">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="BPt.evaluate">
-<span class="sig-prename descclassname"><span class="pre">BPt.</span></span><span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">problem_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_preds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_estimators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_cv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decode_feat_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mute_warnings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">extra_params</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/funcs.py#L971-L1199"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.evaluate" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">BPt.</span></span><span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">problem_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_preds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_estimators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_cv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_data_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decode_feat_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mute_warnings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">extra_params</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/funcs.py#L971-L1210"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.evaluate" title="Permalink to this definition">#</a></dt>
 <dd><p>This method is used to evaluate a model pipeline
 with cross-validation.</p>
 <dl class="field-list">
@@ -846,8 +846,8 @@ evaluation splits.</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>store_preds</strong><span class="classifier">bool, optional</span></dt><dd><p>If set to True, the returned <a class="reference internal" href="BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a> will store
-the saved predictions under <a class="reference internal" href="BPt.BPtEvaluator.preds.html#BPt.BPtEvaluator.preds" title="BPt.BPtEvaluator.preds"><code class="xref py py-data docutils literal notranslate"><span class="pre">BPt.BPtEvaluator.preds</span></code></a>.
+<dt><strong>store_preds</strong><span class="classifier">bool, optional</span></dt><dd><p>If set to True, the returned <code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code> will store
+the saved predictions under <code class="xref py py-data docutils literal notranslate"><span class="pre">BPt.EvalResults.preds</span></code>.
 This includes a saved copy of the true target values as well.</p>
 <p>If False, the <cite>preds</cite> parameter will be empty and it
 will not be possible to use some related functions.</p>
@@ -855,9 +855,9 @@ will not be possible to use some related functions.</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>store_estimators</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, then the returned <a class="reference internal" href="BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a>
+<dt><strong>store_estimators</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, then the returned <code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code>
 will store the fitted estimators from evaluation
-under <a class="reference internal" href="BPt.BPtEvaluator.estimators.html#BPt.BPtEvaluator.estimators" title="BPt.BPtEvaluator.estimators"><code class="xref py py-data docutils literal notranslate"><span class="pre">BPt.BPtEvaluator.estimators</span></code></a>.</p>
+under <code class="xref py py-data docutils literal notranslate"><span class="pre">BPt.EvalResults.estimators</span></code>.</p>
 <p>If False, the <cite>estimators</cite> parameter will be empty,
 and it will not be possible to access measures of
 feature importance as well.</p>
@@ -865,21 +865,28 @@ feature importance as well.</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>store_timing</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, then the returned <a class="reference internal" href="BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a>
+<dt><strong>store_timing</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, then the returned <code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code>
 will store the time it took to fit and score the pipeline
-under <a class="reference internal" href="BPt.BPtEvaluator.timing.html#BPt.BPtEvaluator.timing" title="BPt.BPtEvaluator.timing"><code class="xref py py-data docutils literal notranslate"><span class="pre">BPt.BPtEvaluator.timing</span></code></a>.</p>
+under <code class="xref py py-data docutils literal notranslate"><span class="pre">BPt.EvalResults.timing</span></code>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>store_cv</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, then the returned <a class="reference internal" href="BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a>
+<dt><strong>store_cv</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, then the returned <code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code>
 will store a copy of the exact CV splitter object
 used during evaluation.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>decode_feat_names</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, then the <a class="reference internal" href="BPt.BPtEvaluator.feat_names.html#BPt.BPtEvaluator.feat_names" title="BPt.BPtEvaluator.feat_names"><code class="xref py py-data docutils literal notranslate"><span class="pre">BPt.BPtEvaluator.feat_names</span></code></a>
+<dt><strong>store_data_ref</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, then will store a shallow copy of the dataset used
+in evaluate, that can be re-used to calculate different post
+evaluate attributes.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>decode_feat_names</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, then the <code class="xref py py-data docutils literal notranslate"><span class="pre">BPt.EvalResults.feat_names</span></code>
 as computed during evaluation will try to use the original
 values as first loaded to inform their naming. Note that
 this is only relevant assuming that <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> was
@@ -933,7 +940,7 @@ in the passed problem_spec. Or for example:</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl>
-<dt><strong>evaluator</strong><span class="classifier"><a class="reference internal" href="BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a></span></dt><dd><p>Returns an instance of the <a class="reference internal" href="BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a>
+<dt><strong>evaluator</strong><span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code></span></dt><dd><p>Returns an instance of the <code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code>
 class. This object stores a wealth of information,
 including the scores from this evaluation as well
 as other utilities including functions for calculating

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>BPt.Dataset.get_scopes &#8212; BPt 2.2.2 documentation</title>
+    <title>BPt.Dataset.get_scopes &#8212; BPt 2.2.3 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -219,6 +219,16 @@
    <li class="toctree-l2">
     <a class="reference internal" href="BPt.Dataset.get_Xy.html">
      BPt.Dataset.get_Xy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_permuted_Xy.html">
+     BPt.Dataset.get_permuted_Xy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.split_by.html">
+     BPt.Dataset.split_by
     </a>
    </li>
    <li class="toctree-l2">
@@ -662,16 +672,6 @@
      BPt.cross_val_score
     </a>
    </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="BPt.BPtEvaluator.html">
-     BPt.BPtEvaluator
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="BPt.BPtEvaluatorSubset.html">
-     BPt.BPtEvaluatorSubset
-    </a>
-   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -766,7 +766,7 @@
 <h1>BPt.Dataset.get_scopes<a class="headerlink" href="#bpt-dataset-get-scopes" title="Permalink to this headline">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="BPt.Dataset.get_scopes">
-<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">get_scopes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/dataset.py#L665-L680"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.get_scopes" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">get_scopes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/dataset.py#L667-L682"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.get_scopes" title="Permalink to this definition">#</a></dt>
 <dd><p>This returns the up to date scopes for the
 Dataset. Note that scopes can be accessed through
 self.scopes, but this function is reccomended instead,

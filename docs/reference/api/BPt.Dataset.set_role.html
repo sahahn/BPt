@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>BPt.Dataset.set_role &#8212; BPt 2.2.2 documentation</title>
+    <title>BPt.Dataset.set_role &#8212; BPt 2.2.3 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -219,6 +219,16 @@
    <li class="toctree-l2">
     <a class="reference internal" href="BPt.Dataset.get_Xy.html">
      BPt.Dataset.get_Xy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_permuted_Xy.html">
+     BPt.Dataset.get_permuted_Xy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.split_by.html">
+     BPt.Dataset.split_by
     </a>
    </li>
    <li class="toctree-l2">
@@ -662,16 +672,6 @@
      BPt.cross_val_score
     </a>
    </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="BPt.BPtEvaluator.html">
-     BPt.BPtEvaluator
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="BPt.BPtEvaluatorSubset.html">
-     BPt.BPtEvaluatorSubset
-    </a>
-   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -766,7 +766,7 @@
 <h1>BPt.Dataset.set_role<a class="headerlink" href="#bpt-dataset-set-role" title="Permalink to this headline">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="BPt.Dataset.set_role">
-<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">set_role</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/dataset.py#L496-L557"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.set_role" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">set_role</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/dataset.py#L498-L559"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.set_role" title="Permalink to this definition">#</a></dt>
 <dd><p>This method is used to set a role for
 either a single column or multiple, as set
 through the scope parameter. See <a class="reference internal" href="../../user_guide/role.html#role"><span class="std std-ref">Role</span></a>

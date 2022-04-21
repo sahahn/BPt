@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>BPt.Dataset.get_Xy &#8212; BPt 2.2.2 documentation</title>
+    <title>BPt.Dataset.get_Xy &#8212; BPt 2.2.3 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -219,6 +219,16 @@
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
      BPt.Dataset.get_Xy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_permuted_Xy.html">
+     BPt.Dataset.get_permuted_Xy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.split_by.html">
+     BPt.Dataset.split_by
     </a>
    </li>
    <li class="toctree-l2">
@@ -662,16 +672,6 @@
      BPt.cross_val_score
     </a>
    </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="BPt.BPtEvaluator.html">
-     BPt.BPtEvaluator
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="BPt.BPtEvaluatorSubset.html">
-     BPt.BPtEvaluatorSubset
-    </a>
-   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -766,7 +766,7 @@
 <h1>BPt.Dataset.get_Xy<a class="headerlink" href="#bpt-dataset-get-xy" title="Permalink to this headline">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="BPt.Dataset.get_Xy">
-<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">get_Xy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">problem_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">problem_spec_params</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/dataset.py#L1558-L1639"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.get_Xy" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">get_Xy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">problem_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">problem_spec_params</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/dataset.py#L1559-L1646"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.get_Xy" title="Permalink to this definition">#</a></dt>
 <dd><p>This function is used to get a sklearn-style
 grouping of input data (X) and target data (y)
 from the Dataset as according to a passed problem_spec.</p>
@@ -776,31 +776,37 @@ returned X, y here.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>problem_spec</strong><span class="classifier"><a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a> or ‘default’, optional</span></dt><dd><p>This argument accepts an instance of the
+<dt><strong>problem_spec</strong><span class="classifier"><a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a> or ‘default’, optional</span></dt><dd><div class="line-block">
+<div class="line">This argument accepts an instance of the
 params class <a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>.
 This object is essentially a wrapper around commonly used
 parameters needs to define the context
 the model pipeline should be evaluated in.
 It includes parameters like problem_type, scorer, n_jobs,
-random_state, etc…
-See <a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a> for more information
-and for how to create an instance of this object.</p>
-<p>If left as ‘default’, then will initialize a
-ProblemSpec with default params.</p>
+random_state, etc…</div>
+</div>
+<div class="line-block">
+<div class="line">If left as ‘default’, then will initialize a
+ProblemSpec with default params.</div>
+</div>
+<div class="line-block">
+<div class="line">See <a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a> for more information
+and for how to create an instance of this object.</div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>
 </pre></div>
 </div>
 </dd>
 <dt><strong>problem_spec_params</strong><span class="classifier"><a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a> params, optional</span></dt><dd><p>You may also pass any valid parameter value pairs here,
 e.g.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">get_Xy</span><span class="p">(</span><span class="n">problem_spec</span><span class="o">=</span><span class="n">problem_spec</span><span class="p">,</span> <span class="n">problem_type</span> <span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">get_Xy</span><span class="p">(</span><span class="n">problem_spec</span><span class="o">=</span><span class="n">problem_spec</span><span class="p">,</span> <span class="n">problem_type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Any parameters passed here will override the original
 value in problem spec. This can be useful when using all default
 values for problem spec except for one, e.g., you just want
 to change random_state.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">get_Xy</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">get_Xy</span><span class="p">(</span><span class="n">problem_spec</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd>
@@ -809,10 +815,14 @@ to change random_state.</p>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>X</strong><span class="classifier">pandas DataFrame</span></dt><dd><p>DataFrame with the input data and columns as
-specified by the passed problem_spec.</p>
+specified by the passed problem_spec.
+Note: the index will be sorted in
+identicially between X and y.</p>
 </dd>
 <dt><strong>y</strong><span class="classifier">pandas Series</span></dt><dd><p>Series with the the target values as requested
-by the passed problem_spec.</p>
+by the passed problem_spec.
+Note: the index will be sorted in
+identicially between X and y.</p>
 </dd>
 </dl>
 </dd>

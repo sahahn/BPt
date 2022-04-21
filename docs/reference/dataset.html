@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Dataset &#8212; BPt 2.2.2 documentation</title>
+    <title>Dataset &#8212; BPt 2.2.3 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -219,6 +219,16 @@
    <li class="toctree-l2">
     <a class="reference internal" href="api/BPt.Dataset.get_Xy.html">
      BPt.Dataset.get_Xy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="api/BPt.Dataset.get_permuted_Xy.html">
+     BPt.Dataset.get_permuted_Xy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="api/BPt.Dataset.split_by.html">
+     BPt.Dataset.split_by
     </a>
    </li>
    <li class="toctree-l2">
@@ -662,16 +672,6 @@
      BPt.cross_val_score
     </a>
    </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="api/BPt.BPtEvaluator.html">
-     BPt.BPtEvaluator
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="api/BPt.BPtEvaluatorSubset.html">
-     BPt.BPtEvaluatorSubset
-    </a>
-   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -864,6 +864,12 @@
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.get_Xy.html#BPt.Dataset.get_Xy" title="BPt.Dataset.get_Xy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.get_Xy</span></code></a>([problem_spec])</p></td>
 <td><p>This function is used to get a sklearn-style grouping of input data (X) and target data (y) from the Dataset as according to a passed problem_spec.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.get_permuted_Xy.html#BPt.Dataset.get_permuted_Xy" title="BPt.Dataset.get_permuted_Xy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.get_permuted_Xy</span></code></a>([problem_spec, ...])</p></td>
+<td><p>This method is otherwise identical  to <a class="reference internal" href="api/BPt.Dataset.get_Xy.html#BPt.Dataset.get_Xy" title="BPt.Dataset.get_Xy"><code class="xref py py-func docutils literal notranslate"><span class="pre">Dataset.get_Xy()</span></code></a>, except a version of X, y where the values in y are permuted is returned.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.split_by.html#BPt.Dataset.split_by" title="BPt.Dataset.split_by"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.split_by</span></code></a>(scope[, decode_values])</p></td>
+<td><p>This method allows splitting the dataset into sub datasets by the different unique values of a passed scope.</p></td>
 </tr>
 </tbody>
 </table>

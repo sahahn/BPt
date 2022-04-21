@@ -33,6 +33,8 @@ Base
    Dataset.copy
    Dataset.auto_detect_categorical
    Dataset.get_Xy
+   Dataset.get_permuted_Xy
+   Dataset.split_by
 
 Encoding
 ~~~~~~~~~~~~~~~~~

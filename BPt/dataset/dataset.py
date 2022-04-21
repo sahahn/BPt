@@ -1184,7 +1184,6 @@ class Dataset(pd.DataFrame):
         # Checks the subset of scope columns if any NaN
         # and will only return the subjects where there are no NaN
         return self[~pd.isnull(self[cols][:]).any(axis=1)].index
-        
 
     def auto_detect_categorical(self, scope='all', obj_thresh=30,
                                 all_thresh=None, inplace=False):
@@ -1344,7 +1343,7 @@ class Dataset(pd.DataFrame):
         -------------
         mapper : dict-like or function, optional
             Dict-like or function transformations to apply to that
-            axis’ values. Use either mapper and axis to specify
+            axis' values. Use either mapper and axis to specify
             the axis to target with mapper, or index and columns.
 
             ::
@@ -1768,7 +1767,38 @@ class Dataset(pd.DataFrame):
                           blocks=blocks, within_grp=within_grp)
 
     def split_by(self, scope, decode_values=True):
-        '''TODO add docs'''
+        '''This method allows splitting the dataset into sub datasets
+        by the different unique values of a passed scope. A dictionary is
+        returned with the different splits. Note this method is simmilar to
+        the native :func:`pandas.DataFrame.groupby`, but difers slightly in practice.
+
+        Parameters
+        -----------
+        scope : :ref:`Scope`
+            | Any valid BPt style :ref:`Scope` used to select the combinition of
+              columns, or a single column, in which the dataset should be
+              split by. If multiple columns, the unique overlap
+              will be created, and that used to split by.
+
+            | Note that any column(s) selected should be categorical.
+
+        decode_values : bool, optional
+            Boolean argument, if True, then when splitting
+            try to use the original value names before any encoding
+            for the names in the returned dictionary.
+
+            ::
+
+                default = True
+
+        Returns
+        --------
+        splits : dict of :class:`Dataset`
+            Returned from this method is a dictionary of
+            splits from the original Dataset, where each element
+            is index'ed by the unique value.
+                
+        '''
 
         # Get the passed columns
         split_cols = self.get_cols(scope)

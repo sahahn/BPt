@@ -950,6 +950,8 @@ class EvalResults():
             saved_attrs.append('estimators')
             avaliable_methods.append('get_X_transform_df')
             avaliable_methods.append('get_inverse_fis')
+            avaliable_methods.append('run_permutation_test')
+
         if self.preds is not None:
             saved_attrs.append('preds')
             avaliable_methods.append('get_preds_dfs')

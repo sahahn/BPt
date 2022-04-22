@@ -6,7 +6,7 @@ Feat Selectors
 
 Different base obj choices for the :class:`FeatSelector<BPt.FeatSelector>` are shown below
 The exact str indicator, as passed to the `obj` param is represented by the sub-heading (within "")
-The avaliable feat selectors are further broken down by which can work with different problem_types.
+The available feat selectors are further broken down by which can work with different problem_types.
 Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
 
 binary

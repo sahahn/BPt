@@ -4,7 +4,7 @@ from ..helpers import proc_type_dep_str
 from ...util import conv_to_list
 from joblib import wrap_non_picklable_objects
 
-AVALIABLE = {
+AVAILABLE = {
     'binary': {
         'accuracy': 'accuracy',
         'roc_auc': 'roc_auc',
@@ -60,12 +60,12 @@ AVALIABLE = {
         'mean_gamma_deviance': 'neg_mean_gamma_deviance',
     },
 }
-AVALIABLE['categorical'] = AVALIABLE['binary'].copy()
+AVAILABLE['categorical'] = AVAILABLE['binary'].copy()
 
 # Set defaults
-AVALIABLE['binary']['default'] = 'roc_auc'
-AVALIABLE['regression']['default'] = 'r2'
-AVALIABLE['categorical']['default'] = 'roc_auc_ovr'
+AVAILABLE['binary']['default'] = 'roc_auc'
+AVAILABLE['regression']['default'] = 'r2'
+AVAILABLE['categorical']['default'] = 'roc_auc_ovr'
 
 SCORERS.update({
 
@@ -94,8 +94,8 @@ def get_scorer_from_str(scorer_str):
 def get_scorers_by_type(problem_type):
 
     objs = []
-    for scorer_str in AVALIABLE[problem_type]:
-        conv = AVALIABLE[problem_type][scorer_str]
+    for scorer_str in AVAILABLE[problem_type]:
+        conv = AVAILABLE[problem_type][scorer_str]
         score_func = get_scorer_from_str(conv)._score_func
         objs.append((scorer_str, score_func))
 
@@ -105,7 +105,7 @@ def get_scorers_by_type(problem_type):
 def _proc_scorer(scorer_str, problem_type, cnt=0):
 
     if isinstance(scorer_str, str):
-        name = proc_type_dep_str(scorer_str, AVALIABLE, problem_type)
+        name = proc_type_dep_str(scorer_str, AVAILABLE, problem_type)
         return get_scorer_from_str(name), name, cnt
     else:
         name = 'Custom Scorer ' + str(cnt)
@@ -153,7 +153,7 @@ def process_scorer(scorer_str, problem_type):
 
     # If passed as str
     if isinstance(scorer_str, str):
-        scorer_str = proc_type_dep_str(scorer_str, AVALIABLE, problem_type)
+        scorer_str = proc_type_dep_str(scorer_str, AVAILABLE, problem_type)
         return get_scorer_from_str(scorer_str)
 
     # Otherwise assume function and wrap

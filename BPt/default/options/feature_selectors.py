@@ -13,7 +13,7 @@ from numpy.random import RandomState
 from ..params.Params import Array
 
 
-AVALIABLE = {
+AVAILABLE = {
         'binary': {
                 'univariate selection c':
                 'univariate selection c',
@@ -34,7 +34,7 @@ AVALIABLE = {
         },
 }
 
-AVALIABLE['categorical'] = AVALIABLE['binary'].copy()
+AVAILABLE['categorical'] = AVAILABLE['binary'].copy()
 
 SELECTORS = {
     'univariate selection r': (SelectPercentile,
@@ -146,4 +146,4 @@ def get_feat_selector_and_params(feat_selector_str, extra_params, params,
             feat_selector_params)
 
 
-all_obj_keys = all_from_avaliable(AVALIABLE)
+all_obj_keys = all_from_avaliable(AVAILABLE)

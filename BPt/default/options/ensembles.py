@@ -7,7 +7,7 @@ from ...pipeline.ensemble_wrappers import (BPtStackingRegressor,
                                            BPtStackingClassifier,
                                            BPtVotingClassifier)
 
-AVALIABLE = {
+AVAILABLE = {
         'binary': {
             'basic ensemble': 'voting classifier',
             None: 'voting classifier',
@@ -46,7 +46,7 @@ try:
 
     from imblearn.ensemble import BalancedBaggingClassifier
 
-    AVALIABLE['binary']['balanced bagging'] = 'balanced bagging classifier'
+    AVAILABLE['binary']['balanced bagging'] = 'balanced bagging classifier'
 
     ENSEMBLES['balanced bagging classifier'] =\
         (BalancedBaggingClassifier, ['default'])
@@ -55,7 +55,7 @@ except ImportError:
     pass
 
 # Should be the same
-AVALIABLE['categorical'] = AVALIABLE['binary'].copy()
+AVAILABLE['categorical'] = AVAILABLE['binary'].copy()
 
 
 def get_ensemble_and_params(ensemble_str, extra_params, params,
@@ -71,4 +71,4 @@ def get_ensemble_and_params(ensemble_str, extra_params, params,
     return (ensemble, extra_ensemble_params), ensemble_params
 
 
-all_obj_keys = all_from_avaliable(AVALIABLE)
+all_obj_keys = all_from_avaliable(AVAILABLE)

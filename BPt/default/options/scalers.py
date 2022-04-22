@@ -6,8 +6,8 @@ from ...extensions.Scalers import Winsorizer
 
 
 # Scalers differs from models in that the types are not restricted
-# by a given problem type. Therefore no AVALIABLE dictionary is needed
-# all avaliable scalers are as indexed by SCALERS.
+# by a given problem type. Therefore no AVAILABLE dictionary is needed
+# all available scalers are as indexed by SCALERS.
 SCALERS = {
     'standard': (StandardScaler, ['base standard']),
 

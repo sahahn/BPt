@@ -485,10 +485,10 @@ class EvalResults():
         can be accessed by the key 'predict'. Values are stored as list
         corresponding to each evaluation fold.
 
-        In the case where other predict-like functions are avaliable, e.g.,
+        In the case where other predict-like functions are available, e.g.,
         in the case of a binary problem, where it may be desirable to
         see the predicted probability, then the those predictions
-        will be made avaliable under the name of the underlying predict
+        will be made available under the name of the underlying predict
         function. In this case, that is self.preds['predict_proba'].
         It will also store results from 'predict' as well.
 
@@ -942,7 +942,7 @@ class EvalResults():
             rep += f'± {score_rep(self.std_scores[key])}\n'
         rep += '\n'
 
-        # Show avaliable saved attrs
+        # Show available saved attrs
         saved_attrs = []
         avaliable_methods = ['to_pickle', 'compare']
 
@@ -991,7 +991,7 @@ class EvalResults():
             saved_attrs += ['cv']
 
         rep += 'Saved Attributes: ' + repr(saved_attrs) + '\n\n'
-        rep += 'Avaliable Methods: ' + repr(avaliable_methods) + '\n\n'
+        rep += 'Available Methods: ' + repr(avaliable_methods) + '\n\n'
 
         # Use custom display str, no need to show scorer.
         rep += 'Evaluated With:\n'
@@ -1002,7 +1002,7 @@ class EvalResults():
     def _estimators_check(self):
 
         if self.estimators is None:
-            raise RuntimeError('This method is not avaliable unless '
+            raise RuntimeError('This method is not available unless '
                                'evaluate is run with store_estimators=True!')
 
     def _dataset_check(self, dataset=None):
@@ -1048,7 +1048,7 @@ class EvalResults():
     def coef_(self):
         '''This attribute represents the mean `coef_` as
         a numpy array across all folds. This parameter will only
-        be avaliable if all estimators have a non null `coef_` parameter
+        be available if all estimators have a non null `coef_` parameter
         and each returns the same shape. See `fis_` for a more flexible
         version of this parameter that can handle when there
         are differing numbers of features.'''
@@ -1921,7 +1921,7 @@ class EvalResults():
                 default = None
 
         blocks : None, array, pd.Series or pd.DataFrame, optional
-            This parameter is only avaliable when the neurotool library is installed.
+            This parameter is only available when the neurotool library is installed.
             See: https://github.com/sahahn/neurotools
 
             This parameter represents the underlying exchangability-block

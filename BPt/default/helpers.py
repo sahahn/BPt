@@ -108,7 +108,7 @@ def proc_extra_params(extra_params, non_search_params, params=None):
     return non_search_params, params
 
 
-def proc_type_dep_str(in_strs, avaliable, problem_type):
+def proc_type_dep_str(in_strs, available, problem_type):
     '''Helper function to perform str correction on
     underlying problem type dependent input, e.g., for
     ensemble_types, and to update extra params
@@ -119,11 +119,11 @@ def proc_type_dep_str(in_strs, avaliable, problem_type):
         as_arr = False
         in_strs = [in_strs]
 
-    if not check_avaliable(in_strs, avaliable, problem_type):
+    if not check_avaliable(in_strs, available, problem_type):
         in_strs = proc_input(in_strs)
 
-        if not check_avaliable(in_strs, avaliable, problem_type):
-            raise RuntimeError(in_strs, 'are not avaliable for '
+        if not check_avaliable(in_strs, available, problem_type):
+            raise RuntimeError(in_strs, 'are not available for '
                                'this problem type.'
                                'This may be due to the requested object '
                                'being an optional dependency! Check to make '
@@ -131,7 +131,7 @@ def proc_type_dep_str(in_strs, avaliable, problem_type):
                                'installed '
                                'and that the passed str contains no typos!')
 
-    avaliable_by_type = get_a_by_type(avaliable, in_strs, problem_type)
+    avaliable_by_type = get_a_by_type(available, in_strs, problem_type)
     final_strs = [avaliable_by_type[in_str] for in_str in in_strs]
 
     if as_arr:
@@ -139,9 +139,9 @@ def proc_type_dep_str(in_strs, avaliable, problem_type):
     return final_strs[0]
 
 
-def get_a_by_type(avaliable, in_strs, problem_type):
+def get_a_by_type(available, in_strs, problem_type):
 
-    avaliable_by_type = avaliable[problem_type]
+    avaliable_by_type = available[problem_type]
 
     for s in in_strs:
         if 'Custom ' in s:
@@ -150,9 +150,9 @@ def get_a_by_type(avaliable, in_strs, problem_type):
     return avaliable_by_type
 
 
-def check_avaliable(in_strs, avaliable, problem_type):
+def check_avaliable(in_strs, available, problem_type):
 
-    avaliable_by_type = get_a_by_type(avaliable, in_strs, problem_type)
+    avaliable_by_type = get_a_by_type(available, in_strs, problem_type)
 
     check = np.array([m in avaliable_by_type for
                       m in in_strs]).all()
@@ -214,11 +214,11 @@ def get_possible_init_params(model):
         return pos_params['co_varnames']
 
 
-def all_from_avaliable(avaliable):
+def all_from_avaliable(available):
 
     a = set()
-    for pt in avaliable:
-        for key in avaliable[pt]:
+    for pt in available:
+        for key in available[pt]:
             a.add(key)
 
     return a
@@ -244,4 +244,4 @@ def coarse_any_obj_check(in_str):
     if proc_str not in all_keys:
         raise RuntimeError('Passed obj=' + str(in_str) + ' does not '
                            'correspond '
-                           'to any avaliable default options from BPt!')
+                           'to any available default options from BPt!')

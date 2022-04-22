@@ -268,10 +268,10 @@ predictions from every evaluate fold.</p>
 <p>The parameter preds is a dictionary, where raw predictions made
 can be accessed by the key ‘predict’. Values are stored as list
 corresponding to each evaluation fold.</p>
-<p>In the case where other predict-like functions are avaliable, e.g.,
+<p>In the case where other predict-like functions are available, e.g.,
 in the case of a binary problem, where it may be desirable to
 see the predicted probability, then the those predictions
-will be made avaliable under the name of the underlying predict
+will be made available under the name of the underlying predict
 function. In this case, that is self.preds[‘predict_proba’].
 It will also store results from ‘predict’ as well.</p>
 <p>self.preds also will store under ‘y_true’ a list, where

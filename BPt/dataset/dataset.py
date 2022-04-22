@@ -85,10 +85,10 @@ _file_docs['n_jobs'] = '''n_jobs : int, optional
             In that case, this specifies the number of cores
             to use in loading and applying the reduce_func to each
             data file. This can provide a significant speed up when
-            passed the number of avaliable cores, but can sometimes
+            passed the number of available cores, but can sometimes
             be memory intensive depending on the underlying size of the file.
 
-            If set to -1, will try to automatically use all avaliable cores.
+            If set to -1, will try to automatically use all available cores.
 
             ::
 
@@ -1685,7 +1685,7 @@ class Dataset(pd.DataFrame):
                 default = None
 
         blocks : None, array, pd.Series or pd.DataFrame, optional
-            This parameter is only avaliable when the neurotool library is installed.
+            This parameter is only available when the neurotool library is installed.
             See:  https://github.com/sahahn/neurotools
 
             This parameter represents the underlying exchangability-block

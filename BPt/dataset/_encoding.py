@@ -622,7 +622,7 @@ def nan_to_class(self, scope='category', inplace=False):
         non_nan_subjects = all_values[~all_values.isna()].index
         values = all_values.loc[non_nan_subjects]
 
-        # Add nan class as next avaliable
+        # Add nan class as next available
         nan_class = np.max(values.astype(int)) + 1
 
         # Get a copy of the new column

@@ -23,7 +23,7 @@ import warnings
 from ..helpers import get_obj_and_params, all_from_avaliable
 
 
-AVALIABLE = {
+AVAILABLE = {
     'binary': {
         'logistic':           'logistic',
         'linear':             'logistic',
@@ -75,7 +75,7 @@ AVALIABLE = {
 }
 
 # Should be the same
-AVALIABLE['categorical'] = AVALIABLE['binary'].copy()
+AVAILABLE['categorical'] = AVAILABLE['binary'].copy()
 
 
 MODELS = {
@@ -170,9 +170,9 @@ try:
         warnings.simplefilter(action='ignore', category=FutureWarning)
         from xgboost import XGBClassifier, XGBRegressor
 
-    AVALIABLE['binary']['xgb'] = 'xgb classifier'
-    AVALIABLE['regression']['xgb'] = 'xgb regressor'
-    AVALIABLE['categorical']['xgb'] = 'xgb classifier'
+    AVAILABLE['binary']['xgb'] = 'xgb classifier'
+    AVAILABLE['regression']['xgb'] = 'xgb regressor'
+    AVAILABLE['categorical']['xgb'] = 'xgb classifier'
 
     MODELS['xgb regressor'] = (XGBRegressor, ['base xgb', 'xgb dist1',
                                               'xgb dist2', 'xgb dist3'])
@@ -187,12 +187,12 @@ except ImportError:
 try:
     from ...extensions.BPtLGBM import BPtLGBMRegressor, BPtLGBMClassifier
 
-    AVALIABLE['binary']['light gbm'] = 'light gbm classifier'
-    AVALIABLE['binary']['lgbm'] = 'light gbm classifier'
-    AVALIABLE['categorical']['light gbm'] = 'light gbm classifier'
-    AVALIABLE['categorical']['lgbm'] = 'light gbm classifier'
-    AVALIABLE['regression']['light gbm'] = 'light gbm regressor'
-    AVALIABLE['regression']['lgbm'] = 'light gbm regressor'
+    AVAILABLE['binary']['light gbm'] = 'light gbm classifier'
+    AVAILABLE['binary']['lgbm'] = 'light gbm classifier'
+    AVAILABLE['categorical']['light gbm'] = 'light gbm classifier'
+    AVAILABLE['categorical']['lgbm'] = 'light gbm classifier'
+    AVAILABLE['regression']['light gbm'] = 'light gbm regressor'
+    AVAILABLE['regression']['lgbm'] = 'light gbm regressor'
 
     MODELS['light gbm regressor'] = (BPtLGBMRegressor, ['base lgbm',
                                                         'lgbm dist1',
@@ -216,4 +216,4 @@ def get_base_model_and_params(model_type, extra_params, model_type_params,
     return model(**extra_model_params), model_type_params
 
 
-all_obj_keys = all_from_avaliable(AVALIABLE)
+all_obj_keys = all_from_avaliable(AVAILABLE)

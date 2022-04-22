@@ -1940,6 +1940,7 @@ class Dataset(pd.DataFrame):
                             _cat_info,
                             summary,
                             plot_bivar,
+                            _plot_bivar,
                             _plot_cat_cat,
                             _plot_cat_float,
                             _plot_float_float,

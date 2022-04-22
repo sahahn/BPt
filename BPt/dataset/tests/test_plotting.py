@@ -3,6 +3,7 @@ import numpy as np
 import tempfile
 import os
 import warnings
+import matplotlib.pyplot as plt
 
 
 def get_fake_dataset():
@@ -23,10 +24,19 @@ def test_for_no_errors():
 
     df = get_fake_dataset()
     df.plot('all', show=False)
+    plt.clf()
+    df.plots(['val1', 'val2'], show=False)
+    plt.clf()
+    df.plots('all', ncols=2, show=False)
+    plt.clf()
     df.plot_bivar('val2', 'val1', show=False)
+    plt.clf()
     df.plot_bivar('class', 'class2', show=False)
+    plt.clf()
     df.plot_bivar('class', 'val1', show=False)
-
+    plt.clf()
+    df.plot_bivar('class', ['val1', 'val2'], show=False)
+    plt.clf()
 
 def test_summary_cat_col():
 
@@ -61,7 +71,6 @@ def test_summary_float_col_mean_std():
                    measures=['mean +- std'])
 
     assert len(df2) == 0
-    print(df1)
     assert df1.loc['val1', 'mean ± std'] == '1.32 ± 1.545'
 
 

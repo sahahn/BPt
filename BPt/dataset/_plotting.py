@@ -794,8 +794,9 @@ def _print_plot_info(self, col, info):
 
 @doc(**_file_docs, subjects=_shared_docs['subjects'],
      decode_values=_plot_docs['decode_values'])
-def plot_bivar(self, col1, col2, subjects='all',
-               decode_values=True, show=True, reduce_func=np.mean,
+def plot_bivar(self, scope1, scope2, subjects='all',
+               decode_values=True, show=True,
+               reduce_func=np.mean,
                n_jobs=-1):
     '''This method can be used to plot the relationship
     between two variables. Different types of plots will
@@ -803,13 +804,13 @@ def plot_bivar(self, col1, col2, subjects='all',
 
     Parameters
     -----------
-    col1 : str
-        The name of the first loaded column in
-        which to plot against col2.
+    scope1 : :ref:`Scope`
+        The name(s) of the first set of variables in
+        which to plot against scopes2.
 
-    col2 : str
-        The name of the second loaded column
-        in which to plot against col1.
+    scope2 : str
+        The name(s) of the second set of variables in
+        which to plot against scopes2.
 
     {subjects}
 
@@ -834,11 +835,27 @@ def plot_bivar(self, col1, col2, subjects='all',
                  'show': show,
                  'reduce_func': reduce_func,
                  'n_jobs': n_jobs}
-
     self._check_scopes()
 
     # Grab subjs to plot
     subjs = self.get_subjects(subjects, return_as='flat index')
+
+    # Get each set of cols
+    cols1 = self.get_cols(scope1)
+    cols2 = self.get_cols(scope2)
+
+    # Plot every combination of 1 and 2
+    for c1 in cols1:
+        for c2 in cols2:
+            self._plot_bivar(c1, c2, subjs, **plot_args)
+
+    # Something like this could be cool for 3x3 bivar
+    # g = sns.PairGrid(data[list(data['data'])[:3]])
+    # g.map_upper(sns.histplot)
+    # g.map_lower(sns.kdeplot, fill=True)
+    # g.map_diag(sns.histplot, kde=True)
+
+def _plot_bivar(self, col1, col2, subjs, **plot_args):
 
     # Cat
     if 'category' in self.scopes[col1]:
@@ -869,6 +886,7 @@ def plot_bivar(self, col1, col2, subjects='all',
         else:
             self._plot_float_float(col1, col2, subjs=subjs, **plot_args)
 
+    # Show at end if requested
     if plot_args['show']:
         plt.show()
 

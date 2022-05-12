@@ -1,4 +1,4 @@
-from ..MLP import MLPClassifier_Wrapper, MLPRegressor_Wrapper
+from ..mlp import MLPClassifier_Wrapper, MLPRegressor_Wrapper
 import numpy as np
 
 

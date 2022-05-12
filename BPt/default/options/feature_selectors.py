@@ -6,7 +6,7 @@ File with different Feature Selectors
 from ..helpers import (get_possible_init_params,
                        get_obj_and_params, all_from_avaliable)
 from sklearn.feature_selection import SelectPercentile, VarianceThreshold
-from ...extensions.FeatSelectors import FeatureSelector
+from ...extensions.feat_selectors import FeatureSelector
 from sklearn.feature_selection import RFE
 import numpy as np
 from numpy.random import RandomState

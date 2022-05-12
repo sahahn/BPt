@@ -2,7 +2,7 @@ from ..helpers import get_obj_and_params, all_from_objects
 from sklearn.preprocessing import (MinMaxScaler, RobustScaler, StandardScaler,
                                    PowerTransformer, MaxAbsScaler,
                                    QuantileTransformer, Normalizer)
-from ...extensions.Scalers import Winsorizer
+from ...extensions.scalers import Winsorizer
 
 
 # Scalers differs from models in that the types are not restricted

@@ -1,4 +1,4 @@
-from ...extensions.MLP import MLPRegressor_Wrapper, MLPClassifier_Wrapper
+from ...extensions.mlp import MLPRegressor_Wrapper, MLPClassifier_Wrapper
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.naive_bayes import GaussianNB

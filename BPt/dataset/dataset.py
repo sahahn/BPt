@@ -212,7 +212,14 @@ class Dataset(pd.DataFrame):
         # If the original passed index isn't a key,
         # then try again treating it as a scope.
         except KeyError:
-            item = super().__getitem__(self.get_cols(key))
+
+            # Raise KeyError if nothing
+            # rather than return nothing
+            cols = self.get_cols(key)
+            if len(cols) == 0:
+                raise KeyError(f'No columns found for key={key}')
+
+            item = super().__getitem__(cols)
 
         # If index returns Dataset, copy over metadata
         if isinstance(item, Dataset):

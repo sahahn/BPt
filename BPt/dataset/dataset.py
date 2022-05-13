@@ -204,6 +204,7 @@ class Dataset(pd.DataFrame):
         # Process passed verbose
         self.verbose = verbose
 
+
     def __getitem__(self, key):
 
         try:

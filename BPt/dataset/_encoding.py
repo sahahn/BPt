@@ -101,7 +101,6 @@ def to_binary(self, scope, drop=True, inplace=False):
     # Update scopes
     self._check_scopes()
 
-
 def _base_binarize(self, col, drop):
 
     # Extract non-nan values / series
@@ -552,6 +551,14 @@ def _ordinalize(self, col):
     encoder = {}
     for i, c in enumerate(label_encoder.classes_):
         encoder[i] = c
+
+        # If already was encoded, map to
+        # farthest back / closest to original
+        # TODO - wrap this logic in re-usable piece
+        # with get_values
+        if col in self.encoders:
+            if c in self.encoders[col]:
+                encoder[i] = self.encoders[col][c]
 
     # Save in encoders
     self.encoders[col] = encoder

@@ -1959,6 +1959,16 @@ class EvalResults():
 
                 default = False
 
+        Returns
+        ------------
+        p_values : dict of float
+            A dictionary, as indexed by all of the valid metrics, with the
+            computed p-values.
+
+        p_scores : dict of array
+            The null distribution, as indexed by all of the valid metrics,
+            of scores.
+
         '''
 
         # Check dataset

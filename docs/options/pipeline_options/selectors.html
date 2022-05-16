@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Feat Selectors &#8212; BPt 2.2.3 documentation</title>
+    <title>Feat Selectors &#8212; BPt 2.2.4 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -389,14 +389,14 @@
 <span id="id1"></span><h1>Feat Selectors<a class="headerlink" href="#feat-selectors" title="Permalink to this headline">#</a></h1>
 <p>Different base obj choices for the <a class="reference internal" href="../../reference/api/BPt.FeatSelector.html#BPt.FeatSelector" title="BPt.FeatSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">FeatSelector</span></code></a> are shown below
 The exact str indicator, as passed to the <cite>obj</cite> param is represented by the sub-heading (within “”)
-The avaliable feat selectors are further broken down by which can work with different problem_types.
+The available feat selectors are further broken down by which can work with different problem_types.
 Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.</p>
 <section id="binary">
 <h2>binary<a class="headerlink" href="#binary" title="Permalink to this headline">#</a></h2>
 <section id="rfe">
 <h3>“rfe”<a class="headerlink" href="#rfe" title="Permalink to this headline">#</a></h3>
 <blockquote>
-<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html#sklearn.feature_selection.RFE" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.feature_selection.RFE</span></code></a></p>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html#sklearn.feature_selection.RFE" title="(in scikit-learn v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.feature_selection.RFE</span></code></a></p>
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">
@@ -417,7 +417,7 @@ Additionally, a link to the original models documentation as well as the impleme
 <section id="selector">
 <h3>“selector”<a class="headerlink" href="#selector" title="Permalink to this headline">#</a></h3>
 <blockquote>
-<div><p>Base Class Documentation: <code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.extensions.FeatSelectors.FeatureSelector</span></code></p>
+<div><p>Base Class Documentation: <code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.extensions.feat_selectors.FeatureSelector</span></code></p>
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">
@@ -438,30 +438,30 @@ Additionally, a link to the original models documentation as well as the impleme
 <section id="univariate-selection-c">
 <h3>“univariate selection c”<a class="headerlink" href="#univariate-selection-c" title="Permalink to this headline">#</a></h3>
 <blockquote>
-<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SelectPercentile.html#sklearn.feature_selection.SelectPercentile" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.feature_selection.SelectPercentile</span></code></a></p>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SelectPercentile.html#sklearn.feature_selection.SelectPercentile" title="(in scikit-learn v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.feature_selection.SelectPercentile</span></code></a></p>
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">
 <li><p>“base univar fs classifier”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_classif</span> <span class="n">at</span> <span class="mh">0x7f4c646b8040</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_classif</span> <span class="n">at</span> <span class="mh">0x7fddce651d30</span><span class="o">&gt;</span>
 <span class="n">percentile</span><span class="p">:</span> <span class="mi">50</span>
 </pre></div>
 </div>
 </li>
 <li><p>“univar fs classifier dist”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_classif</span> <span class="n">at</span> <span class="mh">0x7f4c646b8040</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_classif</span> <span class="n">at</span> <span class="mh">0x7fddce651d30</span><span class="o">&gt;</span>
 <span class="n">percentile</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">16.333333333333332</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
 <li><p>“univar fs c keep more”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_classif</span> <span class="n">at</span> <span class="mh">0x7f4c646b8040</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_classif</span> <span class="n">at</span> <span class="mh">0x7fddce651d30</span><span class="o">&gt;</span>
 <span class="n">percentile</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">8.166666666666666</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
 <li><p>“univar fs c keep less”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_classif</span> <span class="n">at</span> <span class="mh">0x7f4c646b8040</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_classif</span> <span class="n">at</span> <span class="mh">0x7fddce651d30</span><span class="o">&gt;</span>
 <span class="n">percentile</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">8.166666666666666</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -473,7 +473,7 @@ Additionally, a link to the original models documentation as well as the impleme
 <section id="variance-threshold">
 <h3>“variance threshold”<a class="headerlink" href="#variance-threshold" title="Permalink to this headline">#</a></h3>
 <blockquote>
-<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.VarianceThreshold.html#sklearn.feature_selection.VarianceThreshold" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.feature_selection.VarianceThreshold</span></code></a></p>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.VarianceThreshold.html#sklearn.feature_selection.VarianceThreshold" title="(in scikit-learn v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.feature_selection.VarianceThreshold</span></code></a></p>
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">
@@ -492,7 +492,7 @@ Additionally, a link to the original models documentation as well as the impleme
 <section id="id2">
 <h3>“rfe”<a class="headerlink" href="#id2" title="Permalink to this headline">#</a></h3>
 <blockquote>
-<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html#sklearn.feature_selection.RFE" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.feature_selection.RFE</span></code></a></p>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html#sklearn.feature_selection.RFE" title="(in scikit-learn v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.feature_selection.RFE</span></code></a></p>
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">
@@ -513,7 +513,7 @@ Additionally, a link to the original models documentation as well as the impleme
 <section id="id3">
 <h3>“selector”<a class="headerlink" href="#id3" title="Permalink to this headline">#</a></h3>
 <blockquote>
-<div><p>Base Class Documentation: <code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.extensions.FeatSelectors.FeatureSelector</span></code></p>
+<div><p>Base Class Documentation: <code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.extensions.feat_selectors.FeatureSelector</span></code></p>
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">
@@ -534,30 +534,30 @@ Additionally, a link to the original models documentation as well as the impleme
 <section id="univariate-selection-r">
 <h3>“univariate selection r”<a class="headerlink" href="#univariate-selection-r" title="Permalink to this headline">#</a></h3>
 <blockquote>
-<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SelectPercentile.html#sklearn.feature_selection.SelectPercentile" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.feature_selection.SelectPercentile</span></code></a></p>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SelectPercentile.html#sklearn.feature_selection.SelectPercentile" title="(in scikit-learn v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.feature_selection.SelectPercentile</span></code></a></p>
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">
 <li><p>“base univar fs regression”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_regression</span> <span class="n">at</span> <span class="mh">0x7f4c646b8280</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_regression</span> <span class="n">at</span> <span class="mh">0x7fddce651f70</span><span class="o">&gt;</span>
 <span class="n">percentile</span><span class="p">:</span> <span class="mi">50</span>
 </pre></div>
 </div>
 </li>
 <li><p>“univar fs regression dist”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_regression</span> <span class="n">at</span> <span class="mh">0x7f4c646b8280</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_regression</span> <span class="n">at</span> <span class="mh">0x7fddce651f70</span><span class="o">&gt;</span>
 <span class="n">percentile</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">16.333333333333332</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
 <li><p>“univar fs r keep more”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_regression</span> <span class="n">at</span> <span class="mh">0x7f4c646b8280</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_regression</span> <span class="n">at</span> <span class="mh">0x7fddce651f70</span><span class="o">&gt;</span>
 <span class="n">percentile</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">8.166666666666666</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
 <li><p>“univar fs r keep less”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_regression</span> <span class="n">at</span> <span class="mh">0x7f4c646b8280</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_regression</span> <span class="n">at</span> <span class="mh">0x7fddce651f70</span><span class="o">&gt;</span>
 <span class="n">percentile</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">8.166666666666666</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -569,7 +569,7 @@ Additionally, a link to the original models documentation as well as the impleme
 <section id="id4">
 <h3>“variance threshold”<a class="headerlink" href="#id4" title="Permalink to this headline">#</a></h3>
 <blockquote>
-<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.VarianceThreshold.html#sklearn.feature_selection.VarianceThreshold" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.feature_selection.VarianceThreshold</span></code></a></p>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.VarianceThreshold.html#sklearn.feature_selection.VarianceThreshold" title="(in scikit-learn v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.feature_selection.VarianceThreshold</span></code></a></p>
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">
@@ -588,7 +588,7 @@ Additionally, a link to the original models documentation as well as the impleme
 <section id="id5">
 <h3>“rfe”<a class="headerlink" href="#id5" title="Permalink to this headline">#</a></h3>
 <blockquote>
-<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html#sklearn.feature_selection.RFE" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.feature_selection.RFE</span></code></a></p>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html#sklearn.feature_selection.RFE" title="(in scikit-learn v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.feature_selection.RFE</span></code></a></p>
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">
@@ -609,7 +609,7 @@ Additionally, a link to the original models documentation as well as the impleme
 <section id="id6">
 <h3>“selector”<a class="headerlink" href="#id6" title="Permalink to this headline">#</a></h3>
 <blockquote>
-<div><p>Base Class Documentation: <code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.extensions.FeatSelectors.FeatureSelector</span></code></p>
+<div><p>Base Class Documentation: <code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.extensions.feat_selectors.FeatureSelector</span></code></p>
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">
@@ -630,30 +630,30 @@ Additionally, a link to the original models documentation as well as the impleme
 <section id="id7">
 <h3>“univariate selection c”<a class="headerlink" href="#id7" title="Permalink to this headline">#</a></h3>
 <blockquote>
-<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SelectPercentile.html#sklearn.feature_selection.SelectPercentile" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.feature_selection.SelectPercentile</span></code></a></p>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SelectPercentile.html#sklearn.feature_selection.SelectPercentile" title="(in scikit-learn v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.feature_selection.SelectPercentile</span></code></a></p>
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">
 <li><p>“base univar fs classifier”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_classif</span> <span class="n">at</span> <span class="mh">0x7f4c646b8040</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_classif</span> <span class="n">at</span> <span class="mh">0x7fddce651d30</span><span class="o">&gt;</span>
 <span class="n">percentile</span><span class="p">:</span> <span class="mi">50</span>
 </pre></div>
 </div>
 </li>
 <li><p>“univar fs classifier dist”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_classif</span> <span class="n">at</span> <span class="mh">0x7f4c646b8040</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_classif</span> <span class="n">at</span> <span class="mh">0x7fddce651d30</span><span class="o">&gt;</span>
 <span class="n">percentile</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">16.333333333333332</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
 <li><p>“univar fs c keep more”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_classif</span> <span class="n">at</span> <span class="mh">0x7f4c646b8040</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_classif</span> <span class="n">at</span> <span class="mh">0x7fddce651d30</span><span class="o">&gt;</span>
 <span class="n">percentile</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">8.166666666666666</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
 <li><p>“univar fs c keep less”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_classif</span> <span class="n">at</span> <span class="mh">0x7f4c646b8040</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_func</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">f_classif</span> <span class="n">at</span> <span class="mh">0x7fddce651d30</span><span class="o">&gt;</span>
 <span class="n">percentile</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">8.166666666666666</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -665,7 +665,7 @@ Additionally, a link to the original models documentation as well as the impleme
 <section id="id8">
 <h3>“variance threshold”<a class="headerlink" href="#id8" title="Permalink to this headline">#</a></h3>
 <blockquote>
-<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.VarianceThreshold.html#sklearn.feature_selection.VarianceThreshold" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.feature_selection.VarianceThreshold</span></code></a></p>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.VarianceThreshold.html#sklearn.feature_selection.VarianceThreshold" title="(in scikit-learn v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.feature_selection.VarianceThreshold</span></code></a></p>
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">

@@ -7,7 +7,7 @@ Scorers
 Different available choices for the `scorer` parameter are shown below.
 `scorer` is accepted by :class:`ProblemSpec<BPt.ProblemSpec>` and :class:`ParamSearch<BPt.ParamSearch>`.
 The str indicator for each `scorer` is represented by the sub-heading (within "")
-The avaliable scorers are further broken down by which can work with different problem_types.
+The available scorers are further broken down by which can work with different problem_types.
 Additionally, a link to the original models documentation is shown.
 
 binary

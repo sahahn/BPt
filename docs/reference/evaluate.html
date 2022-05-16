@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Evaluate &#8212; BPt 2.2.3 documentation</title>
+    <title>Evaluate &#8212; BPt 2.2.4 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -357,6 +357,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="api/BPt.Dataset.plots.html">
+     BPt.Dataset.plots
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="api/BPt.Dataset.plot_bivar.html">
      BPt.Dataset.plot_bivar
     </a>
@@ -672,6 +677,16 @@
      BPt.cross_val_score
     </a>
    </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="api/BPt.EvalResults.html">
+     BPt.EvalResults
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="api/BPt.EvalResultsSubset.html">
+     BPt.EvalResultsSubset
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -757,8 +772,8 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#bpt-evaluator">
-   BPt Evaluator
+  <a class="reference internal nav-link" href="#evalresults">
+   EvalResults
   </a>
  </li>
 </ul>
@@ -793,7 +808,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.get_estimator.html#BPt.get_estimator" title="BPt.get_estimator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_estimator</span></code></a>(pipeline[, dataset, problem_spec])</p></td>
-<td><p>Get a sklearn compatible <a class="reference external" href="https://scikit-learn.org/stable/developers/develop.html#develop" title="(in scikit-learn v1.0)"><span class="xref std std-ref">estimator</span></a> from a <a class="reference internal" href="api/BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>, <a class="reference internal" href="api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> and <a class="reference internal" href="api/BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>.</p></td>
+<td><p>Get a sklearn compatible <a class="reference external" href="https://scikit-learn.org/stable/developers/develop.html#develop" title="(in scikit-learn v1.1)"><span class="xref std std-ref">estimator</span></a> from a <a class="reference internal" href="api/BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>, <a class="reference internal" href="api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> and <a class="reference internal" href="api/BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -810,22 +825,28 @@
 <td><p>This method is used to evaluate a model pipeline with cross-validation.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/BPt.cross_validate.html#BPt.cross_validate" title="BPt.cross_validate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cross_validate</span></code></a>(pipeline, dataset[, ...])</p></td>
-<td><p>This function is a BPt compatible wrapper around <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_validate.html#sklearn.model_selection.cross_validate" title="(in scikit-learn v1.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.model_selection.cross_validate()</span></code></a></p></td>
+<td><p>This function is a BPt compatible wrapper around <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_validate.html#sklearn.model_selection.cross_validate" title="(in scikit-learn v1.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.model_selection.cross_validate()</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.cross_val_score.html#BPt.cross_val_score" title="BPt.cross_val_score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cross_val_score</span></code></a>(pipeline, dataset[, ...])</p></td>
-<td><p>This function is a BPt compatible wrapper around <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html#sklearn.model_selection.cross_val_score" title="(in scikit-learn v1.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.model_selection.cross_val_score()</span></code></a></p></td>
+<td><p>This function is a BPt compatible wrapper around <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html#sklearn.model_selection.cross_val_score" title="(in scikit-learn v1.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.model_selection.cross_val_score()</span></code></a></p></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="bpt-evaluator">
-<h2>BPt Evaluator<a class="headerlink" href="#bpt-evaluator" title="Permalink to this headline">#</a></h2>
+<section id="evalresults">
+<h2>EvalResults<a class="headerlink" href="#evalresults" title="Permalink to this headline">#</a></h2>
 <table class="longtable table autosummary">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.EvalResults.html#BPt.EvalResults" title="BPt.EvalResults"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EvalResults</span></code></a>(estimator, ps[, encoders, ...])</p></td>
+<td><p>This class is returned from calls to <a class="reference internal" href="api/BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>, and can be used to store information from evaluate, or compute additional feature importances.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.EvalResultsSubset.html#BPt.EvalResultsSubset" title="BPt.EvalResultsSubset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EvalResultsSubset</span></code></a>(evaluator, subjects[, ...])</p></td>
+<td><p>This class represents a subset of <a class="reference internal" href="api/BPt.EvalResults.html#BPt.EvalResults" title="BPt.EvalResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code></a> and is returned as a result of calling <a class="reference internal" href="api/BPt.EvalResults.subset_by.html#BPt.EvalResults.subset_by" title="BPt.EvalResults.subset_by"><code class="xref py py-func docutils literal notranslate"><span class="pre">EvalResults.subset_by()</span></code></a>.</p></td>
+</tr>
 </tbody>
 </table>
 </section>

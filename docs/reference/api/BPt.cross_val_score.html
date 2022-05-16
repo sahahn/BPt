@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>BPt.cross_val_score &#8212; BPt 2.2.3 documentation</title>
+    <title>BPt.cross_val_score &#8212; BPt 2.2.4 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -33,7 +33,7 @@
     <script src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Extension Classes" href="../extensions.html" />
+    <link rel="next" title="BPt.EvalResults" href="BPt.EvalResults.html" />
     <link rel="prev" title="BPt.cross_validate" href="BPt.cross_validate.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
@@ -357,6 +357,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.plots.html">
+     BPt.Dataset.plots
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="BPt.Dataset.plot_bivar.html">
      BPt.Dataset.plot_bivar
     </a>
@@ -672,6 +677,16 @@
      BPt.cross_val_score
     </a>
    </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.EvalResults.html">
+     BPt.EvalResults
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.EvalResultsSubset.html">
+     BPt.EvalResultsSubset
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -768,7 +783,7 @@
 <dt class="sig sig-object py" id="BPt.cross_val_score">
 <span class="sig-prename descclassname"><span class="pre">BPt.</span></span><span class="sig-name descname"><span class="pre">cross_val_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">problem_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sk_n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">extra_params</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/funcs.py#L786-L868"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.cross_val_score" title="Permalink to this definition">#</a></dt>
 <dd><p>This function is a BPt compatible wrapper around
-<a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html#sklearn.model_selection.cross_val_score" title="(in scikit-learn v1.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.model_selection.cross_val_score()</span></code></a></p>
+<a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html#sklearn.model_selection.cross_val_score" title="(in scikit-learn v1.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.model_selection.cross_val_score()</span></code></a></p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
@@ -819,7 +834,7 @@ ProblemSpec with default params.</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>cv</strong><span class="classifier"><a class="reference internal" href="BPt.CV.html#BPt.CV" title="BPt.CV"><code class="xref py py-class docutils literal notranslate"><span class="pre">CV</span></code></a> or <a class="reference external" href="https://scikit-learn.org/stable/modules/cross_validation.html#cross-validation" title="(in scikit-learn v1.0)"><span class="xref std std-ref">sklearn CV</span></a>, optional</span></dt><dd><p>This parameter controls what type of cross-validation
+<dt><strong>cv</strong><span class="classifier"><a class="reference internal" href="BPt.CV.html#BPt.CV" title="BPt.CV"><code class="xref py py-class docutils literal notranslate"><span class="pre">CV</span></code></a> or <a class="reference external" href="https://scikit-learn.org/stable/modules/cross_validation.html#cross-validation" title="(in scikit-learn v1.1)"><span class="xref std std-ref">sklearn CV</span></a>, optional</span></dt><dd><p>This parameter controls what type of cross-validation
 splitting strategy is used. You may pass
 a number of options here.</p>
 <ul class="simple">

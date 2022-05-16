@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>BPt.Dataset.summary &#8212; BPt 2.2.3 documentation</title>
+    <title>BPt.Dataset.summary &#8212; BPt 2.2.4 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -357,6 +357,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.plots.html">
+     BPt.Dataset.plots
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="BPt.Dataset.plot_bivar.html">
      BPt.Dataset.plot_bivar
     </a>
@@ -672,6 +677,16 @@
      BPt.cross_val_score
     </a>
    </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.EvalResults.html">
+     BPt.EvalResults
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.EvalResultsSubset.html">
+     BPt.EvalResultsSubset
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -766,7 +781,7 @@
 <h1>BPt.Dataset.summary<a class="headerlink" href="#bpt-dataset-summary" title="Permalink to this headline">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="BPt.Dataset.summary">
-<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">scope,</span> <span class="pre">subjects='all',</span> <span class="pre">measures=['count',</span> <span class="pre">'nan</span> <span class="pre">count',</span> <span class="pre">'mean',</span> <span class="pre">'max',</span> <span class="pre">'min',</span> <span class="pre">'std',</span> <span class="pre">'var',</span> <span class="pre">'skew',</span> <span class="pre">'kurtosis'],</span> <span class="pre">cat_measures=['count',</span> <span class="pre">'freq',</span> <span class="pre">'nan</span> <span class="pre">count'],</span> <span class="pre">decode_values=True,</span> <span class="pre">save_file=None,</span> <span class="pre">decimals=3,</span> <span class="pre">reduce_func=&lt;function</span> <span class="pre">mean&gt;,</span> <span class="pre">n_jobs=-1</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_plotting.py#L185-L365"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.summary" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">scope,</span> <span class="pre">subjects='all',</span> <span class="pre">measures=['count',</span> <span class="pre">'nan</span> <span class="pre">count',</span> <span class="pre">'mean',</span> <span class="pre">'max',</span> <span class="pre">'min',</span> <span class="pre">'std',</span> <span class="pre">'var',</span> <span class="pre">'skew',</span> <span class="pre">'kurtosis'],</span> <span class="pre">cat_measures=['count',</span> <span class="pre">'freq',</span> <span class="pre">'nan</span> <span class="pre">count'],</span> <span class="pre">decode_values=True,</span> <span class="pre">save_file=None,</span> <span class="pre">decimals=3,</span> <span class="pre">reduce_func=&lt;function</span> <span class="pre">mean&gt;,</span> <span class="pre">n_jobs=-1</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_plotting.py#L220-L400"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.summary" title="Permalink to this definition">#</a></dt>
 <dd><p>This method is used to generate a summary across
 some data.</p>
 <dl class="field-list">
@@ -934,9 +949,9 @@ valid when the passed col/column is a ‘data file’.
 In that case, this specifies the number of cores
 to use in loading and applying the reduce_func to each
 data file. This can provide a significant speed up when
-passed the number of avaliable cores, but can sometimes
+passed the number of available cores, but can sometimes
 be memory intensive depending on the underlying size of the file.</p>
-<p>If set to -1, will try to automatically use all avaliable cores.</p>
+<p>If set to -1, will try to automatically use all available cores.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 </pre></div>
 </div>

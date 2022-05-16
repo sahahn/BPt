@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Dataset &#8212; BPt 2.2.3 documentation</title>
+    <title>Dataset &#8212; BPt 2.2.4 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -357,6 +357,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="api/BPt.Dataset.plots.html">
+     BPt.Dataset.plots
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="api/BPt.Dataset.plot_bivar.html">
      BPt.Dataset.plot_bivar
     </a>
@@ -670,6 +675,16 @@
    <li class="toctree-l2">
     <a class="reference internal" href="api/BPt.cross_val_score.html">
      BPt.cross_val_score
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="api/BPt.EvalResults.html">
+     BPt.EvalResults
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="api/BPt.EvalResultsSubset.html">
+     BPt.EvalResultsSubset
     </a>
    </li>
   </ul>
@@ -993,13 +1008,16 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.plot.html#BPt.Dataset.plot" title="BPt.Dataset.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.plot</span></code></a>(scope[, subjects, cut, ...])</p></td>
 <td><p>This function creates plots for each of the passed columns (as specified by scope) seperately.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.plot_bivar.html#BPt.Dataset.plot_bivar" title="BPt.Dataset.plot_bivar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.plot_bivar</span></code></a>(col1, col2[, subjects, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.plots.html#BPt.Dataset.plots" title="BPt.Dataset.plots"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.plots</span></code></a>(scope[, subjects, ncols, ...])</p></td>
+<td><p>This function creates a multi-figure plot containing all of the passed columns (as specified by scope) in their own axes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.plot_bivar.html#BPt.Dataset.plot_bivar" title="BPt.Dataset.plot_bivar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.plot_bivar</span></code></a>(scope1, scope2[, ...])</p></td>
 <td><p>This method can be used to plot the relationship between two variables.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.nan_info.html#BPt.Dataset.nan_info" title="BPt.Dataset.nan_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.nan_info</span></code></a>([scope])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.nan_info.html#BPt.Dataset.nan_info" title="BPt.Dataset.nan_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.nan_info</span></code></a>([scope])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.summary.html#BPt.Dataset.summary" title="BPt.Dataset.summary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.summary</span></code></a>(scope[, subjects, measures, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.summary.html#BPt.Dataset.summary" title="BPt.Dataset.summary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.summary</span></code></a>(scope[, subjects, measures, ...])</p></td>
 <td><p>This method is used to generate a summary across some data.</p></td>
 </tr>
 </tbody>

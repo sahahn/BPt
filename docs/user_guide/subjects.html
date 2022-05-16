@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Subjects &#8212; BPt 2.2.3 documentation</title>
+    <title>Subjects &#8212; BPt 2.2.4 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -461,25 +461,25 @@ pairs with an eventname of ‘e1’. Consider another example:</p>
 <p>Next, we will use <a class="reference internal" href="../reference/api/BPt.Dataset.get_subjects.html#BPt.Dataset.get_subjects" title="BPt.Dataset.get_subjects"><code class="xref py py-func docutils literal notranslate"><span class="pre">Dataset.get_subjects()</span></code></a> to explore what passing
 different values to <cite>subjects</cite> will return.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [8]: </span><span class="n">data</span><span class="o">.</span><span class="n">get_subjects</span><span class="p">(</span><span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;subj1&#39;</span><span class="p">])</span>
-<span class="gh">Out[8]: </span><span class="go">{&#39;subj1&#39;}</span>
+<span class="gh">Out[8]: </span><span class="go">Index([&#39;subj1&#39;], dtype=&#39;object&#39;, name=&#39;index&#39;)</span>
 
 <span class="gp">In [9]: </span><span class="n">data</span><span class="o">.</span><span class="n">get_subjects</span><span class="p">(</span><span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;subj1&#39;</span><span class="p">,</span> <span class="s1">&#39;subj2&#39;</span><span class="p">])</span>
-<span class="gh">Out[9]: </span><span class="go">{&#39;subj1&#39;, &#39;subj2&#39;}</span>
+<span class="gh">Out[9]: </span><span class="go">Index([&#39;subj1&#39;, &#39;subj2&#39;], dtype=&#39;object&#39;, name=&#39;index&#39;)</span>
 </pre></div>
 </div>
 <p>One gotcha is that if we pass a single str value, it will be assumed to
 be a file path, so if we pass subjects=’subj1’, we will get an error.
 Let’s try using <a class="reference internal" href="../reference/api/BPt.ValueSubset.html#BPt.ValueSubset" title="BPt.ValueSubset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueSubset</span></code></a> next.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [10]: </span><span class="n">data</span><span class="o">.</span><span class="n">get_subjects</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">ValueSubset</span><span class="p">(</span><span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-<span class="gh">Out[10]: </span><span class="go">{&#39;subj1&#39;}</span>
+<span class="gh">Out[10]: </span><span class="go">Index([&#39;subj1&#39;], dtype=&#39;object&#39;, name=&#39;index&#39;)</span>
 
 <span class="gp">In [11]: </span><span class="n">data</span><span class="o">.</span><span class="n">get_subjects</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">ValueSubset</span><span class="p">(</span><span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
-<span class="gh">Out[11]: </span><span class="go">{&#39;subj1&#39;, &#39;subj2&#39;}</span>
+<span class="gh">Out[11]: </span><span class="go">Index([&#39;subj1&#39;, &#39;subj2&#39;], dtype=&#39;object&#39;, name=&#39;index&#39;)</span>
 </pre></div>
 </div>
 <p>We can also use special reversed keywords.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [12]: </span><span class="n">data</span><span class="o">.</span><span class="n">get_subjects</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)</span>
-<span class="gh">Out[12]: </span><span class="go">{&#39;subj3&#39;}</span>
+<span class="gh">Out[12]: </span><span class="go">Index([&#39;subj3&#39;], dtype=&#39;object&#39;, name=&#39;index&#39;)</span>
 </pre></div>
 </div>
 </section>

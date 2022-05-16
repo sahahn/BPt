@@ -6,7 +6,7 @@ Feat Selectors
 
 Different base obj choices for the :class:`FeatSelector<BPt.FeatSelector>` are shown below
 The exact str indicator, as passed to the `obj` param is represented by the sub-heading (within "")
-The avaliable feat selectors are further broken down by which can work with different problem_types.
+The available feat selectors are further broken down by which can work with different problem_types.
 Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
 
 binary
@@ -30,7 +30,7 @@ binary
 "selector"
 **********
 
-  Base Class Documentation: :class:`BPt.extensions.FeatSelectors.FeatureSelector`
+  Base Class Documentation: :class:`BPt.extensions.feat_selectors.FeatureSelector`
 
   Param Distributions
 
@@ -52,22 +52,22 @@ binary
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f4c646b8040>
+		score_func: <function f_classif at 0x7fddce651d30>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f4c646b8040>
+		score_func: <function f_classif at 0x7fddce651d30>
 		percentile: Scalar(init=50, lower=1, upper=99).set_mutation(sigma=16.333333333333332).set_bounds(full_range_sampling=False, lower=1, upper=99)
 
 	2. "univar fs c keep more" ::
 
-		score_func: <function f_classif at 0x7f4c646b8040>
+		score_func: <function f_classif at 0x7fddce651d30>
 		percentile: Scalar(init=75, lower=50, upper=99).set_mutation(sigma=8.166666666666666).set_bounds(full_range_sampling=False, lower=50, upper=99)
 
 	3. "univar fs c keep less" ::
 
-		score_func: <function f_classif at 0x7f4c646b8040>
+		score_func: <function f_classif at 0x7fddce651d30>
 		percentile: Scalar(init=25, lower=1, upper=50).set_mutation(sigma=8.166666666666666).set_bounds(full_range_sampling=False, lower=1, upper=50)
 
 
@@ -105,7 +105,7 @@ regression
 "selector"
 **********
 
-  Base Class Documentation: :class:`BPt.extensions.FeatSelectors.FeatureSelector`
+  Base Class Documentation: :class:`BPt.extensions.feat_selectors.FeatureSelector`
 
   Param Distributions
 
@@ -127,22 +127,22 @@ regression
 
 	0. "base univar fs regression" ::
 
-		score_func: <function f_regression at 0x7f4c646b8280>
+		score_func: <function f_regression at 0x7fddce651f70>
 		percentile: 50
 
 	1. "univar fs regression dist" ::
 
-		score_func: <function f_regression at 0x7f4c646b8280>
+		score_func: <function f_regression at 0x7fddce651f70>
 		percentile: Scalar(init=50, lower=1, upper=99).set_mutation(sigma=16.333333333333332).set_bounds(full_range_sampling=False, lower=1, upper=99)
 
 	2. "univar fs r keep more" ::
 
-		score_func: <function f_regression at 0x7f4c646b8280>
+		score_func: <function f_regression at 0x7fddce651f70>
 		percentile: Scalar(init=75, lower=50, upper=99).set_mutation(sigma=8.166666666666666).set_bounds(full_range_sampling=False, lower=50, upper=99)
 
 	3. "univar fs r keep less" ::
 
-		score_func: <function f_regression at 0x7f4c646b8280>
+		score_func: <function f_regression at 0x7fddce651f70>
 		percentile: Scalar(init=25, lower=1, upper=50).set_mutation(sigma=8.166666666666666).set_bounds(full_range_sampling=False, lower=1, upper=50)
 
 
@@ -180,7 +180,7 @@ categorical
 "selector"
 **********
 
-  Base Class Documentation: :class:`BPt.extensions.FeatSelectors.FeatureSelector`
+  Base Class Documentation: :class:`BPt.extensions.feat_selectors.FeatureSelector`
 
   Param Distributions
 
@@ -202,22 +202,22 @@ categorical
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f4c646b8040>
+		score_func: <function f_classif at 0x7fddce651d30>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f4c646b8040>
+		score_func: <function f_classif at 0x7fddce651d30>
 		percentile: Scalar(init=50, lower=1, upper=99).set_mutation(sigma=16.333333333333332).set_bounds(full_range_sampling=False, lower=1, upper=99)
 
 	2. "univar fs c keep more" ::
 
-		score_func: <function f_classif at 0x7f4c646b8040>
+		score_func: <function f_classif at 0x7fddce651d30>
 		percentile: Scalar(init=75, lower=50, upper=99).set_mutation(sigma=8.166666666666666).set_bounds(full_range_sampling=False, lower=50, upper=99)
 
 	3. "univar fs c keep less" ::
 
-		score_func: <function f_classif at 0x7f4c646b8040>
+		score_func: <function f_classif at 0x7fddce651d30>
 		percentile: Scalar(init=25, lower=1, upper=50).set_mutation(sigma=8.166666666666666).set_bounds(full_range_sampling=False, lower=1, upper=50)
 
 

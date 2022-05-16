@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>BPt.Dataset.plot &#8212; BPt 2.2.3 documentation</title>
+    <title>BPt.Dataset.plot &#8212; BPt 2.2.4 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -357,6 +357,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.plots.html">
+     BPt.Dataset.plots
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="BPt.Dataset.plot_bivar.html">
      BPt.Dataset.plot_bivar
     </a>
@@ -672,6 +677,16 @@
      BPt.cross_val_score
     </a>
    </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.EvalResults.html">
+     BPt.EvalResults
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.EvalResultsSubset.html">
+     BPt.EvalResultsSubset
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -766,7 +781,7 @@
 <h1>BPt.Dataset.plot<a class="headerlink" href="#bpt-dataset-plot" title="Permalink to this headline">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="BPt.Dataset.plot">
-<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">scope</span></em>, <em class="sig-param"><span class="pre">subjects='all'</span></em>, <em class="sig-param"><span class="pre">cut=0</span></em>, <em class="sig-param"><span class="pre">decode_values=True</span></em>, <em class="sig-param"><span class="pre">count=True</span></em>, <em class="sig-param"><span class="pre">show=True</span></em>, <em class="sig-param"><span class="pre">reduce_func=&lt;function</span> <span class="pre">mean&gt;</span></em>, <em class="sig-param"><span class="pre">n_jobs=-1</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_plotting.py#L368-L459"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.plot" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">scope</span></em>, <em class="sig-param"><span class="pre">subjects='all'</span></em>, <em class="sig-param"><span class="pre">cut=0</span></em>, <em class="sig-param"><span class="pre">decode_values=True</span></em>, <em class="sig-param"><span class="pre">count=True</span></em>, <em class="sig-param"><span class="pre">show=True</span></em>, <em class="sig-param"><span class="pre">reduce_func=&lt;function</span> <span class="pre">mean&gt;</span></em>, <em class="sig-param"><span class="pre">n_jobs=-1</span></em>, <em class="sig-param"><span class="pre">axes=None</span></em>, <em class="sig-param"><span class="pre">ax=None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_plotting.py#L402-L532"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.plot" title="Permalink to this definition">#</a></dt>
 <dd><p>This function creates plots for each of the passed
 columns (as specified by scope) seperately.</p>
 <dl class="field-list">
@@ -813,7 +828,7 @@ False, then display the frequency out of 1.</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>show</strong><span class="classifier">bool, optional</span></dt><dd><p>If plt.show() from matplotlib should
+<dt><strong>show</strong><span class="classifier">bool or ‘default’, optional</span></dt><dd><p>If plt.show() from matplotlib should
 be called after plotting each column within
 the passed scope. You will typically
 want this parameter to be the default True,
@@ -824,7 +839,10 @@ one column, and want to make customizations,
 then you should pass this value as False,
 and you can make changes to the figure
 via matplotlib’s global state system.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">True</span>
+<p>Note: If axes or ax is passed as non-null,
+then default swaps to False. Otherwise default
+is True.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>
 </pre></div>
 </div>
 </dd>
@@ -843,10 +861,23 @@ valid when the passed col/column is a ‘data file’.
 In that case, this specifies the number of cores
 to use in loading and applying the reduce_func to each
 data file. This can provide a significant speed up when
-passed the number of avaliable cores, but can sometimes
+passed the number of available cores, but can sometimes
 be memory intensive depending on the underlying size of the file.</p>
-<p>If set to -1, will try to automatically use all avaliable cores.</p>
+<p>If set to -1, will try to automatically use all available cores.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>axes</strong><span class="classifier">list of Axes or None, optional</span></dt><dd><p>Can optionally pass a list of axes in which
+to add each  plot to. By default plot each seperate</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>ax</strong><span class="classifier">Axes or None, optional</span></dt><dd><p>Simmilar to axes, but in the case of only
+plotting a single column, this parameter can also be
+used.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 </div>
 </dd>

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>BPt.Pipeline &#8212; BPt 2.2.3 documentation</title>
+    <title>BPt.Pipeline &#8212; BPt 2.2.4 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -357,6 +357,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.plots.html">
+     BPt.Dataset.plots
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="BPt.Dataset.plot_bivar.html">
      BPt.Dataset.plot_bivar
     </a>
@@ -672,6 +677,16 @@
      BPt.cross_val_score
     </a>
    </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.EvalResults.html">
+     BPt.EvalResults
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.EvalResultsSubset.html">
+     BPt.EvalResultsSubset
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -826,7 +841,7 @@ messy (i.e., overlapping messages from different threads).</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This class differs from <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.pipeline.Pipeline</span></code></a>
+<p>This class differs from <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="(in scikit-learn v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.pipeline.Pipeline</span></code></a>
 most drastically in that this class is not itself directly a
 sklearn-complaint estimator (i.e., an object with fit and predict methods).
 Instead, this object represents a flexible set of input pieces,
@@ -855,7 +870,7 @@ for example:</p>
 and an elastic net, all using the BPt style custom objects.</div>
 </div>
 <div class="line-block">
-<div class="line">This object can also work with <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.pipeline.Pipeline</span></code></a>
+<div class="line">This object can also work with <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="(in scikit-learn v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.pipeline.Pipeline</span></code></a>
 style steps. Or a mix of BPt style and sklearn style, for example:</div>
 </div>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [3]: </span><span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">Ridge</span>
@@ -872,7 +887,7 @@ style steps. Or a mix of BPt style and sklearn style, for example:</div>
 </pre></div>
 </div>
 <p>You may also pass sklearn objects directly instead of as
-a tuple, i.e., in the <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="(in scikit-learn v1.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.pipeline.make_pipeline()</span></code></a>
+a tuple, i.e., in the <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="(in scikit-learn v1.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.pipeline.make_pipeline()</span></code></a>
 input style. For example:</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [6]: </span><span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">Ridge</span>
 
@@ -896,7 +911,7 @@ and no associated hyper-parameter distributions.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.Pipeline.build.html#BPt.Pipeline.build" title="BPt.Pipeline.build"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code></a>([dataset, problem_spec])</p></td>
-<td><p>This method generates a sklearn compliant <a class="reference external" href="https://scikit-learn.org/stable/developers/develop.html#develop" title="(in scikit-learn v1.0)"><span class="xref std std-ref">estimator</span></a> version of the current <a class="reference internal" href="#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a> with respect to a passed dataset and <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> and <a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>.</p></td>
+<td><p>This method generates a sklearn compliant <a class="reference external" href="https://scikit-learn.org/stable/developers/develop.html#develop" title="(in scikit-learn v1.1)"><span class="xref std std-ref">estimator</span></a> version of the current <a class="reference internal" href="#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a> with respect to a passed dataset and <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> and <a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="BPt.Pipeline.copy.html#BPt.Pipeline.copy" title="BPt.Pipeline.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
 <td><p>This method returns a deepcopy of the base object.</p></td>

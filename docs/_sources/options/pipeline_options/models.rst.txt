@@ -6,7 +6,7 @@ Models
 
 Different base obj choices for the :class:`Model<BPt.Model>` are shown below
 The exact str indicator, as passed to the `obj` param is represented  by the sub-heading (within "")
-The avaliable models are further broken down by which can work with different problem_types.
+The available models are further broken down by which can work with different problem_types.
 Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
 
 binary
@@ -285,7 +285,7 @@ binary
 "mlp classifier"
 ****************
 
-  Base Class Documentation: :class:`BPt.extensions.MLP.MLPClassifier_Wrapper`
+  Base Class Documentation: :class:`BPt.extensions.mlp.MLPClassifier_Wrapper`
 
   Param Distributions
 
@@ -779,7 +779,7 @@ regression
 "mlp regressor"
 ***************
 
-  Base Class Documentation: :class:`BPt.extensions.MLP.MLPRegressor_Wrapper`
+  Base Class Documentation: :class:`BPt.extensions.mlp.MLPRegressor_Wrapper`
 
   Param Distributions
 
@@ -1259,7 +1259,7 @@ categorical
 "mlp classifier"
 ****************
 
-  Base Class Documentation: :class:`BPt.extensions.MLP.MLPClassifier_Wrapper`
+  Base Class Documentation: :class:`BPt.extensions.mlp.MLPClassifier_Wrapper`
 
   Param Distributions
 

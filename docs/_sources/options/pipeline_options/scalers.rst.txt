@@ -90,7 +90,7 @@ Additionally, a link to the original models documentation as well as the impleme
 "winsorize"
 ***********
 
-  Base Class Documentation: :class:`BPt.extensions.Scalers.Winsorizer`
+  Base Class Documentation: :class:`BPt.extensions.scalers.Winsorizer`
 
   Param Distributions
 

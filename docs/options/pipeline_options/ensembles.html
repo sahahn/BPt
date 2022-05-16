@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Ensemble Types &#8212; BPt 2.2.3 documentation</title>
+    <title>Ensemble Types &#8212; BPt 2.2.4 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -299,11 +299,6 @@
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#balanced-bagging-classifier">
-     “balanced bagging classifier”
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#stacking-classifier">
      “stacking classifier”
     </a>
@@ -359,16 +354,11 @@
    </li>
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#id4">
-     “balanced bagging classifier”
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#id5">
      “stacking classifier”
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#id6">
+    <a class="reference internal nav-link" href="#id5">
      “voting classifier”
     </a>
    </li>
@@ -399,7 +389,7 @@
 <span id="id1"></span><h1>Ensemble Types<a class="headerlink" href="#ensemble-types" title="Permalink to this headline">#</a></h1>
 <p>Different base obj choices for the <a class="reference internal" href="../../reference/api/BPt.Ensemble.html#BPt.Ensemble" title="BPt.Ensemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ensemble</span></code></a> are shown below
 The exact str indicator, as passed to the <cite>obj</cite> param is represented by the sub-heading (within “”)
-The avaliable ensembles are further broken down by which can workwith different problem_types.
+The available ensembles are further broken down by which can workwith different problem_types.
 Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
 Also note that ensemble may require a few extra params!</p>
 <section id="binary">
@@ -407,7 +397,7 @@ Also note that ensemble may require a few extra params!</p>
 <section id="adaboost-classifier">
 <h3>“adaboost classifier”<a class="headerlink" href="#adaboost-classifier" title="Permalink to this headline">#</a></h3>
 <blockquote>
-<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostClassifier.html#sklearn.ensemble.AdaBoostClassifier" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.ensemble.AdaBoostClassifier</span></code></a></p>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostClassifier.html#sklearn.ensemble.AdaBoostClassifier" title="(in scikit-learn v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.ensemble.AdaBoostClassifier</span></code></a></p>
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">
@@ -423,23 +413,7 @@ Also note that ensemble may require a few extra params!</p>
 <section id="bagging-classifier">
 <h3>“bagging classifier”<a class="headerlink" href="#bagging-classifier" title="Permalink to this headline">#</a></h3>
 <blockquote>
-<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.BaggingClassifier.html#sklearn.ensemble.BaggingClassifier" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.ensemble.BaggingClassifier</span></code></a></p>
-<p>Param Distributions</p>
-<blockquote>
-<div><ol class="arabic" start="0">
-<li><p>“default”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span> <span class="n">only</span>
-</pre></div>
-</div>
-</li>
-</ol>
-</div></blockquote>
-</div></blockquote>
-</section>
-<section id="balanced-bagging-classifier">
-<h3>“balanced bagging classifier”<a class="headerlink" href="#balanced-bagging-classifier" title="Permalink to this headline">#</a></h3>
-<blockquote>
-<div><p>Base Class Documentation: <a class="reference external" href="https://imbalanced-learn.org/stable/references/generated/imblearn.ensemble.BalancedBaggingClassifier.html#imblearn.ensemble.BalancedBaggingClassifier" title="(in imbalanced-learn v0.9.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">imblearn.ensemble.BalancedBaggingClassifier</span></code></a></p>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.BaggingClassifier.html#sklearn.ensemble.BaggingClassifier" title="(in scikit-learn v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.ensemble.BaggingClassifier</span></code></a></p>
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">
@@ -490,7 +464,7 @@ Also note that ensemble may require a few extra params!</p>
 <section id="adaboost-regressor">
 <h3>“adaboost regressor”<a class="headerlink" href="#adaboost-regressor" title="Permalink to this headline">#</a></h3>
 <blockquote>
-<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostRegressor.html#sklearn.ensemble.AdaBoostRegressor" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.ensemble.AdaBoostRegressor</span></code></a></p>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostRegressor.html#sklearn.ensemble.AdaBoostRegressor" title="(in scikit-learn v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.ensemble.AdaBoostRegressor</span></code></a></p>
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">
@@ -506,7 +480,7 @@ Also note that ensemble may require a few extra params!</p>
 <section id="bagging-regressor">
 <h3>“bagging regressor”<a class="headerlink" href="#bagging-regressor" title="Permalink to this headline">#</a></h3>
 <blockquote>
-<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.BaggingRegressor.html#sklearn.ensemble.BaggingRegressor" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.ensemble.BaggingRegressor</span></code></a></p>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.BaggingRegressor.html#sklearn.ensemble.BaggingRegressor" title="(in scikit-learn v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.ensemble.BaggingRegressor</span></code></a></p>
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">
@@ -557,7 +531,7 @@ Also note that ensemble may require a few extra params!</p>
 <section id="id2">
 <h3>“adaboost classifier”<a class="headerlink" href="#id2" title="Permalink to this headline">#</a></h3>
 <blockquote>
-<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostClassifier.html#sklearn.ensemble.AdaBoostClassifier" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.ensemble.AdaBoostClassifier</span></code></a></p>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostClassifier.html#sklearn.ensemble.AdaBoostClassifier" title="(in scikit-learn v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.ensemble.AdaBoostClassifier</span></code></a></p>
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">
@@ -573,7 +547,7 @@ Also note that ensemble may require a few extra params!</p>
 <section id="id3">
 <h3>“bagging classifier”<a class="headerlink" href="#id3" title="Permalink to this headline">#</a></h3>
 <blockquote>
-<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.BaggingClassifier.html#sklearn.ensemble.BaggingClassifier" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.ensemble.BaggingClassifier</span></code></a></p>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.BaggingClassifier.html#sklearn.ensemble.BaggingClassifier" title="(in scikit-learn v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.ensemble.BaggingClassifier</span></code></a></p>
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">
@@ -587,23 +561,7 @@ Also note that ensemble may require a few extra params!</p>
 </div></blockquote>
 </section>
 <section id="id4">
-<h3>“balanced bagging classifier”<a class="headerlink" href="#id4" title="Permalink to this headline">#</a></h3>
-<blockquote>
-<div><p>Base Class Documentation: <a class="reference external" href="https://imbalanced-learn.org/stable/references/generated/imblearn.ensemble.BalancedBaggingClassifier.html#imblearn.ensemble.BalancedBaggingClassifier" title="(in imbalanced-learn v0.9.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">imblearn.ensemble.BalancedBaggingClassifier</span></code></a></p>
-<p>Param Distributions</p>
-<blockquote>
-<div><ol class="arabic" start="0">
-<li><p>“default”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span> <span class="n">only</span>
-</pre></div>
-</div>
-</li>
-</ol>
-</div></blockquote>
-</div></blockquote>
-</section>
-<section id="id5">
-<h3>“stacking classifier”<a class="headerlink" href="#id5" title="Permalink to this headline">#</a></h3>
+<h3>“stacking classifier”<a class="headerlink" href="#id4" title="Permalink to this headline">#</a></h3>
 <blockquote>
 <div><p>Base Class Documentation: <code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.pipeline.ensemble_wrappers.BPtStackingClassifier</span></code></p>
 <p>Param Distributions</p>
@@ -618,8 +576,8 @@ Also note that ensemble may require a few extra params!</p>
 </div></blockquote>
 </div></blockquote>
 </section>
-<section id="id6">
-<h3>“voting classifier”<a class="headerlink" href="#id6" title="Permalink to this headline">#</a></h3>
+<section id="id5">
+<h3>“voting classifier”<a class="headerlink" href="#id5" title="Permalink to this headline">#</a></h3>
 <blockquote>
 <div><p>Base Class Documentation: <code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.pipeline.ensemble_wrappers.BPtVotingClassifier</span></code></p>
 <p>Param Distributions</p>

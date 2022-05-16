@@ -160,6 +160,7 @@ BPt.Dataset
       Dataset.pivot_table
       Dataset.plot
       Dataset.plot_bivar
+      Dataset.plots
       Dataset.pop
       Dataset.pow
       Dataset.prod

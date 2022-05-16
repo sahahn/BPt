@@ -1067,7 +1067,7 @@
        "\n",
        "Saved Attributes: ['estimators', 'preds', 'timing', 'train_subjects', 'val_subjects', 'feat_names', 'ps', 'mean_scores', 'std_scores', 'weighted_mean_scores', 'scores', 'fis_', 'coef_']\n",
        "\n",
-       "Avaliable Methods: ['get_preds_dfs', 'get_fis', 'get_coef_', 'permutation_importance']\n",
+       "Available Methods: ['get_preds_dfs', 'get_fis', 'get_coef_', 'permutation_importance']\n",
        "\n",
        "Evaluated with:\n",
        "ProblemSpec(problem_type='regression',\n",

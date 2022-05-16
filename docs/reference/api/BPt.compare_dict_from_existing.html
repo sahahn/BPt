@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>BPt.compare_dict_from_existing &#8212; BPt 2.2.3 documentation</title>
+    <title>BPt.compare_dict_from_existing &#8212; BPt 2.2.4 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -357,6 +357,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.plots.html">
+     BPt.Dataset.plots
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="BPt.Dataset.plot_bivar.html">
      BPt.Dataset.plot_bivar
     </a>
@@ -672,6 +677,16 @@
      BPt.cross_val_score
     </a>
    </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.EvalResults.html">
+     BPt.EvalResults
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.EvalResultsSubset.html">
+     BPt.EvalResultsSubset
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -768,7 +783,7 @@
 <dt class="sig sig-object py" id="BPt.compare_dict_from_existing">
 <span class="sig-prename descclassname"><span class="pre">BPt.</span></span><span class="sig-name descname"><span class="pre">compare_dict_from_existing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/compare.py#L705-L795"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.compare_dict_from_existing" title="Permalink to this definition">#</a></dt>
 <dd><p>Load in a <a class="reference internal" href="BPt.CompareDict.html#BPt.CompareDict" title="BPt.CompareDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompareDict</span></code></a> from some combination
-of already evaluated instances of <code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code>.</p>
+of already evaluated instances of <a class="reference internal" href="BPt.EvalResults.html#BPt.EvalResults" title="BPt.EvalResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code></a>.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
@@ -777,14 +792,14 @@ of different ways.</p>
 <ol class="arabic simple">
 <li><p>As a dictionary, where key-values
 correspond to either an instance of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code> or the str location
-of a pickle saved <code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code>.</p></li>
-<li><p>As a list, of either <code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code>
+<a class="reference internal" href="BPt.EvalResults.html#BPt.EvalResults" title="BPt.EvalResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code></a> or the str location
+of a pickle saved <a class="reference internal" href="BPt.EvalResults.html#BPt.EvalResults" title="BPt.EvalResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code></a>.</p></li>
+<li><p>As a list, of either <a class="reference internal" href="BPt.EvalResults.html#BPt.EvalResults" title="BPt.EvalResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code></a>
 instances, str file locations where they are
 saved, or a mix.</p></li>
 <li><p>As a str, corresponding to the location of
 a directory, where every file in the directory
-is a pickle saved instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code>.</p></li>
+is a pickle saved instance of <a class="reference internal" href="BPt.EvalResults.html#BPt.EvalResults" title="BPt.EvalResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code></a>.</p></li>
 </ol>
 <p>Note: The key values in the compare dictionary
 will be in the case that a dictionary is passed, the

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>BPt.Dataset.get_permuted_Xy &#8212; BPt 2.2.3 documentation</title>
+    <title>BPt.Dataset.get_permuted_Xy &#8212; BPt 2.2.4 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -357,6 +357,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.plots.html">
+     BPt.Dataset.plots
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="BPt.Dataset.plot_bivar.html">
      BPt.Dataset.plot_bivar
     </a>
@@ -672,6 +677,16 @@
      BPt.cross_val_score
     </a>
    </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.EvalResults.html">
+     BPt.EvalResults
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.EvalResultsSubset.html">
+     BPt.EvalResultsSubset
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -766,7 +781,7 @@
 <h1>BPt.Dataset.get_permuted_Xy<a class="headerlink" href="#bpt-dataset-get-permuted-xy" title="Permalink to this headline">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="BPt.Dataset.get_permuted_Xy">
-<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">get_permuted_Xy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">problem_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">within_grp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">problem_spec_params</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/dataset.py#L1648-L1750"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.get_permuted_Xy" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">get_permuted_Xy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">problem_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">within_grp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">problem_spec_params</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/dataset.py#L1656-L1758"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.get_permuted_Xy" title="Permalink to this definition">#</a></dt>
 <dd><p>This method is otherwise identical  to <a class="reference internal" href="BPt.Dataset.get_Xy.html#BPt.Dataset.get_Xy" title="BPt.Dataset.get_Xy"><code class="xref py py-func docutils literal notranslate"><span class="pre">Dataset.get_Xy()</span></code></a>, except
 a version of X, y where the values in y are permuted is returned. Permutations
 can further be customized if extra library neurotools
@@ -802,7 +817,7 @@ be used each time, if this is left as None.</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>blocks</strong><span class="classifier">None, array, pd.Series or pd.DataFrame, optional</span></dt><dd><p>This parameter is only avaliable when the neurotool library is installed.
+<dt><strong>blocks</strong><span class="classifier">None, array, pd.Series or pd.DataFrame, optional</span></dt><dd><p>This parameter is only available when the neurotool library is installed.
 See:  <a class="reference external" href="https://github.com/sahahn/neurotools">https://github.com/sahahn/neurotools</a></p>
 <p>This parameter represents the underlying exchangability-block
 structure of the data passed. It is also used to constrain the possible

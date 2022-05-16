@@ -90,6 +90,7 @@ Plotting / Viewing
    :toctree: api/
 
    Dataset.plot
+   Dataset.plots
    Dataset.plot_bivar
    Dataset.nan_info
    Dataset.summary

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>BPt.Dataset.test_split &#8212; BPt 2.2.3 documentation</title>
+    <title>BPt.Dataset.test_split &#8212; BPt 2.2.4 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -357,6 +357,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.plots.html">
+     BPt.Dataset.plots
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="BPt.Dataset.plot_bivar.html">
      BPt.Dataset.plot_bivar
     </a>
@@ -672,6 +677,16 @@
      BPt.cross_val_score
     </a>
    </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.EvalResults.html">
+     BPt.EvalResults
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.EvalResultsSubset.html">
+     BPt.EvalResultsSubset
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -899,15 +914,15 @@ influence the original <a class="reference internal" href="BPt.Dataset.html#BPt.
 <span class="gp">In [5]: </span><span class="n">tr_data</span>
 <span class="gh">Out[5]: </span><span class="go"></span>
 <span class="go">  animals  numbers</span>
+<span class="go">0   &#39;cat&#39;      1.0</span>
 <span class="go">1   &#39;cat&#39;      2.0</span>
 <span class="go">2   &#39;dog&#39;      1.0</span>
-<span class="go">3   &#39;dog&#39;      2.0</span>
 <span class="go">4   &#39;elk&#39;      NaN</span>
 
 <span class="gp">In [6]: </span><span class="n">test_data</span>
 <span class="gh">Out[6]: </span><span class="go"></span>
 <span class="go">  animals  numbers</span>
-<span class="go">0   &#39;cat&#39;      1.0</span>
+<span class="go">3   &#39;dog&#39;      2.0</span>
 </pre></div>
 </div>
 <p>We can also define a split by passing specific subjects.</p>

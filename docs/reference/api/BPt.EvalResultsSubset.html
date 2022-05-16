@@ -1,0 +1,961 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>BPt.EvalResultsSubset &#8212; BPt 2.2.4 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="BPt.EvalResultsSubset.all_train_subjects" href="BPt.EvalResultsSubset.all_train_subjects.html" />
+    <link rel="prev" title="BPt.EvalResults.to_pickle" href="BPt.EvalResults.to_pickle.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../index.html">
+  <img src="../../_static/red_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../installation/index.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  API reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../options/index.html">
+  Default Options
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../change_log/index.html">
+  Change Log
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../cite/index.html">
+  Cite BPt
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/sahahn/BPt" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/SageHahn11" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../dataset.html">
+   Dataset
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.html">
+     BPt.Dataset
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_cols.html">
+     BPt.Dataset.get_cols
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_subjects.html">
+     BPt.Dataset.get_subjects
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_values.html">
+     BPt.Dataset.get_values
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.add_scope.html">
+     BPt.Dataset.add_scope
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.remove_scope.html">
+     BPt.Dataset.remove_scope
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.set_role.html">
+     BPt.Dataset.set_role
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.set_roles.html">
+     BPt.Dataset.set_roles
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_roles.html">
+     BPt.Dataset.get_roles
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.rename.html">
+     BPt.Dataset.rename
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.copy.html">
+     BPt.Dataset.copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.auto_detect_categorical.html">
+     BPt.Dataset.auto_detect_categorical
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_Xy.html">
+     BPt.Dataset.get_Xy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_permuted_Xy.html">
+     BPt.Dataset.get_permuted_Xy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.split_by.html">
+     BPt.Dataset.split_by
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.to_binary.html">
+     BPt.Dataset.to_binary
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.binarize.html">
+     BPt.Dataset.binarize
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.k_bin.html">
+     BPt.Dataset.k_bin
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.ordinalize.html">
+     BPt.Dataset.ordinalize
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.nan_to_class.html">
+     BPt.Dataset.nan_to_class
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.copy_as_non_input.html">
+     BPt.Dataset.copy_as_non_input
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.add_unique_overlap.html">
+     BPt.Dataset.add_unique_overlap
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.add_data_files.html">
+     BPt.Dataset.add_data_files
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.to_data_file.html">
+     BPt.Dataset.to_data_file
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.consolidate_data_files.html">
+     BPt.Dataset.consolidate_data_files
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.update_data_file_paths.html">
+     BPt.Dataset.update_data_file_paths
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.get_file_mapping.html">
+     BPt.Dataset.get_file_mapping
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.filter_outliers_by_std.html">
+     BPt.Dataset.filter_outliers_by_std
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.filter_outliers_by_percent.html">
+     BPt.Dataset.filter_outliers_by_percent
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.filter_categorical_by_percent.html">
+     BPt.Dataset.filter_categorical_by_percent
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_cols.html">
+     BPt.Dataset.drop_cols
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_nan_subjects.html">
+     BPt.Dataset.drop_nan_subjects
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_subjects_by_nan.html">
+     BPt.Dataset.drop_subjects_by_nan
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_cols_by_unique_val.html">
+     BPt.Dataset.drop_cols_by_unique_val
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_cols_by_nan.html">
+     BPt.Dataset.drop_cols_by_nan
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_id_cols.html">
+     BPt.Dataset.drop_id_cols
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.drop_duplicate_cols.html">
+     BPt.Dataset.drop_duplicate_cols
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.apply_inclusions.html">
+     BPt.Dataset.apply_inclusions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.apply_exclusions.html">
+     BPt.Dataset.apply_exclusions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.plot.html">
+     BPt.Dataset.plot
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.plots.html">
+     BPt.Dataset.plots
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.plot_bivar.html">
+     BPt.Dataset.plot_bivar
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.nan_info.html">
+     BPt.Dataset.nan_info
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.summary.html">
+     BPt.Dataset.summary
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.set_test_split.html">
+     BPt.Dataset.set_test_split
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.set_train_split.html">
+     BPt.Dataset.set_train_split
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.test_split.html">
+     BPt.Dataset.test_split
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.train_split.html">
+     BPt.Dataset.train_split
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.save_test_split.html">
+     BPt.Dataset.save_test_split
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Dataset.save_train_split.html">
+     BPt.Dataset.save_train_split
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../pipeline.html">
+   Pipelines
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Pipeline.html">
+     BPt.Pipeline
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.ModelPipeline.html">
+     BPt.ModelPipeline
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../pipeline_pieces.html">
+   Pipeline Pieces
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Loader.html">
+     BPt.Loader
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Imputer.html">
+     BPt.Imputer
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Scaler.html">
+     BPt.Scaler
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Sampler.html">
+     BPt.Sampler
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Transformer.html">
+     BPt.Transformer
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.FeatSelector.html">
+     BPt.FeatSelector
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Model.html">
+     BPt.Model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Ensemble.html">
+     BPt.Ensemble
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.ParamSearch.html">
+     BPt.ParamSearch
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../problem_spec.html">
+   ProblemSpec
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+  <label for="toctree-checkbox-4">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.ProblemSpec.html">
+     BPt.ProblemSpec
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../CV.html">
+   CV
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+  <label for="toctree-checkbox-5">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.CV.html">
+     BPt.CV
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.CVStrategy.html">
+     BPt.CVStrategy
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../input_operations.html">
+   Input Operations
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+  <label for="toctree-checkbox-6">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Select.html">
+     BPt.Select
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Duplicate.html">
+     BPt.Duplicate
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.ValueSubset.html">
+     BPt.ValueSubset
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Intersection.html">
+     BPt.Intersection
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Pipe.html">
+     BPt.Pipe
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../compare.html">
+   Compare
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+  <label for="toctree-checkbox-7">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Compare.html">
+     BPt.Compare
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.Option.html">
+     BPt.Option
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.CompareDict.html">
+     BPt.CompareDict
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.compare_dict_from_existing.html">
+     BPt.compare_dict_from_existing
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../dists.html">
+   Parameter Distributions
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+  <label for="toctree-checkbox-8">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Choice.html">
+     BPt.p.Choice
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.TransitionChoice.html">
+     BPt.p.TransitionChoice
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Scalar.html">
+     BPt.p.Scalar
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Log.html">
+     BPt.p.Log
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Array.html">
+     BPt.p.Array
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Tuple.html">
+     BPt.p.Tuple
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Dict.html">
+     BPt.p.Dict
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.p.Instrumentation.html">
+     BPt.p.Instrumentation
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../evaluate.html">
+   Evaluate
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+  <label for="toctree-checkbox-9">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.get_estimator.html">
+     BPt.get_estimator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.evaluate.html">
+     BPt.evaluate
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.cross_validate.html">
+     BPt.cross_validate
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.cross_val_score.html">
+     BPt.cross_val_score
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.EvalResults.html">
+     BPt.EvalResults
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     BPt.EvalResultsSubset
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../extensions.html">
+   Extension Classes
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/>
+  <label for="toctree-checkbox-10">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.extensions.Identity.html">
+     BPt.extensions.Identity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.extensions.ThresholdNetworkMeasures.html">
+     BPt.extensions.ThresholdNetworkMeasures
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.extensions.SingleConnectivityMeasure.html">
+     BPt.extensions.SingleConnectivityMeasure
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../util.html">
+   Util
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/>
+  <label for="toctree-checkbox-11">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.util.save_docx_table.html">
+     BPt.util.save_docx_table
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="BPt.util.is_array_like.html">
+     BPt.util.is_array_like
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+
+<nav id="bd-toc-nav">
+    
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="bpt-evalresultssubset">
+<h1>BPt.EvalResultsSubset<a class="headerlink" href="#bpt-evalresultssubset" title="Permalink to this headline">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="BPt.EvalResultsSubset">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">BPt.</span></span><span class="sig-name descname"><span class="pre">EvalResultsSubset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evaluator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/eval.py#L2101-L2217"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.EvalResultsSubset" title="Permalink to this definition">#</a></dt>
+<dd><p>This class represents a subset of <a class="reference internal" href="BPt.EvalResults.html#BPt.EvalResults" title="BPt.EvalResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code></a> and
+is returned as a result of calling <a class="reference internal" href="BPt.EvalResults.subset_by.html#BPt.EvalResults.subset_by" title="BPt.EvalResults.subset_by"><code class="xref py py-func docutils literal notranslate"><span class="pre">EvalResults.subset_by()</span></code></a>.</p>
+<p>This class specifically updates values for a subset of val_subjects,
+which mean only the following attributes are re-calculated / will be
+different from the source <a class="reference internal" href="BPt.EvalResults.html#BPt.EvalResults" title="BPt.EvalResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code></a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">val_subjects</span>
+<span class="n">all_val_subjects</span>
+<span class="n">preds</span>
+<span class="n">scores</span>
+<span class="n">mean_scores</span>
+<span class="n">weighted_mean_scores</span>
+</pre></div>
+</div>
+<p class="rubric">Attributes</p>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.all_train_subjects.html#BPt.EvalResultsSubset.all_train_subjects" title="BPt.EvalResultsSubset.all_train_subjects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_train_subjects</span></code></a></p></td>
+<td><p><div class="line-block">
+<div class="line">This parameter stores the training subjects / index</div>
+</div>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.all_val_subjects.html#BPt.EvalResultsSubset.all_val_subjects" title="BPt.EvalResultsSubset.all_val_subjects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_val_subjects</span></code></a></p></td>
+<td><p><div class="line-block">
+<div class="line">This parameter stores the validation subjects / index</div>
+</div>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.coef_.html#BPt.EvalResultsSubset.coef_" title="BPt.EvalResultsSubset.coef_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coef_</span></code></a></p></td>
+<td><p>This attribute represents the mean <cite>coef_</cite> as a numpy array across all folds.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.cv.html#BPt.EvalResultsSubset.cv" title="BPt.EvalResultsSubset.cv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cv</span></code></a></p></td>
+<td><p>If set to store CV is true, a deepcopy of the passed cv splitter will be stored</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.estimator.html#BPt.EvalResultsSubset.estimator" title="BPt.EvalResultsSubset.estimator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimator</span></code></a></p></td>
+<td><p>This parameter stores the passed saved, unfitted estimator used in this evaluation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.estimators.html#BPt.EvalResultsSubset.estimators" title="BPt.EvalResultsSubset.estimators"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimators</span></code></a></p></td>
+<td><p>If the parameter <cite>store_estimators</cite> is set to True when calling <a class="reference internal" href="BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>, then this parameter will store the fitted estimator in a list.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.feat_names.html#BPt.EvalResultsSubset.feat_names" title="BPt.EvalResultsSubset.feat_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">feat_names</span></code></a></p></td>
+<td><p>The features names corresponding to any measures of feature importance, stored as a list of lists, where the top level list represents each fold of cross validation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.feature_importances_.html#BPt.EvalResultsSubset.feature_importances_" title="BPt.EvalResultsSubset.feature_importances_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">feature_importances_</span></code></a></p></td>
+<td><p>This property stores the mean values across fitted estimators assuming each fitted estimator has a non empty <cite>feature_importances_</cite> attribute.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.fis_.html#BPt.EvalResultsSubset.fis_" title="BPt.EvalResultsSubset.fis_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fis_</span></code></a></p></td>
+<td><p>This property stores the mean value across each fold of the CV for either the <cite>coef_</cite> or <cite>feature_importance_</cite> parameter.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.mean_scores.html#BPt.EvalResultsSubset.mean_scores" title="BPt.EvalResultsSubset.mean_scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_scores</span></code></a></p></td>
+<td><p>This parameter stores the mean scores as a dictionary of values, where each dictionary is indexed by the name of the scorer, and the dictionary value is the mean score for that scorer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.mean_timing.html#BPt.EvalResultsSubset.mean_timing" title="BPt.EvalResultsSubset.mean_timing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_timing</span></code></a></p></td>
+<td><p>This property stores information on the fit and scoring times, if requested by the original call to <a class="reference internal" href="BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.n_folds.html#BPt.EvalResultsSubset.n_folds" title="BPt.EvalResultsSubset.n_folds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_folds</span></code></a></p></td>
+<td><p>A quicker helper property to get the number of CV folds this object was evaluated with.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.n_subjects.html#BPt.EvalResultsSubset.n_subjects" title="BPt.EvalResultsSubset.n_subjects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_subjects</span></code></a></p></td>
+<td><p>A quicker helper property to get the sum of the length of <a class="reference internal" href="BPt.EvalResults.train_subjects.html#BPt.EvalResults.train_subjects" title="BPt.EvalResults.train_subjects"><code class="xref py py-data docutils literal notranslate"><span class="pre">train_subjects</span></code></a> and <a class="reference internal" href="BPt.EvalResults.val_subjects.html#BPt.EvalResults.val_subjects" title="BPt.EvalResults.val_subjects"><code class="xref py py-data docutils literal notranslate"><span class="pre">val_subjects</span></code></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.preds.html#BPt.EvalResultsSubset.preds" title="BPt.EvalResultsSubset.preds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preds</span></code></a></p></td>
+<td><p>If the parameter <cite>store_preds</cite> is set to True when calling <a class="reference internal" href="BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>, then this parameter will store the predictions from every evaluate fold.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.ps.html#BPt.EvalResultsSubset.ps" title="BPt.EvalResultsSubset.ps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ps</span></code></a></p></td>
+<td><p>A saved and pre-processed version of the problem_spec used (with any extra_params applied) when running this instance of Evaluator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.score.html#BPt.EvalResultsSubset.score" title="BPt.EvalResultsSubset.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a></p></td>
+<td><p>This property represents a quick helper for accessing the mean scores of whatever the first scorer is (in the case of multiple scorers).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.scores.html#BPt.EvalResultsSubset.scores" title="BPt.EvalResultsSubset.scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scores</span></code></a></p></td>
+<td><p>This property stores the scores for each scorer as a dictionary of lists, where the keys are the names of the scorer and the list represents the score obtained for each fold, where each index corresponds to to a fold of cross validation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.std_scores.html#BPt.EvalResultsSubset.std_scores" title="BPt.EvalResultsSubset.std_scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">std_scores</span></code></a></p></td>
+<td><p>This parameter stores the standard deviation scores as a dictionary of values, where each dictionary is indexed by the name of the scorer, and value contains the standard deviation across evaluation folds for that scorer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.timing.html#BPt.EvalResultsSubset.timing" title="BPt.EvalResultsSubset.timing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timing</span></code></a></p></td>
+<td><p>This property stores information on the fit and scoring times, if requested by the original call to <a class="reference internal" href="BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.train_subjects.html#BPt.EvalResultsSubset.train_subjects" title="BPt.EvalResultsSubset.train_subjects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train_subjects</span></code></a></p></td>
+<td><p><div class="line-block">
+<div class="line">This parameter stores the training subjects / index</div>
+</div>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.val_subjects.html#BPt.EvalResultsSubset.val_subjects" title="BPt.EvalResultsSubset.val_subjects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">val_subjects</span></code></a></p></td>
+<td><p><div class="line-block">
+<div class="line">This parameter stores the validation subjects / index</div>
+</div>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.weighted_mean_scores.html#BPt.EvalResultsSubset.weighted_mean_scores" title="BPt.EvalResultsSubset.weighted_mean_scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weighted_mean_scores</span></code></a></p></td>
+<td><p>This property stores the mean scores across evaluation folds (simmilar to <a class="reference internal" href="BPt.EvalResults.mean_scores.html#BPt.EvalResults.mean_scores" title="BPt.EvalResults.mean_scores"><code class="xref py py-data docutils literal notranslate"><span class="pre">mean_scores</span></code></a>), but weighted by the number of subjects / datapoints in each fold.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.compare.html#BPt.EvalResultsSubset.compare" title="BPt.EvalResultsSubset.compare"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compare</span></code></a>(other[, rope_interval])</p></td>
+<td><p>This method is designed to perform a statistical comparison between the results from the evaluation stored in this object and another instance of <a class="reference internal" href="BPt.EvalResults.html#BPt.EvalResults" title="BPt.EvalResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.get_X_transform_df.html#BPt.EvalResultsSubset.get_X_transform_df" title="BPt.EvalResultsSubset.get_X_transform_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_X_transform_df</span></code></a>([dataset, fold, ...])</p></td>
+<td><p>This method is used as a helper for getting the transformed input data for one of the saved models run during evaluate.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.get_coefs.html#BPt.EvalResultsSubset.get_coefs" title="BPt.EvalResultsSubset.get_coefs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_coefs</span></code></a>()</p></td>
+<td><p>This function returns each <cite>coef_</cite> value across fitted estimators.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.get_feature_importances.html#BPt.EvalResultsSubset.get_feature_importances" title="BPt.EvalResultsSubset.get_feature_importances"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_feature_importances</span></code></a>()</p></td>
+<td><p>This function returns each <cite>feature_importances_</cite> value across fitted estimators.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.get_fis.html#BPt.EvalResultsSubset.get_fis" title="BPt.EvalResultsSubset.get_fis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_fis</span></code></a>([mean, abs])</p></td>
+<td><p>This method will return a pandas DataFrame with each row a fold, and each column a feature if the underlying model supported either the <cite>coef_</cite> or <cite>feature_importance_</cite> parameters.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.get_inverse_fis.html#BPt.EvalResultsSubset.get_inverse_fis" title="BPt.EvalResultsSubset.get_inverse_fis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_inverse_fis</span></code></a>([fis])</p></td>
+<td><p>Try to inverse transform stored feature importances (either beta weights or automatically calculated feature importances) to their original space.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.get_preds_dfs.html#BPt.EvalResultsSubset.get_preds_dfs" title="BPt.EvalResultsSubset.get_preds_dfs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_preds_dfs</span></code></a>([drop_nan_targets])</p></td>
+<td><p>This function can be used to return the raw predictions made during evaluation as a list of pandas Dataframes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.permutation_importance.html#BPt.EvalResultsSubset.permutation_importance" title="BPt.EvalResultsSubset.permutation_importance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">permutation_importance</span></code></a>([dataset, n_repeats, ...])</p></td>
+<td><p>This function computes the permutation feature importances from the base scikit-learn function <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance" title="(in scikit-learn v1.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.inspection.permutation_importance()</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.run_permutation_test.html#BPt.EvalResultsSubset.run_permutation_test" title="BPt.EvalResultsSubset.run_permutation_test"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_permutation_test</span></code></a>([n_perm, dataset, ...])</p></td>
+<td><p>Compute signifigance values for the original results according to a permutation test scheme.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.subset_by.html#BPt.EvalResultsSubset.subset_by" title="BPt.EvalResultsSubset.subset_by"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subset_by</span></code></a>(group[, dataset, decode_values])</p></td>
+<td><p>Generate instances of <a class="reference internal" href="#BPt.EvalResultsSubset" title="BPt.EvalResultsSubset"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResultsSubset</span></code></a> based on subsets of subjects based on different unique groups.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.EvalResultsSubset.to_pickle.html#BPt.EvalResultsSubset.to_pickle" title="BPt.EvalResultsSubset.to_pickle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_pickle</span></code></a>(loc)</p></td>
+<td><p>Quick helper to save as pickle.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2020-2022.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

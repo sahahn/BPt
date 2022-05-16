@@ -1975,7 +1975,7 @@ class EvalResults():
         X, _ = dataset.get_Xy(self.ps)
 
         p_scores = {}
-        for n in range(n_perm):
+        for _ in range(n_perm):
             
             # Get the random seed for this permutation
             try:
@@ -2042,7 +2042,6 @@ class EvalResults():
             null_dist_means[metric] = np.mean(p_scores[metric])
             null_dist_stds[metric] = np.std(p_scores[metric])
 
-
         # Optionally make plot
         if plot:
 
@@ -2079,13 +2078,14 @@ class EvalResults():
                     
                     # Add vert line
                     a.axvline(self.mean_scores[metric], color='Red', linewidth=6,
-                                         label=f'Baseline - {self.mean_scores[metric]:.3f} (pval={p_values[metric]:.3f})')
+                              label=f'Baseline - {self.mean_scores[metric]:.3f} (pval={p_values[metric]:.3f})')
                     
                     # Add legend + title
                     a.legend()
                     a.set_title(metric)
 
-        return p_values, null_dist_means, null_dist_stds
+        # Return p_values and each of the null results
+        return p_values, p_scores
 
 
 class EvalResultsSubset(EvalResults):

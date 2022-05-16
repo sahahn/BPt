@@ -88,6 +88,15 @@ def is_notebook():
             return True
     except NameError:
         pass
+
+    # Check google collab
+    try:
+        import google.colab
+        return True
+    except:
+        ModuleNotFoundError
+
+
     return False
 
 

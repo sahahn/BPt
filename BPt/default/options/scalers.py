@@ -2,12 +2,12 @@ from ..helpers import get_obj_and_params, all_from_objects
 from sklearn.preprocessing import (MinMaxScaler, RobustScaler, StandardScaler,
                                    PowerTransformer, MaxAbsScaler,
                                    QuantileTransformer, Normalizer)
-from ...extensions.Scalers import Winsorizer
+from ...extensions.scalers import Winsorizer
 
 
 # Scalers differs from models in that the types are not restricted
-# by a given problem type. Therefore no AVALIABLE dictionary is needed
-# all avaliable scalers are as indexed by SCALERS.
+# by a given problem type. Therefore no AVAILABLE dictionary is needed
+# all available scalers are as indexed by SCALERS.
 SCALERS = {
     'standard': (StandardScaler, ['base standard']),
 

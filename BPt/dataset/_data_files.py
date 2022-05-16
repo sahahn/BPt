@@ -388,7 +388,7 @@ def consolidate_data_files(self, save_dr, replace_with=None,
         The number of jobs to use while stacking
         and saving each file.
 
-        If -1, then will try to use all avaliable cpu's.
+        If -1, then will try to use all available cpu's.
 
         ::
 

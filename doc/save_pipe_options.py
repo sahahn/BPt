@@ -109,15 +109,15 @@ def get_scorer_name(obj):
     return name
 
 
-def get_avaliable_by_type(AVALIABLE):
+def get_avaliable_by_type(AVAILABLE):
 
     avaliable_by_type = {}
 
-    for pt in AVALIABLE:
+    for pt in AVAILABLE:
 
         avaliable_by_type[pt] = set()
-        for select in AVALIABLE[pt]:
-            avaliable_by_type[pt].add(AVALIABLE[pt][select])
+        for select in AVAILABLE[pt]:
+            avaliable_by_type[pt].add(AVAILABLE[pt][select])
 
         avaliable_by_type[pt] = list(avaliable_by_type[pt])
         avaliable_by_type[pt].sort()
@@ -125,9 +125,9 @@ def get_avaliable_by_type(AVALIABLE):
     return avaliable_by_type
 
 
-def get_objects_by_type(problem_type, AVALIABLE=None, OBJS=None):
+def get_objects_by_type(problem_type, AVAILABLE=None, OBJS=None):
 
-    avaliable_by_type = get_avaliable_by_type(AVALIABLE)
+    avaliable_by_type = get_avaliable_by_type(AVAILABLE)
 
     objs = []
     for obj_str in avaliable_by_type[problem_type]:
@@ -167,19 +167,19 @@ def main_category(lines, name):
     return lines
 
 
-def add_block(lines, problem_types, AVALIABLE=None, OBJS=None):
-    '''If AVALIABLE and OBJS stay none, assume that showing scorers'''
+def add_block(lines, problem_types, AVAILABLE=None, OBJS=None):
+    '''If AVAILABLE and OBJS stay none, assume that showing scorers'''
 
     for pt in problem_types:
         lines.append(pt)
         lines.append(''.join('=' for i in range(len(pt))))
 
-        if AVALIABLE is None and OBJS is None:
+        if AVAILABLE is None and OBJS is None:
             objs = o.scorers.get_scorers_by_type(pt)
             scorer = True
 
         else:
-            objs = get_objects_by_type(pt, AVALIABLE, OBJS)
+            objs = get_objects_by_type(pt, AVAILABLE, OBJS)
             scorer = False
 
         for obj in objs:
@@ -283,14 +283,14 @@ def save_all():
     lines.append('The exact str indicator, as passed to the `obj` param '
                  'is represented '
                  ' by the sub-heading (within "")')
-    lines.append('The avaliable models are further broken down by '
+    lines.append('The available models are further broken down by '
                  'which can work ' +
                  'with different problem_types.')
     lines.append('Additionally, a link to the original models documentation ' +
                  'as well as the implemented parameter '
                  'distributions are shown.')
     lines.append('')
-    lines = add_block(lines, problem_types, o.models.AVALIABLE,
+    lines = add_block(lines, problem_types, o.models.AVAILABLE,
                       o.models.MODELS)
     save(lines, 'models')
 
@@ -303,7 +303,7 @@ def save_all():
                  ':class:`ParamSearch<BPt.ParamSearch>`.')
     lines.append('The str indicator for each `scorer` is represented by' +
                  ' the sub-heading (within "")')
-    lines.append('The avaliable scorers are further broken down by which can' +
+    lines.append('The available scorers are further broken down by which can' +
                  ' work with different problem_types.')
     lines.append('Additionally, a link to the original models documentation ' +
                  'is shown.')
@@ -394,14 +394,14 @@ def save_all():
     lines.append('The exact str indicator, as passed to the `obj` '
                  'param is represented' +
                  ' by the sub-heading (within "")')
-    lines.append('The avaliable feat selectors are further broken down by '
+    lines.append('The available feat selectors are further broken down by '
                  'which can work '
                  'with different problem_types.')
     lines.append('Additionally, a link to the original models documentation ' +
                  'as well as the implemented parameter '
                  'distributions are shown.')
     lines.append('')
-    lines = add_block(lines, problem_types, o.feature_selectors.AVALIABLE,
+    lines = add_block(lines, problem_types, o.feature_selectors.AVAILABLE,
                       o.feature_selectors.SELECTORS)
     save(lines, 'selectors')
 
@@ -412,7 +412,7 @@ def save_all():
     lines.append('The exact str indicator, as passed to the `obj` '
                  'param is represented' +
                  ' by the sub-heading (within "")')
-    lines.append('The avaliable ensembles are further broken down by ' +
+    lines.append('The available ensembles are further broken down by ' +
                  'which can work' +
                  'with different problem_types.')
     lines.append('Additionally, a link to the original models documentation ' +
@@ -420,7 +420,7 @@ def save_all():
                  ' distributions are shown.')
     lines.append('Also note that ensemble may require a few extra params!')
     lines.append('')
-    lines = add_block(lines, problem_types, o.ensembles.AVALIABLE,
+    lines = add_block(lines, problem_types, o.ensembles.AVAILABLE,
                       o.ensembles.ENSEMBLES)
     save(lines, 'ensembles')
 

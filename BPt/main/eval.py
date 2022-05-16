@@ -485,10 +485,10 @@ class EvalResults():
         can be accessed by the key 'predict'. Values are stored as list
         corresponding to each evaluation fold.
 
-        In the case where other predict-like functions are avaliable, e.g.,
+        In the case where other predict-like functions are available, e.g.,
         in the case of a binary problem, where it may be desirable to
         see the predicted probability, then the those predictions
-        will be made avaliable under the name of the underlying predict
+        will be made available under the name of the underlying predict
         function. In this case, that is self.preds['predict_proba'].
         It will also store results from 'predict' as well.
 
@@ -942,7 +942,7 @@ class EvalResults():
             rep += f'± {score_rep(self.std_scores[key])}\n'
         rep += '\n'
 
-        # Show avaliable saved attrs
+        # Show available saved attrs
         saved_attrs = []
         avaliable_methods = ['to_pickle', 'compare']
 
@@ -950,6 +950,8 @@ class EvalResults():
             saved_attrs.append('estimators')
             avaliable_methods.append('get_X_transform_df')
             avaliable_methods.append('get_inverse_fis')
+            avaliable_methods.append('run_permutation_test')
+
         if self.preds is not None:
             saved_attrs.append('preds')
             avaliable_methods.append('get_preds_dfs')
@@ -989,7 +991,7 @@ class EvalResults():
             saved_attrs += ['cv']
 
         rep += 'Saved Attributes: ' + repr(saved_attrs) + '\n\n'
-        rep += 'Avaliable Methods: ' + repr(avaliable_methods) + '\n\n'
+        rep += 'Available Methods: ' + repr(avaliable_methods) + '\n\n'
 
         # Use custom display str, no need to show scorer.
         rep += 'Evaluated With:\n'
@@ -1000,7 +1002,7 @@ class EvalResults():
     def _estimators_check(self):
 
         if self.estimators is None:
-            raise RuntimeError('This method is not avaliable unless '
+            raise RuntimeError('This method is not available unless '
                                'evaluate is run with store_estimators=True!')
 
     def _dataset_check(self, dataset=None):
@@ -1046,7 +1048,7 @@ class EvalResults():
     def coef_(self):
         '''This attribute represents the mean `coef_` as
         a numpy array across all folds. This parameter will only
-        be avaliable if all estimators have a non null `coef_` parameter
+        be available if all estimators have a non null `coef_` parameter
         and each returns the same shape. See `fis_` for a more flexible
         version of this parameter that can handle when there
         are differing numbers of features.'''
@@ -1795,7 +1797,7 @@ class EvalResults():
 
         {dataset}
 
-        | If left as default=None, then will try to use
+            | If left as default=None, then will try to use
               a shallow copy of the dataset passed to the original
               evaluate call (assuming evaluate was run with store_data_ref=True).
 
@@ -1901,7 +1903,7 @@ class EvalResults():
 
         {dataset}
 
-        | If left as default=None, then will try to use
+            | If left as default=None, then will try to use
               a shallow copy of the dataset passed to the original
               evaluate call (assuming evaluate was run with store_data_ref=True).
 
@@ -1917,6 +1919,55 @@ class EvalResults():
             ::
 
                 default = None
+
+        blocks : None, array, pd.Series or pd.DataFrame, optional
+            This parameter is only available when the neurotool library is installed.
+            See: https://github.com/sahahn/neurotools
+
+            This parameter represents the underlying exchangability-block
+            structure of the data passed. It is also used to constrain the possible
+            permutations in some way.
+
+            See PALM's documentation for an introduction on how to format ExchangeabilityBlocks:
+            https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/PALM/ExchangeabilityBlocks
+
+            This parameter accepts the same style input as PALM, except it is passed
+            here as an array or DataFrame instead of as a file. The main requirement 
+            is that the shape of the structure match the number of subjects / data points
+            in the first dimension.
+
+            ::
+
+                default = None
+
+        within_grp : bool, optional
+            This parameter is only relevant when a permutation structure / blocks is passed, in that
+            case it describes how the left-most exchanability / permutation structure column should act.
+            Specifically, if True, then it specifies that the left-most column should be treated as groups
+            to act in a within group swap only manner. If False, then it will consider the left-most column
+            groups to only be able to swap at the group level with other groups of the same size.
+
+            ::
+
+                default = True
+
+        plot : bool, optional
+            Can optionally add a plot visualizing the true result in comparison
+            to the generated null distribution.
+
+            ::
+
+                default = False
+
+        Returns
+        ------------
+        p_values : dict of float
+            A dictionary, as indexed by all of the valid metrics, with the
+            computed p-values.
+
+        p_scores : dict of array
+            The null distribution, as indexed by all of the valid metrics,
+            of scores.
 
         '''
 
@@ -1934,7 +1985,7 @@ class EvalResults():
         X, _ = dataset.get_Xy(self.ps)
 
         p_scores = {}
-        for n in range(n_perm):
+        for _ in range(n_perm):
             
             # Get the random seed for this permutation
             try:
@@ -2001,7 +2052,6 @@ class EvalResults():
             null_dist_means[metric] = np.mean(p_scores[metric])
             null_dist_stds[metric] = np.std(p_scores[metric])
 
-
         # Optionally make plot
         if plot:
 
@@ -2038,13 +2088,14 @@ class EvalResults():
                     
                     # Add vert line
                     a.axvline(self.mean_scores[metric], color='Red', linewidth=6,
-                                         label=f'Baseline - {self.mean_scores[metric]:.3f} (pval={p_values[metric]:.3f})')
+                              label=f'Baseline - {self.mean_scores[metric]:.3f} (pval={p_values[metric]:.3f})')
                     
                     # Add legend + title
                     a.legend()
                     a.set_title(metric)
 
-        return p_values, null_dist_means, null_dist_stds
+        # Return p_values and each of the null results
+        return p_values, p_scores
 
 
 class EvalResultsSubset(EvalResults):

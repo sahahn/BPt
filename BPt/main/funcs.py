@@ -761,7 +761,7 @@ def _eval_prep(estimator, ps, dataset, cv=5):
     sk_cv = check_cv(cv=sk_cv, y=None if pd.isnull(y).any() else y,
                      classifier=is_classifier)
 
-    # Make sure random_state and shuffle are set, if avaliable attributes.
+    # Make sure random_state and shuffle are set, if available attributes.
     if hasattr(sk_cv, 'random_state'):
         setattr(sk_cv, 'random_state', ps.random_state)
     if hasattr(sk_cv, 'shuffle'):

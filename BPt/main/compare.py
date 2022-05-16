@@ -593,7 +593,7 @@ class CompareDict(dict):
 
         # Make sure valid metric
         if metric not in metrics:
-            raise RuntimeError(f'{metric} not in avaliable {metrics}')
+            raise RuntimeError(f'{metric} not in available {metrics}')
 
         n_comparisons = (
             factorial(len(self))

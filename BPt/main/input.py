@@ -524,7 +524,7 @@ class Loader(Piece):
           The benefit of this method in contrast to 'all' is
           that only one subject's full raw data needs to be
           loaded at once, whereas with all, you must have enough
-          avaliable memory to load all of the current training or
+          available memory to load all of the current training or
           validation subject's raw data at one. Likewise 'single'
           allows for caching fit_transform operations for each
           individual subject (which can then be more flexibly re-used).
@@ -655,7 +655,7 @@ class Imputer(Piece):
     ----------
     obj : str
         `obj` selects the base imputation strategy to use.
-        See :ref:`Imputers` for all avaliable options.
+        See :ref:`Imputers` for all available options.
         Notably, if 'iterative' is passed,
         then a base model must also be passed!
 
@@ -756,7 +756,7 @@ class Scaler(Piece):
     obj : str or custom obj
         | `obj` if passed a str selects a scaler from the preset defined
             scalers, See :ref:`Scalers`
-            for all avaliable options. If passing a custom object, it must
+            for all available options. If passing a custom object, it must
             be a sklearn compatible
             transformer, and further must not require the target variable,
             not change the number of data
@@ -863,7 +863,7 @@ class Transformer(Piece):
     Parameters
     ----------
     obj : str or custom_obj
-        `obj` if passed a str selects from the avaliable class
+        `obj` if passed a str selects from the available class
         defined options for
         transformer as found at :ref:`Transformers`.
 
@@ -918,7 +918,7 @@ class FeatSelector(Piece):
         | The `obj` parameter selects which
             feature selection strategy to use.
 
-        | See :ref:`Feat Selectors` for all avaliable preset options
+        | See :ref:`Feat Selectors` for all available preset options
             and :ref:`Pipeline Objects<pipeline_objects>` to read more
             about pipeline objects in general.
 
@@ -1047,7 +1047,7 @@ class Ensemble(Model):
             initializing this object.
 
         | See :ref:`Ensemble Types` to see all
-            avaliable options for ensembles.
+            available options for ensembles.
 
         .. warning::
 
@@ -1274,7 +1274,7 @@ class ParamSearch(Params):
     ----------
     search_type : str, optional
         | The type of nevergrad hyper-parameter search to conduct. See
-            :ref:`Search Types<search_type_options>` for all avaliable options.
+            :ref:`Search Types<search_type_options>` for all available options.
 
         | You may pass 'grid' here in addition to the
             supported nevergrad searches. This will use sklearn's
@@ -2001,7 +2001,7 @@ class Pipeline(Params):
                 except ValueError:
                     obj = getattr(obj, key_piece)
 
-            # Set value via set params if avaliable / not self
+            # Set value via set params if available / not self
             if obj != self and hasattr(obj, 'set_params'):
                 obj.set_params(**{last_key: value})
                 return self

@@ -85,10 +85,10 @@ _file_docs['n_jobs'] = '''n_jobs : int, optional
             In that case, this specifies the number of cores
             to use in loading and applying the reduce_func to each
             data file. This can provide a significant speed up when
-            passed the number of avaliable cores, but can sometimes
+            passed the number of available cores, but can sometimes
             be memory intensive depending on the underlying size of the file.
 
-            If set to -1, will try to automatically use all avaliable cores.
+            If set to -1, will try to automatically use all available cores.
 
             ::
 
@@ -204,6 +204,7 @@ class Dataset(pd.DataFrame):
         # Process passed verbose
         self.verbose = verbose
 
+
     def __getitem__(self, key):
 
         try:
@@ -212,7 +213,14 @@ class Dataset(pd.DataFrame):
         # If the original passed index isn't a key,
         # then try again treating it as a scope.
         except KeyError:
-            item = super().__getitem__(self.get_cols(key))
+
+            # Raise KeyError if nothing
+            # rather than return nothing
+            cols = self.get_cols(key)
+            if len(cols) == 0:
+                raise KeyError(f'No columns found for key={key}')
+
+            item = super().__getitem__(cols)
 
         # If index returns Dataset, copy over metadata
         if isinstance(item, Dataset):
@@ -1685,7 +1693,7 @@ class Dataset(pd.DataFrame):
                 default = None
 
         blocks : None, array, pd.Series or pd.DataFrame, optional
-            This parameter is only avaliable when the neurotool library is installed.
+            This parameter is only available when the neurotool library is installed.
             See:  https://github.com/sahahn/neurotools
 
             This parameter represents the underlying exchangability-block
@@ -1934,11 +1942,13 @@ class Dataset(pd.DataFrame):
                               _get_next_ind)
 
     from ._plotting import (plot,
+                            plots,
                             nan_info,
                             _cont_info,
                             _cat_info,
                             summary,
                             plot_bivar,
+                            _plot_bivar,
                             _plot_cat_cat,
                             _plot_cat_float,
                             _plot_float_float,

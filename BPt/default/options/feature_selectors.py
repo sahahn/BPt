@@ -6,14 +6,14 @@ File with different Feature Selectors
 from ..helpers import (get_possible_init_params,
                        get_obj_and_params, all_from_avaliable)
 from sklearn.feature_selection import SelectPercentile, VarianceThreshold
-from ...extensions.FeatSelectors import FeatureSelector
+from ...extensions.feat_selectors import FeatureSelector
 from sklearn.feature_selection import RFE
 import numpy as np
 from numpy.random import RandomState
 from ..params.Params import Array
 
 
-AVALIABLE = {
+AVAILABLE = {
         'binary': {
                 'univariate selection c':
                 'univariate selection c',
@@ -34,7 +34,7 @@ AVALIABLE = {
         },
 }
 
-AVALIABLE['categorical'] = AVALIABLE['binary'].copy()
+AVAILABLE['categorical'] = AVAILABLE['binary'].copy()
 
 SELECTORS = {
     'univariate selection r': (SelectPercentile,
@@ -146,4 +146,4 @@ def get_feat_selector_and_params(feat_selector_str, extra_params, params,
             feat_selector_params)
 
 
-all_obj_keys = all_from_avaliable(AVALIABLE)
+all_obj_keys = all_from_avaliable(AVAILABLE)

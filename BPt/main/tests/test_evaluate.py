@@ -991,7 +991,7 @@ def test_evaluate_pipeline_with_custom_selector():
         selector = b_est1[0]
         custom_sel = selector.estimator_
 
-        from ...extensions.FeatSelectors import FeatureSelector as FS
+        from ...extensions.feat_selectors import FeatureSelector as FS
         assert isinstance(custom_sel, FS)
         assert len(custom_sel.mask) == 2
         assert np.array_equal(custom_sel.mask, selector._get_support_mask())
@@ -1097,7 +1097,7 @@ def test_evaluate_nan_targets_named_index():
 def test_linear_svm_with_multiproc():
 
     search_cv = CV(splits=3, n_repeats=1)
-    random_search = ParamSearch('RandomSearch', n_iter=16, cv=search_cv)
+    random_search = ParamSearch('RandomSearch', n_iter=8, cv=search_cv)
     linear_svm_search = Model('linear svm', params=1,
                               param_search=random_search)
     pipe = Pipeline(steps=[linear_svm_search])
@@ -1107,7 +1107,7 @@ def test_linear_svm_with_multiproc():
     _ = evaluate(pipeline=pipe,
                  dataset=dataset,
                  progress_bar=False,
-                 cv=2, n_jobs=4)
+                 cv=2, n_jobs=2)
 
 
 def test_evaluate_cv_test():

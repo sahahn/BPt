@@ -1,5 +1,5 @@
 import numpy as np
-from ..FeatSelectors import FeatureSelector
+from ..feat_selectors import FeatureSelector
 
 
 def basic_test():

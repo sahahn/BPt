@@ -119,7 +119,7 @@ def _return_subjects_as(self, subjects, return_as, only_level):
 
 
 @doc(subjects=_shared_docs['subjects'])
-def get_subjects(self, subjects, return_as='set', only_level=None):
+def get_subjects(self, subjects, return_as='index', only_level=None):
     '''Method to get a set of subjects, from
     a set of already loaded ones, or from a saved location.
 
@@ -130,12 +130,15 @@ def get_subjects(self, subjects, return_as='set', only_level=None):
     return_as : ['set', 'index', 'flat index'], optional
 
         - 'set'
-            Return as set of subjects.
+            Return as set of subjects. Note,
+            that as a of newer version of pandas
+            indexing with a set of subjects will
+            be depreciated.
 
         - 'index'
             Return as sorted :class:`pandas.Index`,
             or if underlying multi-index as a
-            :class:`pandas.MultiIndex`.
+            :class:`pandas.MultiIndex`. (default)
 
         - 'flat index'
             Return as sorted :class:`pandas.Index`,
@@ -143,6 +146,10 @@ def get_subjects(self, subjects, return_as='set', only_level=None):
             this will return the same result as
             'index', when MultiIndex, will return the index as a flat
             Index of tuples.
+
+        ::
+
+            default = 'index'
 
     only_level : int or None, optional
         This parameter is only relevant when the

@@ -74,7 +74,7 @@
     }
    ],
    "source": [
-    "# This way we can look at all column avaliable\n",
+    "# This way we can look at all column available\n",
     "all_cols = list(pd.read_csv('data/nda_rds_201.csv', nrows=0))\n",
     "all_cols[:10]"
    ]
@@ -1942,7 +1942,7 @@
        "\n",
        "Saved Attributes: ['estimators', 'preds', 'timing', 'train_subjects', 'val_subjects', 'feat_names', 'ps', 'mean_scores', 'std_scores', 'weighted_mean_scores', 'scores', 'fis_', 'coef_']\n",
        "\n",
-       "Avaliable Methods: ['get_preds_dfs', 'get_fis', 'get_coef_', 'permutation_importance']\n",
+       "Available Methods: ['get_preds_dfs', 'get_fis', 'get_coef_', 'permutation_importance']\n",
        "\n",
        "Evaluated with:\n",
        "ProblemSpec(n_jobs=8, problem_type='regression', random_state=51,\n",
@@ -2037,7 +2037,7 @@
        "\n",
        "Saved Attributes: ['estimators', 'preds', 'timing', 'train_subjects', 'val_subjects', 'feat_names', 'ps', 'mean_scores', 'std_scores', 'weighted_mean_scores', 'scores', 'fis_', 'coef_']\n",
        "\n",
-       "Avaliable Methods: ['get_preds_dfs', 'get_fis', 'get_coef_', 'permutation_importance']\n",
+       "Available Methods: ['get_preds_dfs', 'get_fis', 'get_coef_', 'permutation_importance']\n",
        "\n",
        "Evaluated with:\n",
        "ProblemSpec(n_jobs=8, problem_type='regression', random_state=51,\n",
@@ -2129,7 +2129,7 @@
        "\n",
        "Saved Attributes: ['estimators', 'preds', 'timing', 'train_subjects', 'val_subjects', 'feat_names', 'ps', 'mean_scores', 'std_scores', 'weighted_mean_scores', 'scores', 'fis_', 'coef_']\n",
        "\n",
-       "Avaliable Methods: ['get_preds_dfs', 'get_fis', 'get_coef_', 'permutation_importance']\n",
+       "Available Methods: ['get_preds_dfs', 'get_fis', 'get_coef_', 'permutation_importance']\n",
        "\n",
        "Evaluated with:\n",
        "ProblemSpec(n_jobs=8, problem_type='regression', random_state=51,\n",
@@ -2351,7 +2351,7 @@
        "\n",
        "Saved Attributes: ['estimators', 'preds', 'timing', 'train_subjects', 'val_subjects', 'feat_names', 'ps', 'mean_scores', 'std_scores', 'weighted_mean_scores', 'scores', 'fis_', 'coef_']\n",
        "\n",
-       "Avaliable Methods: ['get_preds_dfs', 'get_fis', 'get_coef_', 'permutation_importance']\n",
+       "Available Methods: ['get_preds_dfs', 'get_fis', 'get_coef_', 'permutation_importance']\n",
        "\n",
        "Evaluated with:\n",
        "ProblemSpec(n_jobs=8, problem_type='regression', random_state=51,\n",
@@ -2417,7 +2417,7 @@
    "source": [
     "## Plotting results\n",
     "\n",
-    "To plot feature importance results we are going to use a different library avaliable at https://github.com/sahahn/Neuro_Plotting, in addition to the library nilearn."
+    "To plot feature importance results we are going to use a different library available at https://github.com/sahahn/Neuro_Plotting, in addition to the library nilearn."
    ]
   },
   {

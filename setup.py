@@ -6,7 +6,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='brain-pred-toolbox',
-      version='2.2.3',
+      version='2.2.4',
       long_description=long_description,
       long_description_content_type='text/markdown',
       description='The Brain Predictability toolbox (BPt) is a ' +
@@ -40,7 +40,8 @@ setup(name='brain-pred-toolbox',
                     'mvlearn',
                     'imblearn',
                     'networkx',
-                    'xgboost>=1.4'],
+                    'xgboost>=1.4',
+                    'bp-neurotools'],
        },
       test_suite='pytest',
       tests_require=['pytest', 'coverage'],

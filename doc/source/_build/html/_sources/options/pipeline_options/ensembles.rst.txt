@@ -6,7 +6,7 @@ Ensemble Types
 
 Different base obj choices for the :class:`Ensemble<BPt.Ensemble>` are shown below
 The exact str indicator, as passed to the `obj` param is represented by the sub-heading (within "")
-The avaliable ensembles are further broken down by which can workwith different problem_types.
+The available ensembles are further broken down by which can workwith different problem_types.
 Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
 Also note that ensemble may require a few extra params!
 

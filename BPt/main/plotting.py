@@ -150,7 +150,6 @@ def _get_top_global(df, top_n, get_abs):
 
     return wide
 
-
 def plot_feat_importances(df,
                           xlabel='Feature Importances',
                           top_n=10,
@@ -240,33 +239,6 @@ def plot_feat_importances(df,
 
 
 """
-def _get_top_global(self, df, top_n, get_abs):
-
-    if get_abs:
-        imps = np.mean(np.abs(df))
-    else:
-        imps = np.mean(df)
-
-    imps.sort_values(ascending=False, inplace=True)
-
-    to_get = list(range(top_n))
-    if not get_abs:
-        to_get += [-i for i in range(1, top_n+1)][::-1]
-
-    top = imps[to_get]
-    feats = imps[to_get].index
-
-    top_df = df[feats]
-
-    if get_abs:
-        top_df = top_df.abs()
-
-    wide = top_df.melt()
-    wide['mean'] = wide['variable'].copy()
-    wide['mean'] = wide['mean'].replace(top.to_dict())
-
-    return wide
-
 
 def Plot_Global_Feat_Importances(
  self, feat_importances='most recent', top_n=10, show_abs=False,

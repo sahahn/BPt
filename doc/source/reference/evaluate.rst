@@ -27,11 +27,11 @@ Evaluate Functions
    cross_val_score
 
 
-BPt Evaluator
+EvalResults
 ~~~~~~~~~~~~~~~
 
 .. autosummary::
    :toctree: api/
 
-   BPtEvaluator
-   BPtEvaluatorSubset  
+   EvalResults
+   EvalResultsSubset  

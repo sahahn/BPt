@@ -482,8 +482,8 @@ class ModelConstructor(TypeConstructor):
     def _process(self, params):
 
         from ..default.options.models import (get_base_model_and_params,
-                                              AVALIABLE)
-        self.AVAILABLE = AVALIABLE.copy()
+                                              AVAILABLE)
+        self.AVAILABLE = AVAILABLE.copy()
 
         # If any ensembles
         ensemble_mask = np.array([hasattr(params[i], 'models')
@@ -932,8 +932,8 @@ class FeatSelectorConstructor(TypeConstructor):
     def _process(self, params):
 
         from ..default.options.feature_selectors import (
-            get_feat_selector_and_params, AVALIABLE)
-        self.AVAILABLE = AVALIABLE
+            get_feat_selector_and_params, AVAILABLE)
+        self.AVAILABLE = AVAILABLE
 
         # Standard base type process
         objs, obj_params =\
@@ -954,8 +954,8 @@ class EnsembleConstructor(TypeConstructor):
 
     def _process(self, params):
         from ..default.options.ensembles import (get_ensemble_and_params,
-                                                 AVALIABLE)
-        self.AVAILABLE = AVALIABLE
+                                                 AVAILABLE)
+        self.AVAILABLE = AVAILABLE
 
         return self._base_type_process(params,
                                        get_ensemble_and_params)

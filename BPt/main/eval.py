@@ -2084,11 +2084,11 @@ class EvalResults():
                     
                     # Base hist
                     sns.histplot(p_scores[metric], ax=a, kde=True,
-                                 label=f'Null Dist. (Mean) - {null_dist_means[metric]:.3f}')
+                                 label=f'Null Dist. (Mean): {null_dist_means[metric]:.3f}')
                     
                     # Add vert line
                     a.axvline(self.mean_scores[metric], color='Red', linewidth=6,
-                              label=f'Baseline - {self.mean_scores[metric]:.3f} (pval={p_values[metric]:.3f})')
+                              label=f'Baseline: {self.mean_scores[metric]:.3f} (pval={p_values[metric]:.3f})')
                     
                     # Add legend + title
                     a.legend()

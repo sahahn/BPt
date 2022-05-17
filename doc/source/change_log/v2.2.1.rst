@@ -5,5 +5,5 @@
 Version 2.2.1
 ---------------
 - Just documentation changes
-  - Now auto generate docs
-  - Fix some formatting docs will look better
+    - Now auto generate docs
+    - Fix some formatting docs will look better

@@ -6,4 +6,4 @@ Version 2.2.5
 ---------------
 
 - Add support for google collab
-  - Detect if in google collab
+    - Detect if in google collab

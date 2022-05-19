@@ -151,7 +151,7 @@ def test_bpt_evaluator_compare():
                         dataset=dataset,
                         progress_bar=False,
                         scorer=['neg_mean_squared_error',
-                                'explained_variance'],
+                                'r2'],
                         random_state=2,
                         cv=2)
 
@@ -161,12 +161,12 @@ def test_bpt_evaluator_compare():
                         progress_bar=False,
                         random_state=2,
                         scorer=['neg_mean_squared_error',
-                                'explained_variance'],
+                                'r2'],
                         cv=2)
 
     # Just in case, make sure dif results
-    results2.mean_scores['explained_variance'] = .9
-    results2.scores['explained_variance'] = [.8, 1]
+    results2.mean_scores['r2'] = .9
+    results2.scores['r2'] = [.8, 1]
 
     compare_df = results1.compare(results2)
     assert compare_df.shape == (2, 7)
@@ -194,7 +194,7 @@ def test_bpt_evaluator_compare_non_overlap_metric():
                         progress_bar=False,
                         random_state=2,
                         scorer=['neg_mean_squared_error',
-                                'explained_variance'],
+                                'r2'],
                         cv=2)
 
     compare_df = results1.compare(results2)
@@ -213,7 +213,7 @@ def test_bpt_evaluator_compare_non_overlap_cv1():
                         dataset=dataset,
                         progress_bar=False,
                         scorer=['neg_mean_squared_error',
-                                'explained_variance'],
+                                'r2'],
                         random_state=2,
                         cv=2)
 
@@ -224,10 +224,10 @@ def test_bpt_evaluator_compare_non_overlap_cv1():
                         progress_bar=False,
                         random_state=2,
                         scorer=['neg_mean_squared_error',
-                                'explained_variance'],
+                                'r2'],
                         cv=3)
-    results2.mean_scores['explained_variance'] = .9
-    results2.scores['explained_variance'] = [.8, 1, .9]
+    results2.mean_scores['r2'] = .9
+    results2.scores['r2'] = [.8, 1, .9]
 
     compare_df = results1.compare(results2)
     assert compare_df.shape == (2, 2)
@@ -245,7 +245,7 @@ def test_bpt_evaluator_compare_non_overlap_cv2():
                         dataset=dataset,
                         progress_bar=False,
                         scorer=['neg_mean_squared_error',
-                                'explained_variance'],
+                                'r2'],
                         random_state=2,
                         cv=2)
 
@@ -256,11 +256,11 @@ def test_bpt_evaluator_compare_non_overlap_cv2():
                         progress_bar=False,
                         random_state=10,
                         scorer=['neg_mean_squared_error',
-                                'explained_variance'],
+                                'r2'],
                         cv=2)
 
-    results2.mean_scores['explained_variance'] = .9
-    results2.scores['explained_variance'] = [.8, 1]
+    results2.mean_scores['r2'] = .9
+    results2.scores['r2'] = [.8, 1]
 
     compare_df = results1.compare(results2)
     assert compare_df.shape == (2, 2)
@@ -375,8 +375,8 @@ def test_subset_by():
     g1 = subsets['1']
     g2 = subsets[2]
 
-    assert len(g1.scores['explained_variance']) == 2
-    assert len(g2.scores['explained_variance']) == 2
+    assert len(g1.scores['r2']) == 2
+    assert len(g2.scores['r2']) == 2
     assert len(g1.mean_scores) == 2
     assert len(g2.mean_scores) == 2
 
@@ -409,8 +409,8 @@ def test_subset_by_def():
     g1 = subsets['1']
     g2 = subsets[2]
 
-    assert len(g1.scores['explained_variance']) == 2
-    assert len(g2.scores['explained_variance']) == 2
+    assert len(g1.scores['r2']) == 2
+    assert len(g2.scores['r2']) == 2
     assert len(g1.mean_scores) == 2
     assert len(g2.mean_scores) == 2
 

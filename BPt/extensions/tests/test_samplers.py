@@ -48,7 +48,7 @@ def test_in_evaluate():
     os = OverSampler(df['groups'])
     pipe = Pipeline([Sampler(os), Model('linear')])
 
-    results = evaluate(pipe, df, progress_bar=False, eval_verbose=0)
+    evaluate(pipe, df, progress_bar=False, eval_verbose=0, scorer='explained_variance')
 
 def test_in_evaluate2():
 
@@ -69,5 +69,5 @@ def test_in_evaluate2():
     pipe = Pipeline([Sampler(os, ref_scope=['groups', 'groups2']),
                      Model('linear')])
 
-    results = evaluate(pipe, df, progress_bar=False, eval_verbose=0)
+    results = evaluate(pipe, df, progress_bar=False, eval_verbose=0, scorer='explained_variance')
     results.estimators[0].steps[0][1].estimator_.groups_vals_.unique()

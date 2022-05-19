@@ -15,3 +15,5 @@ Version 2.2.5
 - Change default gb pipeline
     - Kind of funky behavior before, where gb pipe would use lgbm if avaliable, switch to always using hist gradient boosting from sklearn for that default.
 
+- Change default regression scorer to R2
+    - Change from explained_variance default to R2 default.

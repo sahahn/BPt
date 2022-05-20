@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Installation &#8212; BPt 2.2.4 documentation</title>
+    <title>Installation &#8212; BPt 2.2.5 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -183,6 +183,11 @@
   </a>
   <ul class="visible nav section-nav flex-column">
    <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#bp-neurotools">
+     bp-neurotools
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
     <a class="reference internal nav-link" href="#lightgbm">
      lightgbm
     </a>
@@ -210,21 +215,6 @@
    <li class="toc-h2 nav-item toc-entry">
     <a class="reference internal nav-link" href="#imblearn">
      imblearn
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#networkx">
-     networkx
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#sweetviz">
-     sweetviz
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#neurotools">
-     neurotools
     </a>
    </li>
   </ul>
@@ -306,6 +296,11 @@ installation of these libraries is non-trivial.</p>
 </div>
 <p>Though note, some may not download properly via pip depending on your operating system.</p>
 <p>Different extension libraries are listed below:</p>
+<section id="bp-neurotools">
+<h2>bp-neurotools<a class="headerlink" href="#bp-neurotools" title="Permalink to this headline">#</a></h2>
+<p>This is a library by the same maintainers as BPt. It is designed to be less ML specific, but
+still contains some useful utilites for neuroimaging ML. See <a class="reference external" href="https://github.com/sahahn/neurotools">https://github.com/sahahn/neurotools</a>.</p>
+</section>
 <section id="lightgbm">
 <h2>lightgbm<a class="headerlink" href="#lightgbm" title="Permalink to this headline">#</a></h2>
 <p>This is a library designed to perform extreme gradient boosting. It
@@ -315,9 +310,7 @@ See <a class="reference external" href="https://lightgbm.readthedocs.io/en/lates
 <section id="nilearn">
 <h2>nilearn<a class="headerlink" href="#nilearn" title="Permalink to this headline">#</a></h2>
 <p>This is a library dedicated to doing ML for neuroimaging, if installed it
-allows using a few of the extension libraries in BPt, including:
-<code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.extensions.SurfLabels</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.extensions.SurfMaps</span></code>
-and <a class="reference internal" href="../reference/api/BPt.extensions.SingleConnectivityMeasure.html#BPt.extensions.SingleConnectivityMeasure" title="BPt.extensions.SingleConnectivityMeasure"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.extensions.SingleConnectivityMeasure</span></code></a>.</p>
+allows use of <a class="reference internal" href="../reference/api/BPt.extensions.SingleConnectivityMeasure.html#BPt.extensions.SingleConnectivityMeasure" title="BPt.extensions.SingleConnectivityMeasure"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.extensions.SingleConnectivityMeasure</span></code></a>.</p>
 </section>
 <section id="python-docx">
 <h2>python-docx<a class="headerlink" href="#python-docx" title="Permalink to this headline">#</a></h2>
@@ -331,20 +324,13 @@ under <a class="reference internal" href="../options/pipeline_options/models.htm
 </section>
 <section id="mvlearn">
 <h2>mvlearn<a class="headerlink" href="#mvlearn" title="Permalink to this headline">#</a></h2>
+<p>There is experimental support through the BPt extensions for using objects like CCA from the
+multi-vew learn library, mvlearn.</p>
 </section>
 <section id="imblearn">
 <h2>imblearn<a class="headerlink" href="#imblearn" title="Permalink to this headline">#</a></h2>
-</section>
-<section id="networkx">
-<h2>networkx<a class="headerlink" href="#networkx" title="Permalink to this headline">#</a></h2>
-<p>Required in order to use <a class="reference internal" href="../reference/api/BPt.extensions.ThresholdNetworkMeasures.html#BPt.extensions.ThresholdNetworkMeasures" title="BPt.extensions.ThresholdNetworkMeasures"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.extensions.ThresholdNetworkMeasures</span></code></a>.</p>
-</section>
-<section id="sweetviz">
-<h2>sweetviz<a class="headerlink" href="#sweetviz" title="Permalink to this headline">#</a></h2>
-</section>
-<section id="neurotools">
-<h2>neurotools<a class="headerlink" href="#neurotools" title="Permalink to this headline">#</a></h2>
-<p><a class="reference external" href="https://github.com/sahahn/neurotools">https://github.com/sahahn/neurotools</a></p>
+<p>There is experimental support for the use of some ensembles methods from library imblearn.
+These are ensembles that ensure bagging is done in a class-balanced manner.</p>
 </section>
 </section>
 

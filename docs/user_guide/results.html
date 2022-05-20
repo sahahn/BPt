@@ -1,0 +1,374 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>&lt;no title&gt; &#8212; BPt 2.2.5 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/pandas.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Saving Data" href="saving_data.html" />
+    <link rel="prev" title="Validation" href="validation.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../index.html">
+  <img src="../_static/red_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../installation/index.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../reference/index.html">
+  API reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../options/index.html">
+  Default Options
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../change_log/index.html">
+  Change Log
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../cite/index.html">
+  Cite BPt
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/sahahn/BPt" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/SageHahn11" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="why_bpt.html">
+   Why BPt?
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="background.html">
+   Background
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="frame_question.html">
+   Frame a Question
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="loading_data.html">
+   Loading Data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ml_pipeline.html">
+   The ML Pipeline
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="validation.html">
+   Validation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="saving_data.html">
+   Saving Data
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="role.html">
+   Role
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="scope.html">
+   Scope
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="data_types.html">
+   Data Types
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="data_files.html">
+   Data Files
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="load_timeseries_example.html">
+     Loading Fake Timeseries Surface Data
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="subjects.html">
+   Subjects
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="pipeline_objects.html">
+   Pipeline Objects
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="params.html">
+   Params
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="extra_params.html">
+   Extra Params
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="bmi_full_example.html">
+   Predict BMI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="dep_full_example.html">
+   Predicting Substance Dependence from Multi-Site Data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ssrt.html">
+   Predict Stop Signal Response Time (SSRT)
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="waist_cm.html">
+   Predict Waist Circumference with Diffusion Weighted Imaging
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="sex.html">
+   Predict Sex
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="simple visible nav section-nav flex-column">
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <p>Results from every machine learning based evaluation in BPt return a special results object called <a class="reference internal" href="../reference/api/BPt.EvalResults.html#BPt.EvalResults" title="BPt.EvalResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code></a>.
+This object stores by default key information related to the conducted experiment,
+which allows the user to then easily access or additionally compute a range of useful
+measures. Listed below are some of the available options:</p>
+<ul class="simple">
+<li><p>Base common machine learning metrics are provided, across regression, binary and multi-class predictions,
+for example R2, negative mean squared error, ROC AUC, balanced accuracy, and others. In the case of employing a cross validation strategy like K-fold,
+these metrics can be accessed either per fold, or averaged across multiple folds (or even the weighted average across folds of different sizes).
+See <a class="reference internal" href="../reference/api/BPt.EvalResults.mean_scores.html#BPt.EvalResults.mean_scores" title="BPt.EvalResults.mean_scores"><code class="xref py py-data docutils literal notranslate"><span class="pre">EvalResults.mean_scores</span></code></a>, <a class="reference internal" href="../reference/api/BPt.EvalResults.scores.html#BPt.EvalResults.scores" title="BPt.EvalResults.scores"><code class="xref py py-data docutils literal notranslate"><span class="pre">EvalResults.scores</span></code></a>, <a class="reference internal" href="../reference/api/BPt.EvalResults.score.html#BPt.EvalResults.score" title="BPt.EvalResults.score"><code class="xref py py-data docutils literal notranslate"><span class="pre">EvalResults.score</span></code></a>.</p></li>
+<li><p>Raw predictions made per participant in the validation set(s) can be accessed in multiple formats,
+and can be useful in performing further analysis beyond those implemented in the
+base library (e.g., computing new metrics or feature importances.
+See <a class="reference internal" href="../reference/api/BPt.EvalResults.preds.html#BPt.EvalResults.preds" title="BPt.EvalResults.preds"><code class="xref py py-data docutils literal notranslate"><span class="pre">EvalResults.preds</span></code></a>, <code class="xref py py-func docutils literal notranslate"><span class="pre">EvalResults.get_preds_df()</span></code>.</p></li>
+<li><p>In the case that the underlying machine learning model natively supports a measure of feature importance
+(e.g., beta weights in a linear model), then these importances can be directly accessed.
+Additionally, feature importances can be estimated regardless of underlying pipeline through a built-in permutation based feature importance method.
+When working with neuroimaging objects directly, (e.g., volumetric or surface representations of the data),
+an interface for back-projecting feature importances back into their original space is provided.
+See <a class="reference internal" href="../reference/api/BPt.EvalResults.permutation_importance.html#BPt.EvalResults.permutation_importance" title="BPt.EvalResults.permutation_importance"><code class="xref py py-func docutils literal notranslate"><span class="pre">EvalResults.permutation_importance()</span></code></a>, <a class="reference internal" href="../reference/api/BPt.EvalResults.get_fis.html#BPt.EvalResults.get_fis" title="BPt.EvalResults.get_fis"><code class="xref py py-func docutils literal notranslate"><span class="pre">EvalResults.get_fis()</span></code></a></p></li>
+<li><p>The results of a single evaluation, regardless of cross-validation method, can be investigated further in order to
+ask questions around the statistical significance of results and/or the potential influence of confounds on results.
+One of the most powerful tools for this type of analysis is a permutation test, wherein the analysis is repeated but with the target labels shuffled.
+An important extension to this base method is the ability to restrain the shuffling of target labels according to an underlying group or nested group structure.
+See <a class="reference internal" href="../reference/api/BPt.EvalResults.run_permutation_test.html#BPt.EvalResults.run_permutation_test" title="BPt.EvalResults.run_permutation_test"><code class="xref py py-func docutils literal notranslate"><span class="pre">EvalResults.run_permutation_test()</span></code></a>.</p></li>
+<li><p>Another available method related to probing the significance of results, is the ability to statistically compare between two or more similar
+results objects, that perhaps vary on choice of a meaningful hyper-parameter. See <a class="reference internal" href="../reference/api/BPt.EvalResults.compare.html#BPt.EvalResults.compare" title="BPt.EvalResults.compare"><code class="xref py py-func docutils literal notranslate"><span class="pre">EvalResults.compare()</span></code></a>.</p></li>
+</ul>
+<p>When it comes to presenting a final set of results within a manuscript or project write up, there is no one-size fits all solution.
+Insead, how one reports results will depend fundamentally on the question(s) of interest.
+In practice, the typical advice is that all metrics from experiments related to questions should be reported.
+Likewise, all related experimental configurations tested should also be reported, the key point being that the user
+should do their best to accurately and fairly present their results. As tempting or desirable as publishing a
+very accurate classifier may be, authors should take care not to overstate their findings.
+This principle holds in the context of null findings as well, where it is valuable to highlight the areas where predictive models fail.</p>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2020-2022.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

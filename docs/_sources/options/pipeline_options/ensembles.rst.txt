@@ -36,6 +36,18 @@ binary
 		defaults only
 
 
+"balanced bagging classifier"
+*****************************
+
+  Base Class Documentation: :class:`imblearn.ensemble.BalancedBaggingClassifier`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
 "stacking classifier"
 *********************
 
@@ -130,6 +142,18 @@ categorical
 ********************
 
   Base Class Documentation: :class:`sklearn.ensemble.BaggingClassifier`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"balanced bagging classifier"
+*****************************
+
+  Base Class Documentation: :class:`imblearn.ensemble.BalancedBaggingClassifier`
 
   Param Distributions
 

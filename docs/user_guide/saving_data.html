@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Saving Data &#8212; BPt 2.2.4 documentation</title>
+    <title>Saving Data &#8212; BPt 2.2.5 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -33,8 +33,8 @@
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Test Split" href="test_split.html" />
-    <link rel="prev" title="Loading Data" href="loading_data.html" />
+    <link rel="next" title="Role" href="role.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="results.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -152,18 +152,33 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="background.html">
+   Background
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="frame_question.html">
+   Frame a Question
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="loading_data.html">
    Loading Data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ml_pipeline.html">
+   The ML Pipeline
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="validation.html">
+   Validation
   </a>
  </li>
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
    Saving Data
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="test_split.html">
-   Test Split
   </a>
  </li>
 </ul>
@@ -288,9 +303,8 @@
                 
   <section id="saving-data">
 <span id="id1"></span><h1>Saving Data<a class="headerlink" href="#saving-data" title="Permalink to this headline">#</a></h1>
-<p>The best way to save <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> is through the pandas base method <code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.DataFrame.to_pickle()</span></code>.
-Likewise, you can load saved <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> with the pandas function <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.read_pickle.html#pandas.read_pickle" title="(in pandas v1.4.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.read_pickle()</span></code></a>. These methods
-are also available through the BPt namespace.</p>
+<p>The best way to save <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> is through the  method <a class="reference internal" href="../reference/api/BPt.Dataset.to_pickle.html#BPt.Dataset.to_pickle" title="BPt.Dataset.to_pickle"><code class="xref py py-func docutils literal notranslate"><span class="pre">Dataset.to_pickle()</span></code></a>.
+Likewise, you can load saved <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> with the pandas function <code class="xref py py-func docutils literal notranslate"><span class="pre">read_pickle()</span></code>.</p>
 <p>Below we create and save a dataset</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">BPt</span> <span class="k">as</span> <span class="nn">bp</span>
 

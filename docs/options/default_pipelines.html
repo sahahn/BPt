@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Default Pipelines &#8212; BPt 2.2.4 documentation</title>
+    <title>Default Pipelines &#8212; BPt 2.2.5 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -367,7 +367,7 @@ be accessed though BPt.default.pipelines.</p>
 <span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
 <span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
 <span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
-<span class="go">                Model(obj=&#39;lgbm&#39;,</span>
+<span class="go">                Model(obj=&#39;hgb&#39;,</span>
 <span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
 <span class="go">                                               n_iter=60),</span>
 <span class="go">                      params=1)])</span>
@@ -409,13 +409,13 @@ be accessed though BPt.default.pipelines.</p>
 <span class="go">                                                                        params=2),</span>
 <span class="go">                                                           Model(obj=&#39;svm&#39;,</span>
 <span class="go">                                                                 params=1)])),</span>
-<span class="go">                                 Model(obj=&#39;lgbm&#39;,</span>
+<span class="go">                                 Model(obj=&#39;hgb&#39;,</span>
 <span class="go">                                       param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
 <span class="go">                                                                n_iter=60),</span>
 <span class="go">                                       params=1)],</span>
 <span class="go">                         n_jobs_type=&#39;models&#39;, obj=&#39;stacking&#39;)])</span>
 <span class="go">compare_pipe</span>
-<span class="go">CompareDict([elastic, ridge, svm_fs, lgbm])</span>
+<span class="go">CompareDict([elastic, ridge, svm_fs, gb])</span>
 </pre></div>
 </div>
 <p>Note also that the individual pieces which make up the default pipelines can be accessed as well.</p>

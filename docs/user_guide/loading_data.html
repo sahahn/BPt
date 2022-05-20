@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Loading Data &#8212; BPt 2.2.4 documentation</title>
+    <title>Loading Data &#8212; BPt 2.2.5 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -33,8 +33,8 @@
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Saving Data" href="saving_data.html" />
-    <link rel="prev" title="Why BPt?" href="why_bpt.html" />
+    <link rel="next" title="The ML Pipeline" href="ml_pipeline.html" />
+    <link rel="prev" title="Frame a Question" href="frame_question.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -151,19 +151,34 @@
    Why BPt?
   </a>
  </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="background.html">
+   Background
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="frame_question.html">
+   Frame a Question
+  </a>
+ </li>
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
    Loading Data
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="saving_data.html">
-   Saving Data
+  <a class="reference internal" href="ml_pipeline.html">
+   The ML Pipeline
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="test_split.html">
-   Test Split
+  <a class="reference internal" href="validation.html">
+   Validation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="saving_data.html">
+   Saving Data
   </a>
  </li>
 </ul>
@@ -280,6 +295,11 @@
    Basic Example
   </a>
  </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#preparing-data">
+   Preparing Data
+  </a>
+ </li>
 </ul>
 
 </nav>
@@ -306,11 +326,10 @@
 <section id="intro">
 <h2>Intro<a class="headerlink" href="#intro" title="Permalink to this headline">#</a></h2>
 <p>In order to get data ready for machine learning, BPt has a specially designed <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> class.
-This class is new as of BPt version &gt;= 2 (replacing the building in loading functions of the
-old BPt_ML). This class is built on top of the DataFrame from the pandas library. As we will see,
+This class is built on top of the DataFrame class from the pandas library. As we will see,
 the recommended way of preparing data actually first involves using the DataFrame class from pandas
-directly. The is that pandas and the DataFrame class should be used to load all of the data you might
-end up wanting to use. Luckily pandas contains a huge wealth of useful functions
+directly. The general idea is to use pandas and the DataFrame class to load all of the data you might
+end up wanting to use. Luckily, pandas contains a huge wealth of useful functions
 for accomplishing this already. Next, once all of the data is loaded, we cast the DataFrame
 to the BPt <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> class, and then use the built in <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> methods to get the data
 ready for use with the rest of BPt. This includes steps like specifying which variables are in what
@@ -319,7 +338,7 @@ tools for plotting / viewing distributions and specifying a global train / test 
 this functionality below!</p>
 <p>Data of interest is inevitably going to come from a wide range of different sources, luckily the python library pandas
 has an incredible amount of support for loading data from different sources into DataFrames.
-Likewise, pandas offers a huge amount of support material, e.g., <a class="reference external" href="https://pandas.pydata.org/docs/getting_started/intro_tutorials/02_read_write.html">https://pandas.pydata.org/docs/getting_started/intro_tutorials/02_read_write.html</a>
+Likewise, pandas offers a huge amount of support material, e.g., [here](<a class="reference external" href="https://pandas.pydata.org/docs/getting_started/intro_tutorials/02_read_write.html">https://pandas.pydata.org/docs/getting_started/intro_tutorials/02_read_write.html</a>),
 for getting starting with loading in raw data (or a google search with a specific question will almost always help).
 Pandas should be used to accomplish the initial loading and merging of all tabular data of interest into a DataFrame.</p>
 <p>For example, let’s say our data of interest is stored in a file called data.csv, we could load it with:</p>
@@ -388,6 +407,18 @@ This gives use two options, where both of the below operations will correctly se
 <span class="gh">Out[9]: </span><span class="go">{&#39;col 1&#39;: &#39;target&#39;}</span>
 </pre></div>
 </div>
+</section>
+<section id="preparing-data">
+<h2>Preparing Data<a class="headerlink" href="#preparing-data" title="Permalink to this headline">#</a></h2>
+<p>There are some pre-modelling steps that, depending on the dataset and the question, might also be explored at this stage,
+and can be performed using the Dataset object directly. These are steps that occur after the actual loading and setting of explicit roles as described above.
+These include decisions like:</p>
+<ul class="simple">
+<li><p>Generating exploratory plots of the different features in the dataset.</p></li>
+<li><p>Should any data be removed or set to missing based on status as an outlier?</p></li>
+<li><p>Should missing data be kept and imputed, or dropped?</p></li>
+<li><p>Are there any pre-requisite transformations that should be applied to the data? E.g., conversion from strings ‘Male’, ‘Female’ to 0 and 1’s.</p></li>
+</ul>
 </section>
 </section>
 

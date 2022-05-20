@@ -20,12 +20,16 @@ The different roles are described below.
 
 - data
     The default role, data, is used to indicate all columns which might at some point serve as input features for an eventual predictive task.
-    Data can have any of the :ref:`Data_Types` including :ref:`Data_Files`. NaN's are allowed in data columns.
+    Data can have any of the :ref:`Data_Types` including :ref:`Data_Files`. NaN's are allowed in data columns. The basic idea is that when
+    passing a :class:`Dataset` to :func:`evaluate`, by default every column with role='data' will be used as input to predict, unless this set
+    of variables is limited in some way by passing a :ref:`scope`.
 
 - target
     The role of target is used to indicate columns which are to be predicted, and therefore will not serve as input features for any predictive tasks.
     Targets can take on any of the :ref:`Data_Types` except :ref:`Data_Files`. Target columns can include NaN values, although be warned that trying
-    passing a target with NaN values to some functions may not work correctly. 
+    passing a target with NaN values to some functions may not work correctly. Likewise, during prediction, any targets with NaN values will not ever
+    be used in any training sets, or contribute to any generated metrics on validation sets. In the case of multiple columns with role='target', then
+    a specific target variable may be set when using :func:`evaluate`.
 
 - non input
     As the name suggests, any features set with role non input, will not be provided directly as input features to a predictive task.

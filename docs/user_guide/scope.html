@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Scope &#8212; BPt 2.2.4 documentation</title>
+    <title>Scope &#8212; BPt 2.2.5 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -152,18 +152,33 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="background.html">
+   Background
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="frame_question.html">
+   Frame a Question
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="loading_data.html">
    Loading Data
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="saving_data.html">
-   Saving Data
+  <a class="reference internal" href="ml_pipeline.html">
+   The ML Pipeline
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="test_split.html">
-   Test Split
+  <a class="reference internal" href="validation.html">
+   Validation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="saving_data.html">
+   Saving Data
   </a>
  </li>
 </ul>
@@ -291,8 +306,9 @@
 <p>Scope’s represent a key concept within BPt, that are present when preparing data with
 the <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> class (See functions for adding and removing scopes
 to the Dataset: <a class="reference internal" href="../reference/api/BPt.Dataset.add_scope.html#BPt.Dataset.add_scope" title="BPt.Dataset.add_scope"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_scope</span></code></a> and
-<a class="reference internal" href="../reference/api/BPt.Dataset.remove_scope.html#BPt.Dataset.remove_scope" title="BPt.Dataset.remove_scope"><code class="xref py py-func docutils literal notranslate"><span class="pre">remove_scope</span></code></a>), and during ML.
-The <cite>scope</cite> argument can also be
+<a class="reference internal" href="../reference/api/BPt.Dataset.remove_scope.html#BPt.Dataset.remove_scope" title="BPt.Dataset.remove_scope"><code class="xref py py-func docutils literal notranslate"><span class="pre">remove_scope</span></code></a>), and during ML. The easiest way to
+think about the scope argument is simply as an expanded way of index’ing the loaded columns.</p>
+<p>The <cite>scope</cite> argument can also be
 found across different <a class="reference internal" href="../reference/api/BPt.ModelPipeline.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a> pieces
 and within <a class="reference internal" href="../reference/api/BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>. The fundamental idea is
 that during loading, plotting, ML, etc… it is often desirable to specify

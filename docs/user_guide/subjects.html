@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Subjects &#8212; BPt 2.2.4 documentation</title>
+    <title>Subjects &#8212; BPt 2.2.5 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -152,18 +152,33 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="background.html">
+   Background
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="frame_question.html">
+   Frame a Question
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="loading_data.html">
    Loading Data
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="saving_data.html">
-   Saving Data
+  <a class="reference internal" href="ml_pipeline.html">
+   The ML Pipeline
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="test_split.html">
-   Test Split
+  <a class="reference internal" href="validation.html">
+   Validation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="saving_data.html">
+   Saving Data
   </a>
  </li>
 </ul>
@@ -287,7 +302,7 @@
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#value-subset-case">
-   4. value subset case
+   1. value subset case
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -324,7 +339,9 @@
   <section id="subjects">
 <span id="id1"></span><h1>Subjects<a class="headerlink" href="#subjects" title="Permalink to this headline">#</a></h1>
 <p>Various functions within BPt, and <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> can accept subjects or some variation on this
-name as an argument. The parameter can accept a few different values. These are explained below:</p>
+name as an argument. The idea of subjects is similar to <a class="reference internal" href="scope.html#scope"><span class="std std-ref">Scope</span></a>, where essentially subjects allows
+for an expanded upon index’ing system but at the row-level, whereas <a class="reference internal" href="scope.html#scope"><span class="std std-ref">Scope</span></a> operates as the column level.</p>
+<p>The parameter can accept a few different values. These are explained below:</p>
 <section id="array-like">
 <h2>1. array-like<a class="headerlink" href="#array-like" title="Permalink to this headline">#</a></h2>
 <p>You may pass any array-like (e.g., list, set, pandas Index, etc…) of subjects directly.
@@ -361,6 +378,9 @@ Operate on all subjects</p></li>
 <li><p>‘nan’
 Select any subjects with any missing values in any of their loaded columns,
 regardless of scope or role.</p></li>
+<li><p>‘not nan’
+Like ‘nan’ but not. Or in english, any subjects without any missing values in
+any of their loaded columns, regardless of scope or role.</p></li>
 <li><p>‘train’
 Select the set of train subjects as defined by a split in the Dataset, e.g.,
 <a class="reference internal" href="../reference/api/BPt.Dataset.set_train_split.html#BPt.Dataset.set_train_split" title="BPt.Dataset.set_train_split"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_train_split</span></code></a>.</p></li>
@@ -375,7 +395,7 @@ subjects = ‘train’ will be used. Otherwise, subjects=’all’ will be used.
 </ul>
 </section>
 <section id="value-subset-case">
-<h2>4. value subset case<a class="headerlink" href="#value-subset-case" title="Permalink to this headline">#</a></h2>
+<h2>1. value subset case<a class="headerlink" href="#value-subset-case" title="Permalink to this headline">#</a></h2>
 <p>You can pass the special input wrapper <a class="reference internal" href="../reference/api/BPt.ValueSubset.html#BPt.ValueSubset" title="BPt.ValueSubset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueSubset</span></code></a>. This can be
 used to select subsets of subject by a column’s
 value or values. See <a class="reference internal" href="../reference/api/BPt.ValueSubset.html#BPt.ValueSubset" title="BPt.ValueSubset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueSubset</span></code></a> for more
@@ -480,6 +500,9 @@ Let’s try using <a class="reference internal" href="../reference/api/BPt.Value
 <p>We can also use special reversed keywords.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [12]: </span><span class="n">data</span><span class="o">.</span><span class="n">get_subjects</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)</span>
 <span class="gh">Out[12]: </span><span class="go">Index([&#39;subj3&#39;], dtype=&#39;object&#39;, name=&#39;index&#39;)</span>
+
+<span class="gp">In [13]: </span><span class="n">data</span><span class="o">.</span><span class="n">get_subjects</span><span class="p">(</span><span class="s1">&#39;not nan&#39;</span><span class="p">)</span>
+<span class="gh">Out[13]: </span><span class="go">Index([&#39;subj1&#39;, &#39;subj2&#39;], dtype=&#39;object&#39;, name=&#39;index&#39;)</span>
 </pre></div>
 </div>
 </section>

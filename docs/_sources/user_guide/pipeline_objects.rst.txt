@@ -33,8 +33,11 @@ instance of :class:`RobustScaler <sklearn.preprocessing.RobustScaler>` from skle
 .. ipython:: python
 
     import BPt as bp
-    scaler = bp.Scaler('robust')
+    scaler = bp.Scaler('robust', scope='all')
     scaler
+
+    # See what this object looks like internally
+    scaler.build()
 
 We can do this because 'robust' exists as a default option already
 available in BPt (See :ref:`Scalers`). That said, if it wasn't we
@@ -45,7 +48,6 @@ could pass it as a custom object as well.
     from sklearn.preprocessing import RobustScaler
     scaler = bp.Scaler(RobustScaler())
     scaler
-
 
 params
 ~~~~~~
@@ -73,4 +75,10 @@ See :ref:`params` for more information on how to set Parameters.
 
 scope
 ~~~~~~
+
+Pipeline objects also have the argument :ref:`Scope` as an input argument.
+This argument allows for pipeline objects to work on just a subset of columns.
+Notably, if the scope in reference to a specific :class:`Dataset` is empty, then
+the piopeline object in question will just be silently skipped. This is useful for defining
+generic pipelines to different types of datasets.
 

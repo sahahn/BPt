@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Why BPt? &#8212; BPt 2.2.4 documentation</title>
+    <title>Why BPt? &#8212; BPt 2.2.5 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -33,7 +33,7 @@
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Loading Data" href="loading_data.html" />
+    <link rel="next" title="Background" href="background.html" />
     <link rel="prev" title="User Guide" href="index.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
@@ -152,18 +152,33 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="background.html">
+   Background
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="frame_question.html">
+   Frame a Question
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="loading_data.html">
    Loading Data
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="saving_data.html">
-   Saving Data
+  <a class="reference internal" href="ml_pipeline.html">
+   The ML Pipeline
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="test_split.html">
-   Test Split
+  <a class="reference internal" href="validation.html">
+   Validation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="saving_data.html">
+   Saving Data
   </a>
  </li>
 </ul>
@@ -288,12 +303,29 @@
                 
   <section id="why-bpt">
 <span id="id1"></span><h1>Why BPt?<a class="headerlink" href="#why-bpt" title="Permalink to this headline">#</a></h1>
+<p>The Brain Predictability toolbox (BPt) is a python based library with a unified framework of machine learning (ML) tools designed to work with both
+tabulated data (e.g. brain derived, psychiatric, behavioral and physiological variables) and neuroimaging specific data (e.g. brain volumes and surfaces).
+This package is suitable for investigating a wide range of different neuroimaging-based ML questions,
+in particular, those queried from large human datasets.</p>
 <p>BPt seeks to integrate a number of lower level packages towards providing a higher level package and user experience.
 The key point of interest here is that BPt is designed specifically for performing neuroimaging based machine learning.
 Towards this end, it builds upon and offers augmented capabilities for core libraries pandas and scikit-learn (as well as others).
 A central goal of the library is to automate key pieces of the workflow, with a large array of default behaviors and pipelines, as well as
 always also allowing the user full control. This package works to reduce the barrier of entry as ultimately using machine learning
 as a research tool should not be restricted only to domain experts.</p>
+<p>The toolbox is designed primarily for ‘population’ based predictive neuroimaging, that is to say, machine learning performed across data from multiple
+participants rather than many data points from a single or small set of participants.
+BPt does support multi-indexing in this latter case, but for the most part the functionality of the toolbox more readily
+supports the former. Input data for the toolbox can take a wide range of forms, but generally speaking are
+the outputs from a typical neuroimaging pre-processing pipeline. The easiest data to work with are data already in tabular
+form, e.g., calculated mean values per region of interest. That said, the toolbox is capable of working with volumetric or
+surface projected MRI or fMRI data as well. Other modalities, like EEG, could use the toolbox,
+but in these cases it may be a poorer fit (as EEG often requires quite different pre-processing steps).</p>
+<p>In general, the use of any framework like BPt imposes a practical trade-off between flexibility and ease of use.
+In the case of working with BPt, as long as the dataset and desired type of analysis are supported,
+then a great deal of minor steps, opportunities for bugs, and decisions can be handled automatically.
+Alternatively, if a specific analysis isn’t supported, for example using deep learning classifiers as
+the machine model of interest, then BPt will be a poor choice.</p>
 </section>
 
 

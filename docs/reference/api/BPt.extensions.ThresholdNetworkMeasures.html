@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>BPt.extensions.ThresholdNetworkMeasures &#8212; BPt 2.2.4 documentation</title>
+    <title>BPt.extensions.ThresholdNetworkMeasures &#8212; BPt 2.2.5 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -33,7 +33,7 @@
     <script src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="BPt.extensions.ThresholdNetworkMeasures.feat_names_" href="BPt.extensions.ThresholdNetworkMeasures.feat_names_.html" />
+    <link rel="next" title="BPt.extensions.SingleConnectivityMeasure" href="BPt.extensions.SingleConnectivityMeasure.html" />
     <link rel="prev" title="BPt.extensions.Identity.transform" href="BPt.extensions.Identity.transform.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
@@ -781,205 +781,8 @@
 <h1>BPt.extensions.ThresholdNetworkMeasures<a class="headerlink" href="#bpt-extensions-thresholdnetworkmeasures" title="Permalink to this headline">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="BPt.extensions.ThresholdNetworkMeasures">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">BPt.extensions.</span></span><span class="sig-name descname"><span class="pre">ThresholdNetworkMeasures</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'abs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'value'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_compute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'avg_degree'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/extensions/loaders.py#L160-L449"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.extensions.ThresholdNetworkMeasures" title="Permalink to this definition">#</a></dt>
-<dd><p>This class is designed for thresholding and then extracting network
-measures from an input correlation matrix.</p>
-<dl class="field-list">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl>
-<dt><strong>threshold</strong><span class="classifier">float, optional</span></dt><dd><p>A floating point threshold between 0 and 1.
-This represents the threshold at which a connection
-in the passed data needs to be in order for it to
-be set as an edge. The type of threshold_method
-also changes how this threshold behaves.</p>
-<p>If ‘density’, then this value represents the
-percent of edges to keep, out of all possible edges.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="mf">.2</span>
-</pre></div>
-</div>
-</dd>
-<dt><strong>threshold_type</strong><span class="classifier">{‘abs’, ‘pos’, ‘neg’}</span></dt><dd><p>The type of thresholding, e.g., should the threshold
-be applied to:</p>
-<ul class="simple">
-<li><dl class="simple">
-<dt>‘abs’</dt><dd><p>The absolute value of the connections</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>‘pos’</dt><dd><p>Only consider edges as passed the threshold if &gt;= self.threshold</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>‘neg’</dt><dd><p>Only consider edges as passed the if &lt;= self.threshold</p>
-</dd>
-</dl>
-</li>
-</ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;abs&#39;</span>
-</pre></div>
-</div>
-</dd>
-<dt><strong>threshold_method</strong><span class="classifier">{‘value’, ‘density’}, optional</span></dt><dd><p>The method for thresholding. The two
-defined options are either to define an edge
-strictly by value, e.g., if threshold_type is ‘abs’,
-and threshold is .2, then any connection greater than or
-equal to .2 will be set as an edge.</p>
-<p>Alternatively, you may specify that the threshold be
-treated as a density. What this means is that if the threshold
-is set to for example .2, then the top 20% of edges by weight
-will be set as an edge, regardless of the actual value of the edge.</p>
-<p>The passed percentage will be considered
-out of all the possible edges. This will be used to
-select a threshold value, rounding up if needed, then
-all edges above or equal to the threshold will be kept
-(positive or abs case) or in neg case, all edges less than or equal.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;value&#39;</span>
-</pre></div>
-</div>
-</dd>
-<dt><strong>to_compute</strong><span class="classifier">valid_measure or list of, optional</span></dt><dd><div class="line-block">
-<div class="line">Either a single str representing a network
-measure to compute, or a list of valid
-measures. You may also pass any custom function
-which accepts one argument G, and returns
-a value.</div>
-</div>
-<div class="line-block">
-<div class="line">The following global measures are currently implemented
-as options:</div>
-<div class="line"><br /></div>
-</div>
-<ul class="simple">
-<li><dl class="simple">
-<dt>‘avg_cluster’:</dt><dd><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.cluster.average_clustering.html#networkx.algorithms.cluster.average_clustering" title="(in NetworkX v2.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">networkx.algorithms.cluster.average_clustering()</span></code></a></p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>‘assortativity’:</dt><dd><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.assortativity.degree_assortativity_coefficient.html#networkx.algorithms.assortativity.degree_assortativity_coefficient" title="(in NetworkX v2.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">networkx.algorithms.assortativity.degree_assortativity_coefficient()</span></code></a></p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>‘global_eff’:</dt><dd><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.efficiency_measures.global_efficiency.html#networkx.algorithms.efficiency_measures.global_efficiency" title="(in NetworkX v2.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">networkx.algorithms.efficiency_measures.global_efficiency()</span></code></a></p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>‘local_eff’:</dt><dd><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.efficiency_measures.local_efficiency.html#networkx.algorithms.efficiency_measures.local_efficiency" title="(in NetworkX v2.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">networkx.algorithms.efficiency_measures.local_efficiency()</span></code></a></p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>‘sigma’:</dt><dd><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.smallworld.sigma.html#networkx.algorithms.smallworld.sigma" title="(in NetworkX v2.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">networkx.algorithms.smallworld.sigma()</span></code></a></p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>‘omega`:</dt><dd><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.smallworld.omega.html#networkx.algorithms.smallworld.omega" title="(in NetworkX v2.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">networkx.algorithms.smallworld.omega()</span></code></a></p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>‘transitivity’:</dt><dd><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.cluster.transitivity.html#networkx.algorithms.cluster.transitivity" title="(in NetworkX v2.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">networkx.algorithms.cluster.transitivity()</span></code></a></p>
-</dd>
-</dl>
-</li>
-</ul>
-<div class="line-block">
-<div class="line"><br /></div>
-<div class="line">You may also select from one of the following
-averages of local measures:</div>
-<div class="line"><br /></div>
-</div>
-<ul class="simple">
-<li><dl class="simple">
-<dt>‘avg_eigenvector_centrality’:</dt><dd><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.centrality.eigenvector_centrality_numpy.html#networkx.algorithms.centrality.eigenvector_centrality_numpy" title="(in NetworkX v2.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">networkx.algorithms.centrality.eigenvector_centrality_numpy()</span></code></a></p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>‘avg_closeness_centrality’:</dt><dd><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.centrality.closeness_centrality.html#networkx.algorithms.centrality.closeness_centrality" title="(in NetworkX v2.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">networkx.algorithms.centrality.closeness_centrality()</span></code></a></p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>‘avg_degree’:</dt><dd><p>Average graph degree.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>‘avg_triangles’:</dt><dd><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.cluster.triangles.html#networkx.algorithms.cluster.triangles" title="(in NetworkX v2.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">networkx.algorithms.cluster.triangles()</span></code></a></p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>‘avg_pagerank’:</dt><dd><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.link_analysis.pagerank_alg.pagerank.html#networkx.algorithms.link_analysis.pagerank_alg.pagerank" title="(in NetworkX v2.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">networkx.algorithms.link_analysis.pagerank_alg.pagerank()</span></code></a></p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>‘avg_betweenness_centrality’:</dt><dd><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.centrality.betweenness_centrality.html#networkx.algorithms.centrality.betweenness_centrality" title="(in NetworkX v2.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">networkx.algorithms.centrality.betweenness_centrality()</span></code></a></p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>‘avg_information_centrality’:</dt><dd><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.centrality.information_centrality.html#networkx.algorithms.centrality.information_centrality" title="(in NetworkX v2.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">networkx.algorithms.centrality.information_centrality()</span></code></a></p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>‘avg_shortest_path_length’:</dt><dd><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.generic.average_shortest_path_length.html#networkx.algorithms.shortest_paths.generic.average_shortest_path_length" title="(in NetworkX v2.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">networkx.algorithms.shortest_paths.generic.average_shortest_path_length()</span></code></a></p>
-</dd>
-</dl>
-</li>
-</ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;avg_degree&#39;</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Attributes</p>
-<table class="longtable table autosummary">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.extensions.ThresholdNetworkMeasures.feat_names_.html#BPt.extensions.ThresholdNetworkMeasures.feat_names_" title="BPt.extensions.ThresholdNetworkMeasures.feat_names_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">feat_names_</span></code></a></p></td>
-<td><p>The list of feature names returned by this objects transform function.</p></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Methods</p>
-<table class="longtable table autosummary">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.extensions.ThresholdNetworkMeasures.fit.html#BPt.extensions.ThresholdNetworkMeasures.fit" title="BPt.extensions.ThresholdNetworkMeasures.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(X[, y])</p></td>
-<td><p>X is a 2d correlation matrix</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.extensions.ThresholdNetworkMeasures.fit_transform.html#BPt.extensions.ThresholdNetworkMeasures.fit_transform" title="BPt.extensions.ThresholdNetworkMeasures.fit_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit_transform</span></code></a>(X[, y])</p></td>
-<td><p>Fit, then transform a passed 2D numpy correlation matrix.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.extensions.ThresholdNetworkMeasures.get_params.html#BPt.extensions.ThresholdNetworkMeasures.get_params" title="BPt.extensions.ThresholdNetworkMeasures.get_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code></a>([deep])</p></td>
-<td><p>Get parameters for this estimator.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.extensions.ThresholdNetworkMeasures.set_params.html#BPt.extensions.ThresholdNetworkMeasures.set_params" title="BPt.extensions.ThresholdNetworkMeasures.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</p></td>
-<td><p>Set the parameters of this estimator.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.extensions.ThresholdNetworkMeasures.transform.html#BPt.extensions.ThresholdNetworkMeasures.transform" title="BPt.extensions.ThresholdNetworkMeasures.transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code></a>(X)</p></td>
-<td><p>Transform a passed 2D numpy correlation matrix.</p></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">BPt.extensions.</span></span><span class="sig-name descname"><span class="pre">ThresholdNetworkMeasures</span></span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/extensions/__init__.py#L17-L18"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.extensions.ThresholdNetworkMeasures" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 </section>
 

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Test Split &#8212; BPt 2.2.4 documentation</title>
+    <title>The ML Pipeline &#8212; BPt 2.2.5 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -33,8 +33,8 @@
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Role" href="role.html" />
-    <link rel="prev" title="Saving Data" href="saving_data.html" />
+    <link rel="next" title="Validation" href="validation.html" />
+    <link rel="prev" title="Loading Data" href="loading_data.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -152,18 +152,33 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="background.html">
+   Background
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="frame_question.html">
+   Frame a Question
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="loading_data.html">
    Loading Data
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   The ML Pipeline
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="validation.html">
+   Validation
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="saving_data.html">
    Saving Data
-  </a>
- </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   Test Split
   </a>
  </li>
 </ul>
@@ -264,19 +279,9 @@
               
               <div class="toc-item">
                 
-<div class="tocsection onthispage mt-5 pt-1 pb-3">
-    <i class="fas fa-list"></i> On this page
-</div>
 
 <nav id="bd-toc-nav">
-    <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#when-to-use-a-test-split">
-   When to use a Test Split?
-  </a>
- </li>
-</ul>
-
+    
 </nav>
               </div>
               
@@ -296,59 +301,34 @@
               
               <div>
                 
-  <section id="test-split">
-<span id="id1"></span><h1>Test Split<a class="headerlink" href="#test-split" title="Permalink to this headline">#</a></h1>
-<p>It can often be useful in machine learning applications, especially neuroimaging based ones
-to set aside a reserved group of subjects as test or holdout subjects. The <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a>
-has a few useful utilities for doing this (For example: <a class="reference internal" href="../reference/api/BPt.Dataset.set_test_split.html#BPt.Dataset.set_test_split" title="BPt.Dataset.set_test_split"><code class="xref py py-func docutils literal notranslate"><span class="pre">Dataset.set_test_split()</span></code></a>).
-That said, it may not always be necessary, and the correct cross-validation strategy will depend
-greatly on the underlying goal of the specific project.</p>
-<section id="when-to-use-a-test-split">
-<h2>When to use a Test Split?<a class="headerlink" href="#when-to-use-a-test-split" title="Permalink to this headline">#</a></h2>
-<p>Deciding when to use a test split usually is not always an easy decision, but
-listing some examples here may be useful for cases when it is appropriate.</p>
-<ol class="arabic">
-<li><p>You are interested in performing some level of pipeline / model exploration before settling
-on a final technique. In this case, a reasonable setup would be to define a global-train-set split
-and to explore different model / pipeline performance with cross-validation on the train set first,
-for example with <a class="reference internal" href="../reference/api/BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>:</p>
-<blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div></blockquote>
-<p>Then, once a suitable pipeline configuration is identified, you can re-train
-the pipeline with the full training set and evaluate it on the test set, again
-with <a class="reference internal" href="../reference/api/BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>:</p>
-<blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-<li><p>You want an additional confirmation of generalizability. In this case perhaps no
-pipeline exploration is needed, but enough subjects / data points are available
-that a testing set can be reserved to act as an extra test of generalizability.
-Additional constraints could be put on the this testing set, for example, if using
-subject’s data from multiple sites, then the testing set could be defined with
-<a class="reference internal" href="../reference/api/BPt.ValueSubset.html#BPt.ValueSubset" title="BPt.ValueSubset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueSubset</span></code></a> to be data from only an unseen site (or sites). In this case,
-one could perform both cross-validation on the training set to establish the average
-generalizability of a modelling approach, in addition to training with the full training
-set and evaluating on the test set.</p>
-<p>Some perks of this setup are that it may allow you to test two different types of generalization,
-e.g., in the case of data from multiple sites, you could ignore that in the internal training set
-validation and use generalizability to the test set as a way of addressing generalizability to new sites.
-Another perk is that it may ease interpretation, as the model trained on the full training set is only
-a single model, in contrast to explaining multiple models as trained and tested with cross-validation techniques
-like K-Fold.</p>
-</li>
-<li><p>Ease of computation. Given an already defined pipeline / choice of model, and a large enough
-set of subjects / data points, evaluating performance via training on the full training set and
-testing on the full testing set just once may be desirable for computational reasons. This method
-of cross-validation is often seen in deep learning applications, where the data sizes are large
-and it is extremely intensive to train models.</p></li>
-</ol>
-</section>
+  <section id="the-ml-pipeline">
+<span id="ml-pipeline"></span><h1>The ML Pipeline<a class="headerlink" href="#the-ml-pipeline" title="Permalink to this headline">#</a></h1>
+<p>A machine learning pipeline is importanly not just the choice of ML model, it is the full set of transformations to the data prior to
+input to an ML algorithm. This is, in a lot of ways, the area with the most researcher degrees of freedom,
+as we can think of both the presence or absence of a transformation, as well as the choice of model and that model’s parameters as
+all ‘hyper-parameters’ of the broader ML pipeline.
+These could be choices like what parcellation to use, to z-score each feature or not, which type of
+fMRI connectivity metric to use, the type of ML estimator, the parameters associated with that estimator, etc.
+The number of permutations grows quite rapidly, so in practice how should the researcher decide? We recommend treating each
+possible ‘hyper-parameter’ according to the following set of options:</p>
+<p>If this parameter is important to the research question, test and report the results by each possible value or a
+reasonable set of values of interest that this parameter might take. For example, let’s say we want to know how our
+prediction varies by choice of paracellation, so we repeat our full ML experiment with 3 different parcellations, and report the results of each.</p>
+<p>Otherwise, if not directly important or related to the question of interest the researcher can either 1.
+Fix the value ahead of time based on a priori knowledge or guess, or 2. Assign the value through some nested validation strategy
+(e.g., train-validation/test split or nested K-fold).
+In general, option 1 is preferable, as it is simpler to both implement and conceptualize fixing a value ahead of time.
+That said, setting values through nested validation can be useful in certain cases, for example it is often used for
+setting hyper-parameters specific to an ML estimator. In other words, option 2 is used as a way to try and
+improve down-stream performance, with an emphasis on “try”, as it is difficult in practice to correctly
+identify the choices which will benefit from this approach.</p>
+<p>While designing an ML Pipeline can be daunting and introduce lots of researcher degrees of freedom,
+it is also the area most amenable to creativity. As long as proper validation is kept in mind, testing
+and trying new / different pipelines can be an important piece of ML modeling.
+This becomes especially important when the researcher starts to consider ML modeling in the context of potential confounds,
+where potential corrections for confounds are themselves steps within the pipeline. That said, especially as a newer researcher,
+it may be a good idea to start by replicating previous strategies from the literature that have been
+found to work well. Default pipelines can be easily specified within BPt.</p>
 </section>
 
 

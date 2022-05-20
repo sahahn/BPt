@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Role &#8212; BPt 2.2.4 documentation</title>
+    <title>Role &#8212; BPt 2.2.5 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -34,7 +34,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Scope" href="scope.html" />
-    <link rel="prev" title="Test Split" href="test_split.html" />
+    <link rel="prev" title="Saving Data" href="saving_data.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -152,18 +152,33 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="background.html">
+   Background
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="frame_question.html">
+   Frame a Question
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="loading_data.html">
    Loading Data
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="saving_data.html">
-   Saving Data
+  <a class="reference internal" href="ml_pipeline.html">
+   The ML Pipeline
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="test_split.html">
-   Test Split
+  <a class="reference internal" href="validation.html">
+   Validation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="saving_data.html">
+   Saving Data
   </a>
  </li>
 </ul>
@@ -299,14 +314,18 @@ helper methods <a class="reference internal" href="../reference/api/BPt.Dataset.
 <ul class="simple">
 <li><dl class="simple">
 <dt>data</dt><dd><p>The default role, data, is used to indicate all columns which might at some point serve as input features for an eventual predictive task.
-Data can have any of the <a class="reference internal" href="data_types.html#data-types"><span class="std std-ref">Data Types</span></a> including <a class="reference internal" href="data_files.html#data-files"><span class="std std-ref">Data Files</span></a>. NaN’s are allowed in data columns.</p>
+Data can have any of the <a class="reference internal" href="data_types.html#data-types"><span class="std std-ref">Data Types</span></a> including <a class="reference internal" href="data_files.html#data-files"><span class="std std-ref">Data Files</span></a>. NaN’s are allowed in data columns. The basic idea is that when
+passing a <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> to <a class="reference internal" href="../reference/api/BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>, by default every column with role=’data’ will be used as input to predict, unless this set
+of variables is limited in some way by passing a <a class="reference internal" href="scope.html#scope"><span class="std std-ref">Scope</span></a>.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
 <dt>target</dt><dd><p>The role of target is used to indicate columns which are to be predicted, and therefore will not serve as input features for any predictive tasks.
 Targets can take on any of the <a class="reference internal" href="data_types.html#data-types"><span class="std std-ref">Data Types</span></a> except <a class="reference internal" href="data_files.html#data-files"><span class="std std-ref">Data Files</span></a>. Target columns can include NaN values, although be warned that trying
-passing a target with NaN values to some functions may not work correctly.</p>
+passing a target with NaN values to some functions may not work correctly. Likewise, during prediction, any targets with NaN values will not ever
+be used in any training sets, or contribute to any generated metrics on validation sets. In the case of multiple columns with role=’target’, then
+a specific target variable may be set when using <a class="reference internal" href="../reference/api/BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>.</p>
 </dd>
 </dl>
 </li>

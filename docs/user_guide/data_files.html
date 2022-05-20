@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Data Files &#8212; BPt 2.2.4 documentation</title>
+    <title>Data Files &#8212; BPt 2.2.5 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -152,18 +152,33 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="background.html">
+   Background
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="frame_question.html">
+   Frame a Question
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="loading_data.html">
    Loading Data
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="saving_data.html">
-   Saving Data
+  <a class="reference internal" href="ml_pipeline.html">
+   The ML Pipeline
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="test_split.html">
-   Test Split
+  <a class="reference internal" href="validation.html">
+   Validation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="saving_data.html">
+   Saving Data
   </a>
  </li>
 </ul>
@@ -291,7 +306,8 @@
 <p>Data files allow BPt to work with any type of arbitrary data beyond simply tabular data.
 For example, Data File’s can be used to load and work with volumetric or surface based neuroimaging data
 or even connectome data.</p>
-<p>See <a class="reference internal" href="../reference/api/BPt.Dataset.add_data_files.html#BPt.Dataset.add_data_files" title="BPt.Dataset.add_data_files"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_data_files</span></code></a> for how to load data files to a Dataset.</p>
+<p>See <a class="reference internal" href="../reference/api/BPt.Dataset.add_data_files.html#BPt.Dataset.add_data_files" title="BPt.Dataset.add_data_files"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_data_files</span></code></a> for how to load data files to a Dataset. Likewise,
+additional function <a class="reference internal" href="../reference/api/BPt.Dataset.to_data_file.html#BPt.Dataset.to_data_file" title="BPt.Dataset.to_data_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_data_file</span></code></a> may be used.</p>
 <p>During construction of a model pipeline any loaded data files must have a corresponding
 <a class="reference internal" href="../reference/api/BPt.Loader.html#BPt.Loader" title="BPt.Loader"><code class="xref py py-class docutils literal notranslate"><span class="pre">Loader</span></code></a> where those files will be converted into valid down stream predictive features.</p>
 <p><strong>Examples:</strong></p>

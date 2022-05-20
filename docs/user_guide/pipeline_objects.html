@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Pipeline Objects &#8212; BPt 2.2.4 documentation</title>
+    <title>Pipeline Objects &#8212; BPt 2.2.5 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -152,18 +152,33 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="background.html">
+   Background
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="frame_question.html">
+   Frame a Question
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="loading_data.html">
    Loading Data
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="saving_data.html">
-   Saving Data
+  <a class="reference internal" href="ml_pipeline.html">
+   The ML Pipeline
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="test_split.html">
-   Test Split
+  <a class="reference internal" href="validation.html">
+   Validation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="saving_data.html">
+   Saving Data
   </a>
  </li>
 </ul>
@@ -327,21 +342,28 @@ on the pieces, this parameter can be passed a custom object directly.</p>
 instance of <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.RobustScaler.html#sklearn.preprocessing.RobustScaler" title="(in scikit-learn v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RobustScaler</span></code></a> from sklearn:</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">BPt</span> <span class="k">as</span> <span class="nn">bp</span>
 
-<span class="gp">In [2]: </span><span class="n">scaler</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="s1">&#39;robust&#39;</span><span class="p">)</span>
+<span class="gp">In [2]: </span><span class="n">scaler</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="s1">&#39;robust&#39;</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
 
 <span class="gp">In [3]: </span><span class="n">scaler</span>
-<span class="gh">Out[3]: </span><span class="go">Scaler(obj=&#39;robust&#39;)</span>
+<span class="gh">Out[3]: </span><span class="go">Scaler(obj=&#39;robust&#39;, scope=&#39;all&#39;)</span>
+
+<span class="go"># See what this object looks like internally</span>
+<span class="gp">In [4]: </span><span class="n">scaler</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="gh">Out[4]: </span><span class="go"></span>
+<span class="go">((&#39;robust&#39;,</span>
+<span class="go">  ScopeTransformer(estimator=RobustScaler(quantile_range=(5, 95)), inds=&#39;all&#39;)),</span>
+<span class="go"> {})</span>
 </pre></div>
 </div>
 <p>We can do this because ‘robust’ exists as a default option already
 available in BPt (See <a class="reference internal" href="../options/pipeline_options/scalers.html#scalers"><span class="std std-ref">Scalers</span></a>). That said, if it wasn’t we
 could pass it as a custom object as well.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [4]: </span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">RobustScaler</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [5]: </span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">RobustScaler</span>
 
-<span class="gp">In [5]: </span><span class="n">scaler</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="n">RobustScaler</span><span class="p">())</span>
+<span class="gp">In [6]: </span><span class="n">scaler</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="n">RobustScaler</span><span class="p">())</span>
 
-<span class="gp">In [6]: </span><span class="n">scaler</span>
-<span class="gh">Out[6]: </span><span class="go">Scaler(obj=RobustScaler())</span>
+<span class="gp">In [7]: </span><span class="n">scaler</span>
+<span class="gh">Out[7]: </span><span class="go">Scaler(obj=RobustScaler())</span>
 </pre></div>
 </div>
 </section>
@@ -351,19 +373,19 @@ could pass it as a custom object as well.</p>
 of associated fixed or distribution of hyper-parameter values for this object. For example,
 we can choose to associate an existing hyper-parameter distribution for the robust scaler from
 before with:</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [7]: </span><span class="n">scaler</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="s1">&#39;robust&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="s2">&quot;robust gs&quot;</span><span class="p">)</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [8]: </span><span class="n">scaler</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="s1">&#39;robust&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="s2">&quot;robust gs&quot;</span><span class="p">)</span>
 
-<span class="gp">In [8]: </span><span class="n">scaler</span>
-<span class="gh">Out[8]: </span><span class="go">Scaler(obj=&#39;robust&#39;, params=&#39;robust gs&#39;)</span>
+<span class="gp">In [9]: </span><span class="n">scaler</span>
+<span class="gh">Out[9]: </span><span class="go">Scaler(obj=&#39;robust&#39;, params=&#39;robust gs&#39;)</span>
 </pre></div>
 </div>
 <p>We could also set it to a custom distribution using ref:<cite>Parameter&lt;api.dists&gt;</cite>:</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">quantile_range</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">Choice</span><span class="p">([(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">95</span><span class="p">),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">90</span><span class="p">),</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">85</span><span class="p">)])</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [10]: </span><span class="n">quantile_range</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">Choice</span><span class="p">([(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">95</span><span class="p">),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">90</span><span class="p">),</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">85</span><span class="p">)])</span>
 
-<span class="gp">In [10]: </span><span class="n">scaler</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="s1">&#39;robust&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;quantile_range&#39;</span><span class="p">:</span> <span class="n">quantile_range</span><span class="p">})</span>
+<span class="gp">In [11]: </span><span class="n">scaler</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="s1">&#39;robust&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;quantile_range&#39;</span><span class="p">:</span> <span class="n">quantile_range</span><span class="p">})</span>
 
-<span class="gp">In [11]: </span><span class="n">scaler</span>
-<span class="gh">Out[11]: </span><span class="go"></span>
+<span class="gp">In [12]: </span><span class="n">scaler</span>
+<span class="gh">Out[12]: </span><span class="go"></span>
 <span class="go">Scaler(obj=&#39;robust&#39;,</span>
 <span class="go">       params={&#39;quantile_range&#39;: Choice([(5, 95), (10, 90), (15, 85)])})</span>
 </pre></div>
@@ -372,6 +394,11 @@ before with:</p>
 </section>
 <section id="scope">
 <h2>scope<a class="headerlink" href="#scope" title="Permalink to this headline">#</a></h2>
+<p>Pipeline objects also have the argument <a class="reference internal" href="scope.html#scope"><span class="std std-ref">Scope</span></a> as an input argument.
+This argument allows for pipeline objects to work on just a subset of columns.
+Notably, if the scope in reference to a specific <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> is empty, then
+the piopeline object in question will just be silently skipped. This is useful for defining
+generic pipelines to different types of datasets.</p>
 </section>
 </section>
 

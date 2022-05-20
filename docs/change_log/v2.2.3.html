@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Version 2.2.3 &#8212; BPt 2.2.4 documentation</title>
+    <title>Version 2.2.3 &#8212; BPt 2.2.5 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -146,6 +146,11 @@
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
     <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="v2.2.5.html">
+   Version 2.2.5
+  </a>
+ </li>
  <li class="toctree-l1">
   <a class="reference internal" href="v2.2.4.html">
    Version 2.2.4
@@ -299,18 +304,28 @@
                 
   <section id="version-2-2-3">
 <span id="whatsnew-223"></span><h1>Version 2.2.3<a class="headerlink" href="#version-2-2-3" title="Permalink to this headline">#</a></h1>
-<ul>
-<li><p>Updates to previous class BPtEvaluator, now called <a class="reference internal" href="../reference/api/BPt.EvalResults.html#BPt.EvalResults" title="BPt.EvalResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code></a>
-- Now saves shallow copy of reference <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> by default.
-- Refactor name from BPtEvaluator to <a class="reference internal" href="../reference/api/BPt.EvalResults.html#BPt.EvalResults" title="BPt.EvalResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code></a></p></li>
-<li><p>New function <a class="reference internal" href="../reference/api/BPt.Dataset.get_permuted_Xy.html#BPt.Dataset.get_permuted_Xy" title="BPt.Dataset.get_permuted_Xy"><code class="xref py py-func docutils literal notranslate"><span class="pre">Dataset.get_permuted_Xy()</span></code></a>
-- This function allows for easily permuting a target y value when calculating</p>
-<blockquote>
-<div><p>X and y.</p>
-</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Updates to previous class BPtEvaluator, now called <a class="reference internal" href="../reference/api/BPt.EvalResults.html#BPt.EvalResults" title="BPt.EvalResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code></a></dt><dd><ul>
+<li><p>Now saves shallow copy of reference <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> by default.</p></li>
+<li><p>Refactor name from BPtEvaluator to <a class="reference internal" href="../reference/api/BPt.EvalResults.html#BPt.EvalResults" title="BPt.EvalResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvalResults</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
 </li>
-<li><p>Small updates to scores
-Now supports when passing custom scorers, the abbilitity to provide a name.</p></li>
+<li><dl class="simple">
+<dt>New function <a class="reference internal" href="../reference/api/BPt.Dataset.get_permuted_Xy.html#BPt.Dataset.get_permuted_Xy" title="BPt.Dataset.get_permuted_Xy"><code class="xref py py-func docutils literal notranslate"><span class="pre">Dataset.get_permuted_Xy()</span></code></a></dt><dd><ul>
+<li><p>This function allows for easily permuting a target y value when calculating
+X and y.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Small updates to scores</dt><dd><p>Now supports when passing custom scorers, the abbilitity to provide a name.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </section>
 

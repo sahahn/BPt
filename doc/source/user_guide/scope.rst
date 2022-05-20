@@ -11,7 +11,9 @@ Scope
 Scope's represent a key concept within BPt, that are present when preparing data with
 the :class:`Dataset` class (See functions for adding and removing scopes
 to the Dataset: :func:`add_scope <Dataset.add_scope>` and
-:func:`remove_scope <Dataset.remove_scope>`), and during ML.
+:func:`remove_scope <Dataset.remove_scope>`), and during ML. The easiest way to
+think about the scope argument is simply as an expanded way of index'ing the loaded columns.
+
 The `scope` argument can also be
 found across different :class:`ModelPipeline <BPt.ModelPipeline>` pieces
 and within :class:`ProblemSpec <BPt.ProblemSpec>`. The fundamental idea is

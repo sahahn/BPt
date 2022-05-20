@@ -945,6 +945,7 @@ def _plot_cat_float(self, cat_col, float_col, subjs, **plot_args):
                 kind="kde")
 
 
+
 """
 Note sure if want to re-create this given how buggy it is, but here is
 reference old code.

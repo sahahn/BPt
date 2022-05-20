@@ -8,9 +8,8 @@ Saving Data
 
 .. currentmodule:: BPt
 
-The best way to save :class:`Dataset` is through the pandas base method :func:`pandas.DataFrame.to_pickle`.
-Likewise, you can load saved :class:`Dataset` with the pandas function :func:`pandas.read_pickle`. These methods
-are also available through the BPt namespace.
+The best way to save :class:`Dataset` is through the  method :func:`Dataset.to_pickle`.
+Likewise, you can load saved :class:`Dataset` with the pandas function :func:`read_pickle`. 
 
 Below we create and save a dataset
 

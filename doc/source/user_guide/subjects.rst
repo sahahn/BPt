@@ -9,7 +9,10 @@ Subjects
 .. currentmodule:: BPt
 
 Various functions within BPt, and :class:`Dataset` can accept subjects or some variation on this
-name as an argument. The parameter can accept a few different values. These are explained below:
+name as an argument. The idea of subjects is similar to :ref:`scope`, where essentially subjects allows
+for an expanded upon index'ing system but at the row-level, whereas :ref:`scope` operates as the column level.
+
+The parameter can accept a few different values. These are explained below:
 
 1. array-like
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -58,6 +61,10 @@ A reserved key word may be passed. These include:
   Select any subjects with any missing values in any of their loaded columns,
   regardless of scope or role.
 
+- 'not nan'
+  Like 'nan' but not. Or in english, any subjects without any missing values in
+  any of their loaded columns, regardless of scope or role.
+
 - 'train'
   Select the set of train subjects as defined by a split in the Dataset, e.g.,
   :func:`set_train_split <BPt.Dataset.set_train_split>`.
@@ -73,7 +80,7 @@ A reserved key word may be passed. These include:
   subjects = 'train' will be used. Otherwise, subjects='all' will be used.
 
 
-4. value subset case
+1. value subset case
 ~~~~~~~~~~~~~~~~~~~~~
 You can pass the special input wrapper :class:`ValueSubset`. This can be
 used to select subsets of subject by a column's
@@ -185,6 +192,7 @@ We can also use special reversed keywords.
 .. ipython:: python
 
   data.get_subjects('nan')
+  data.get_subjects('not nan')
   
 
 

@@ -6,17 +6,17 @@ Version 2.1.6
 ---------------
 
 - DataFiles now can support multiple locs
-  - Added initial support for DataFiles / Loader being able to work with multiple
-    file locations at once.
+    - Added initial support for DataFiles / Loader being able to work with multiple
+      file locations at once.
 
 - Fixed issues with Loader internals
-  - Fixed some bugs related to internals of inds and scopes.
+    - Fixed some bugs related to internals of inds and scopes.
 
 - Added functions to Dataset
-  - Added some helper utilities for getting subjects with and without nan, now by scope
+    - Added some helper utilities for getting subjects with and without nan, now by scope
 
 - Updates to :func:`CompareDict.summary`
-  - Added some better formatting + extra options to :class:`CompareDict` summary func calls.
+    - Added some better formatting + extra options to :class:`CompareDict` summary func calls.
 
 - Compute hash faster for large file mappings
-  - In cases with many data files / file mappings, was computing hash slow. Now much faster.
+    - In cases with many data files / file mappings, was computing hash slow. Now much faster.

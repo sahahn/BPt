@@ -1,0 +1,19 @@
+.. _whatsnew_225:
+
+.. currentmodule:: BPt
+
+Version 2.2.5
+---------------
+
+- Update docs / examples
+    - All full examples have been re-run
+    - Some updates made the user guide section of documentation
+
+- Add support for google collab
+    - Detect if in google collab, and use correct progress bar
+
+- Change default gb pipeline
+    - Kind of funky behavior before, where gb pipe would use lgbm if avaliable, switch to always using hist gradient boosting from sklearn for that default.
+
+- Change default regression scorer to R2
+    - Change from explained_variance default to R2 default.

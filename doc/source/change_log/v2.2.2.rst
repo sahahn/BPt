@@ -6,29 +6,29 @@ Version 2.2.2
 ---------------
 
 - Sampler class
-  - Added new input :class:`Sampler` class.
+    - Added new input :class:`Sampler` class.
 
 - Improve plotting categorical plots
-  - Now when plotting categorical with :class:`Dataset.plot` will display the raw numbers by each bar.
+    - Now when plotting categorical with :class:`Dataset.plot` will display the raw numbers by each bar.
 
 - Fixed the caching for :class:`Loader`
-  - Error w/ previous versions for caching with :class:`Loader` when behav == 'all'
-  - Now fixed, and more effienct.
+    - Error w/ previous versions for caching with :class:`Loader` when behav == 'all'
+    - Now fixed, and more effienct.
 
 - More efficient scoring  / bug fix
-  - Updating scoring logic in :func:`evaluate` to stop re-calling predict / predict proba when there was multiple scores.
-  - New implementation uses to logic from sklearn multimetric wrapper to handle this better.
-  - Can give a big speed up in cases where early pipeline transformation / predictions take a long time and multiple metrics are calculated.
+    - Updating scoring logic in :func:`evaluate` to stop re-calling predict / predict proba when there was multiple scores.
+    - New implementation uses to logic from sklearn multimetric wrapper to handle this better.
+    - Can give a big speed up in cases where early pipeline transformation / predictions take a long time and multiple metrics are calculated.
 
 - Add data files function updated
-  - The add data files method is now robust to reference index that are integer
-  - The new default subject to file is now 'auto'.
+    - The add data files method is now robust to reference index that are integer
+    - The new default subject to file is now 'auto'.
 
 - Shading to progress bar
-  - The progress bar in :class:`BPtEvaluator` now is shaded, no real reason, just prettier.
+    - The progress bar in :class:`BPtEvaluator` now is shaded, no real reason, just prettier.
 
 - Some internal refactoring
-  - Internal renaming of modules to more pythonic.
+    - Internal renaming of modules to more pythonic.
 
 - Add repr and iter to :class:`Compare`
-  - Just changing how it looks, no functional changes
+    - Just changing how it looks, no functional changes

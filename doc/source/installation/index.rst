@@ -91,6 +91,11 @@ Though note, some may not download properly via pip depending on your operating 
 
 Different extension libraries are listed below:
 
+bp-neurotools
+~~~~~~~~~~~~~~
+
+This is a library by the same maintainers as BPt. It is designed to be less ML specific, but
+still contains some useful utilites for neuroimaging ML. See https://github.com/sahahn/neurotools.
 
 lightgbm
 ~~~~~~~~~~~
@@ -103,9 +108,7 @@ nilearn
 ~~~~~~~~
 
 This is a library dedicated to doing ML for neuroimaging, if installed it
-allows using a few of the extension libraries in BPt, including:
-:class:`BPt.extensions.SurfLabels`, :class:`BPt.extensions.SurfMaps`
-and :class:`BPt.extensions.SingleConnectivityMeasure`.
+allows use of :class:`BPt.extensions.SingleConnectivityMeasure`.
                    
 python-docx
 ~~~~~~~~~~~~~
@@ -122,18 +125,11 @@ under :ref:`Models`.
 mvlearn
 ~~~~~~~~~
 
+There is experimental support through the BPt extensions for using objects like CCA from the
+multi-vew learn library, mvlearn.
+
 imblearn
 ~~~~~~~~~~~
 
-networkx
-~~~~~~~~~~
-
-Required in order to use :class:`BPt.extensions.ThresholdNetworkMeasures`.
-                    
-sweetviz
-~~~~~~~~~
-
-
-neurotools
-~~~~~~~~~~~
-https://github.com/sahahn/neurotools
+There is experimental support for the use of some ensembles methods from library imblearn.
+These are ensembles that ensure bagging is done in a class-balanced manner.

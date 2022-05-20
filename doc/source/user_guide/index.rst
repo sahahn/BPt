@@ -15,9 +15,13 @@ Guides
     :maxdepth: 2
 
     why_bpt
+    background
+    frame_question
     loading_data
+    ml_pipeline
+    validation
+    results
     saving_data
-    test_split
 
 Key Concept References
 -----------------------

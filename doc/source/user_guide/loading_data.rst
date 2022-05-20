@@ -12,11 +12,10 @@ Intro
 ------
 
 In order to get data ready for machine learning, BPt has a specially designed :class:`Dataset` class.
-This class is new as of BPt version >= 2 (replacing the building in loading functions of the
-old BPt_ML). This class is built on top of the DataFrame from the pandas library. As we will see,
+This class is built on top of the DataFrame class from the pandas library. As we will see,
 the recommended way of preparing data actually first involves using the DataFrame class from pandas
-directly. The is that pandas and the DataFrame class should be used to load all of the data you might
-end up wanting to use. Luckily pandas contains a huge wealth of useful functions
+directly. The general idea is to use pandas and the DataFrame class to load all of the data you might
+end up wanting to use. Luckily, pandas contains a huge wealth of useful functions
 for accomplishing this already. Next, once all of the data is loaded, we cast the DataFrame
 to the BPt :class:`Dataset` class, and then use the built in :class:`Dataset` methods to get the data
 ready for use with the rest of BPt. This includes steps like specifying which variables are in what
@@ -24,10 +23,9 @@ role (e.g., target variables vs. data variables), outlier detection, transformat
 tools for plotting / viewing distributions and specifying a global train / test split. We will introduce all of
 this functionality below!
 
-
 Data of interest is inevitably going to come from a wide range of different sources, luckily the python library pandas
 has an incredible amount of support for loading data from different sources into DataFrames.
-Likewise, pandas offers a huge amount of support material, e.g., https://pandas.pydata.org/docs/getting_started/intro_tutorials/02_read_write.html
+Likewise, pandas offers a huge amount of support material, e.g., [here](https://pandas.pydata.org/docs/getting_started/intro_tutorials/02_read_write.html),
 for getting starting with loading in raw data (or a google search with a specific question will almost always help).
 Pandas should be used to accomplish the initial loading and merging of all tabular data of interest into a DataFrame.
 
@@ -96,3 +94,15 @@ This gives use two options, where both of the below operations will correctly se
   data = data.set_role('col 1', 'target')
   data.set_role('col 1', 'target', inplace=True)
   data.roles
+
+Preparing Data
+----------------
+
+There are some pre-modelling steps that, depending on the dataset and the question, might also be explored at this stage,
+and can be performed using the Dataset object directly. These are steps that occur after the actual loading and setting of explicit roles as described above.
+These include decisions like:
+
+- Generating exploratory plots of the different features in the dataset.
+- Should any data be removed or set to missing based on status as an outlier?
+- Should missing data be kept and imputed, or dropped? 
+- Are there any pre-requisite transformations that should be applied to the data? E.g., conversion from strings ‘Male’, ‘Female’ to 0 and 1’s. 

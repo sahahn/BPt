@@ -78,7 +78,7 @@ SCORERS.update({
 
 })
 
-default_scorers = {'regression': ['explained_variance',
+default_scorers = {'regression': ['r2',
                                   'neg_mean_squared_error'],
                    'binary': ['matthews', 'roc_auc',
                               'balanced_accuracy'],

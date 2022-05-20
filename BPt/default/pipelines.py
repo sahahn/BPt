@@ -15,18 +15,13 @@ elastic_search = Model('elastic', params=1, param_search=random_search)
 ridge_search = Model('ridge', params=1, param_search=random_search)
 rf_search = Model('rf', params=1, param_search=random_search)
 svm_search = Model('svm', params=1, param_search=random_search)
+gb_search = Model('hgb', params=1, param_search=random_search)
 
 u_feat = FeatSelector('univariate selection', params=2)
 svm = Model('svm', params=1)
 svm_fs_search_pipe = Pipeline(steps=[u_feat, svm], param_search=random_search)
 svm_fs_search = Model(svm_fs_search_pipe)
 
-# A little funky, but if lgbm not installed, use hbm
-try:
-    import lightgbm
-    gb_search = Model('lgbm', params=1, param_search=random_search)
-except ImportError:
-    gb_search = Model('hgb', params=1, param_search=random_search)
 
 stacking = Ensemble('stacking', models=[elastic_search,
                                         ridge_search,
@@ -49,7 +44,7 @@ stacking_pipe = Pipeline(steps=_base_steps + [stacking])
 compare_pipe = Compare([Option(elastic_pipe, name='elastic'),
                         Option(ridge_pipe, name='ridge'),
                         Option(svm_fs_pipe, name='svm_fs'),
-                        Option(gb_pipe, name='lgbm')])
+                        Option(gb_pipe, name='gb')])
 
 pieces = {'m_imputer': m_imputer,
           'c_imputer': c_imputer,

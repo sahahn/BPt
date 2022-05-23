@@ -314,3 +314,37 @@ def testBPtListLoader():
     assert loader.inds_ == [0]
     assert m == loader.out_mapping_
     assert m[0] == [0, 1, 2, 3]
+
+
+def test_BPtLoader_NaN():
+
+    mapping = get_fake_mapping(10)
+    X = np.arange(10).reshape((5, 2)).astype('float')
+    X[0][0] = np.nan
+    X[-2][-2] = np.nan
+
+    # Test base behavior
+    loader = BPtLoader(estimator=Identity(),
+                       inds=[0, 1],
+                       file_mapping=mapping,
+                       n_jobs=1,
+                       fix_n_jobs=False,
+                       cache_loc=None)
+    assert loader._n_jobs == 1
+
+    X_trans = loader.fit_transform(X)
+    
+
+    assert X_trans.shape == (5, 8)
+    assert np.isnan(X_trans[0][0])
+    assert np.isnan(X_trans[0][1])
+    assert np.isnan(X_trans[0][2])
+    assert np.isnan(X_trans[0][3])
+    assert X_trans[-1][-1] == 9
+
+    assert np.isnan(X_trans[3][0])
+    assert np.isnan(X_trans[3][3])
+
+
+    # Clean up
+    clean_fake_mapping(10)

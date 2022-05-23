@@ -1,0 +1,9 @@
+.. _whatsnew_226:
+
+.. currentmodule:: BPt
+
+Version 2.2.6
+---------------
+
+- Fix bug in :func:`Dataset.update_data_file_paths`
+    - Now handles NaN case.

@@ -35,6 +35,30 @@ def get_trans_chunk(transformer, data_files, func):
     return X_trans_chunk
 
 
+def fill_loaded_nans(X_trans_cols, nan_mask):
+
+    # If no NaN's, return as is
+    if np.sum(nan_mask) == 0:
+        return X_trans_cols
+
+    # If passed not as list, convert to list
+    # Where each loaded element is a loaded data point
+    if not isinstance(X_trans_cols, list):
+        X_trans_cols = list(X_trans_cols)
+
+    # They all should have the same shape,
+    # so can find needed shape from just 1st one
+    # to init nans object
+    nans = np.empty(X_trans_cols[0].shape)
+    nans[:] = np.nan
+
+    # And... fill
+    for nan_ind in np.where(nan_mask)[0]:
+        X_trans_cols.insert(nan_ind, nans)
+
+    # Return filled
+    return X_trans_cols
+
 class BPtLoader(ScopeTransformer):
 
     # Override
@@ -266,24 +290,11 @@ class BPtLoader(ScopeTransformer):
                 X_trans_cols += chunk
 
         # X_trans_cols is now list, where each element of the list
-        # is a loaded data point. If no NaN's can return as is
-        if np.sum(nan_mask) == 0:
-            return X_trans_cols
-       
-        # Otherwise, need to fill in any missing with NaN's
-        # that have the same shape as the rest of the loaded files
+        # is a loaded data point.
 
-        # They all should have the same shape,
-        # so can find needed shape from just 1st one
-        # to init nans object
-        nans = np.empty(X_trans_cols[0].shape)
-        nans[:] = np.nan
-
-        # And... fill
-        for nan_ind in np.where(nan_mask)[0]:
-            X_trans_cols.insert(nan_ind, nans)
-
-        return X_trans_cols
+        # Need to fill in any missing with NaN's, if any, with
+        # the same shape. Will return as is, if None
+        return fill_loaded_nans(X_trans_cols, nan_mask)
 
     def transform_df(self, df, base_name='loader', encoders=None):
 
@@ -434,16 +445,16 @@ class CompatArray(list):
 
     def load(self, ind, file_mapping):
 
-        # Could store file mapping in object / make load specific to
-        # to ind ?
-
         # Skip if already loaded
         if self.loaded:
             return
 
+        # Compute NaN mask
+        self.nan_mask = np.isnan(self[ind])
+
         # Load col
         col_loaded = []
-        for key in self[ind]:
+        for key in self[ind][~self.nan_mask]:
             data_file = file_mapping[int(key)]
             data = data_file.load()
             col_loaded.append(data)
@@ -525,7 +536,6 @@ class BPtListLoader(BPtLoader):
                 print(f'Error loading from fit_cache, skipping load cache.', flush=True)
 
         return None
-
 
     def _cache_fit(self):
         '''Cache fitted estimator'''
@@ -623,10 +633,23 @@ class BPtListLoader(BPtLoader):
         X.load(ind=self.inds_[0], file_mapping=self.file_mapping)
 
         if self.verbose:
-            print('Loaded files for load ind:', self.inds_[0], flush=True)
+            print('Loaded files for load ind:', self.inds_[0],
+                  X.nan_mask, flush=True)
 
-        # Then fit
-        self.estimator_.fit(X[self.inds_[0]], y=y, **fit_params)
+        # Then fit, but with the added piece
+        # that in the case of any NaN's, and y is not None,
+        # we want to only fit w/ non-NaN y's
+        if y is not None:
+            fit_y = y[~X.nan_mask]
+        else:
+            fit_y = None
+
+        # TODO may need to check to see if any fit params need to
+        # be modified to temporarily not include any NaNs
+        if len(fit_params) > 1 and np.sum(X.nan_mask) > 0:
+            raise RuntimeWarning('Fit params:', fit_params, 'may not work correctly.')
+
+        self.estimator_.fit(X[self.inds_[0]], y=fit_y, **fit_params)
 
         # Try cache
         self._cache_fit()
@@ -641,7 +664,7 @@ class BPtListLoader(BPtLoader):
         if self.estimator_ is None:
             return X
 
-        # If X not compat array, set
+        # If X not already compat array, we need it to be
         if not isinstance(X, CompatArray):
             X = CompatArray(X)
 
@@ -664,6 +687,11 @@ class BPtListLoader(BPtLoader):
             X.load(ind=self.inds_[0], file_mapping=self.file_mapping)
             X_trans = self.estimator_.transform(X[self.inds_[0]], **trans_params)
 
+            # Before saving X_trans / passing on to next step
+            # we want to add back in any NaN's (if any)
+            # Note: if NaN's will cast to list, so just make sure array
+            X_trans = np.array(fill_loaded_nans(X_trans, X.nan_mask))
+
             # Try to save newly transformed
             self._cache_transform(X_trans)
 
@@ -681,3 +709,5 @@ class BPtListLoader(BPtLoader):
             print(f'Final return transform shape: {ret_X_trans.shape}')
 
         return ret_X_trans
+
+

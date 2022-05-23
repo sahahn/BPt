@@ -6,7 +6,8 @@ Version 2.2.6
 ---------------
 
 - NaN support in :class:`Loader`
-    - Loaders with single behavior will now support propegating any found NaN' with the same shape as the rest of the loaded data files.
+    - Loaders with will now support propegating any found NaN' with the same shape as the rest of the loaded data files.
+    - Will support 'single' and 'all' behavior, tests added to confirm.
 
 - Fix bug in :func:`Dataset.update_data_file_paths`
     - Now handles NaN case.

@@ -153,7 +153,7 @@ def _get_top_global(df, top_n, get_abs):
 def plot_feat_importances(df,
                           xlabel='Feature Importances',
                           top_n=10,
-                          show_abs=False, ci=95,
+                          show_abs=False, ci='sd',
                           palette='default', title='default',
                           ax=None):
 

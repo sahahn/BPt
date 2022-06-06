@@ -11,3 +11,6 @@ Version 2.2.6
 
 - Fix bug in :func:`Dataset.update_data_file_paths`
     - Now handles NaN case.
+
+- Tweaks to input parameters
+    - Just allow more options when init'ing :class:`CV`, :class:`ProblemSpec` and :class:`ParamSearch`.

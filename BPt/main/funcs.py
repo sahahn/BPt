@@ -255,7 +255,7 @@ def _base_ps_check(ps, dataset):
     # Replace problem_spec type w/ correct if passed short hands
     pt = ps.problem_type
 
-    if pt == 'default':
+    if pt == 'default' or pt == 'auto':
         pt = dataset._get_problem_type(ps.target)
     elif pt == 'b':
         pt = 'binary'

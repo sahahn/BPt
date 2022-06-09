@@ -127,7 +127,7 @@ P['rf classifier dist'] = P['rf dist'].copy()
 P['rf classifier dist']['class_weight'] = cls_weight
 
 # Hist gradient boosting params
-P['hbb dist1'] =\
+P['hgb dist1'] =\
     {'max_iter': Scalar(init=100, lower=3, upper=200).set_integer_casting()}
 
 P['hgb dist2'] =\
@@ -181,9 +181,9 @@ P['lgbm dist3'] = {'silent': True,
                    'eval_split': .2,
                    'boosting_type': 'gbdt',
                    'learning_rate':
-                   'Log(lower=5e-3, upper=.2, init=.1)',
+                   Log(lower=5e-3, upper=.2, init=.1),
                    'colsample_bytree':
-                   'Scalar(lower=.75, upper=1, init=1)',
+                   Scalar(lower=.75, upper=1, init=1),
                    'min_child_samples':
                    Scalar(lower=2, upper=30, init=20).set_integer_casting(),
                    'num_leaves':

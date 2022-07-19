@@ -19,7 +19,7 @@ Version 2.2.6
     - Just allow more options when init'ing :class:`CV`, :class:`ProblemSpec` and :class:`ParamSearch`.
 
 - Removed MLP
-    - Why are you using MLP? Don't, it just isn't good.
+    - Why are you using MLP? Don't, it just isn't good. Sorry, gone, poof.
 
 - New experimental color options
     - Messing around with option for coloring output for :class:`Compare` summary, but still broken for now.

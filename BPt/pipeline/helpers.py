@@ -39,7 +39,6 @@ def get_grid_params(params):
     # Set grid params
     grid_params = {}
     for p in params:
-
         if hasattr(params[p], 'to_grid'):
             grid_params[p] = params[p].to_grid()
         elif is_ng(params[p]):

@@ -225,6 +225,9 @@ class BPtGridSearchCV(BPtSearchCV):
     def fit_grid(self, X, y=None, mapping=None,
                  fit_index=None, **fit_params):
 
+        if self.ps['verbose'] >= 1:
+            print('Starting grid based hyper-parameter search.', flush=True)
+
         # Conv nevergrad to grid compat. param grid
         param_grid = get_grid_params(self.param_distributions)
 
@@ -252,6 +255,13 @@ class BPtGridSearchCV(BPtSearchCV):
 
         else:
             self.search_obj_.fit(X, y, **f_params)
+
+        # Optional verbose
+        if self.ps['verbose'] >= 1:
+            print('Finished nevergrad hyper-parameter search,',
+                  'with best internal CV score:', self.best_score_)
+        if self.ps['verbose'] >= 2:
+            print('Selected hyper-parameters:', self.best_params_)
 
         return self
 

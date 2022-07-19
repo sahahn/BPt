@@ -1993,6 +1993,19 @@ class EvalResults():
         # X stays the same
         X, _ = dataset.get_Xy(self.ps)
 
+        if blocks is not None:
+
+            # If not same length, try to match them
+            if len(X) != len(blocks):
+
+                try:
+                    blocks = blocks.loc[X.index]
+                except:
+
+                    # TODO give more info
+                    raise RuntimeError('length of blocks and data do not match.')
+
+        # TODO add option to multi-process here
         p_scores = {}
         for _ in range(n_perm):
             
@@ -2006,7 +2019,6 @@ class EvalResults():
             # Get permuted y
             y_perm = dataset._get_permuted_y(self.ps, random_state=rs,
                                              blocks=blocks, within_grp=within_grp)
-
 
             # Init silent copy to eval with
             p_eval = EvalResults(estimator=self.estimator,

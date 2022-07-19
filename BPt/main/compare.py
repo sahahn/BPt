@@ -62,8 +62,8 @@ def make_summary_pretty(styler, mean_score_cols):
     styler.background_gradient(axis=0, cmap="bwr", subset='mean_scores_sr')
     
     styler.background_gradient(axis=0, cmap="bwr",
-                            subset=mean_score_cols,
-                            low=.5, high=.5)
+                               subset=mean_score_cols,
+                               low=.5, high=.5)
     return styler
 
 class Option(BPtInputMixIn):
@@ -494,6 +494,7 @@ class CompareDict(dict):
         show_std = True
         if 'show_std' in kwargs:
             show_std = kwargs['show_std']
+        color = False
         if 'color' in kwargs:
             color = kwargs['color']
 

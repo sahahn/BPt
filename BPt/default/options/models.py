@@ -1,4 +1,3 @@
-from ...extensions.mlp import MLPRegressor_Wrapper, MLPClassifier_Wrapper
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.naive_bayes import GaussianNB
@@ -41,7 +40,6 @@ AVAILABLE = {
         'svc':                'svm classifier',
         'linear svm':         'linear svm classifier',
         'linear svc':         'linear svm classifier',
-        'mlp':                'mlp classifier',
         'sgd':                'sgd classifier',
         'gb':                 'gb classifier',
         'hgb':                'hgb classifier',
@@ -62,7 +60,6 @@ AVAILABLE = {
         'svr':                'svm regressor',
         'linear svm':         'linear svm regressor',
         'linear svr':         'linear svm regressor',
-        'mlp':                'mlp regressor',
         'ridge':              'ridge regressor',
         'lasso':              'lasso regressor',
         'gb':                 'gb regressor',
@@ -124,19 +121,6 @@ MODELS = {
 
     'svm regressor': (SVR, ['base svm', 'svm dist']),
     'svm classifier': (SVC, ['base svm classifier', 'svm classifier dist']),
-
-    'mlp regressor': (MLPRegressor_Wrapper, ['default', 'mlp dist 3 layer',
-                                             'mlp dist es 3 layer',
-                                             'mlp dist 2 layer',
-                                             'mlp dist es 2 layer',
-                                             'mlp dist 1 layer',
-                                             'mlp dist es 1 layer']),
-    'mlp classifier': (MLPClassifier_Wrapper, ['default', 'mlp dist 3 layer',
-                                               'mlp dist es 3 layer',
-                                               'mlp dist 2 layer',
-                                               'mlp dist es 2 layer',
-                                               'mlp dist 1 layer',
-                                               'mlp dist es 1 layer']),
 
     'linear svm classifier': (LinearSVC, ['base linear svc',
                                           'linear svc dist']),

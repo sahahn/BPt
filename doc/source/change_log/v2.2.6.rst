@@ -14,3 +14,6 @@ Version 2.2.6
 
 - Tweaks to input parameters
     - Just allow more options when init'ing :class:`CV`, :class:`ProblemSpec` and :class:`ParamSearch`.
+
+- Removed MLP
+    - Why are you using MLP? Don't, it just isn't good.

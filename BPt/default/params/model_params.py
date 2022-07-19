@@ -263,49 +263,6 @@ P['svm classifier dist']['probability'] = True
 P['svm classifier dist']['class_weight'] = cls_weight
 
 
-# Define different choices for the mlp
-P['base mlp'] = {}
-
-sizes = Scalar(init=200, lower=50, upper=400).set_integer_casting()
-batch_size = TransitionChoice(['auto', sizes])
-
-P['mlp dist 1 layer'] =\
-    {'hidden_layer_sizes':
-     Scalar(init=100, lower=2, upper=300).set_integer_casting(),
-     'activation':
-         TransitionChoice(['identity', 'logistic', 'tanh', 'relu']),
-         'alpha': Log(lower=1e-5, upper=1e2),
-         'batch_size': batch_size,
-         'learning_rate':
-         TransitionChoice(['constant', 'invscaling', 'adaptive']),
-         'learning_rate_init': Log(lower=1e-5, upper=1e2),
-         'max_iter':
-         Scalar(init=200, lower=100, upper=1000).set_integer_casting(),
-         'beta_1': Scalar(init=.9, lower=.1, upper=.99),
-         'beta_2': Scalar(init=.999, lower=.1, upper=.9999)}
-
-P['mlp dist es 1 layer'] = P['mlp dist 1 layer'].copy()
-P['mlp dist es 1 layer']['early_stopping'] = True
-P['mlp dist es 1 layer']['n_iter_no_change'] =\
-    Scalar(lower=5, upper=50).set_integer_casting()
-
-two_layer = Array(init=(100, 100)).set_mutation(sigma=50)
-two_layer = two_layer.set_bounds(lower=1, upper=300).set_integer_casting()
-
-P['mlp dist 2 layer'] = P['mlp dist 1 layer'].copy()
-P['mlp dist 2 layer']['hidden_layer_sizes'] = two_layer
-
-P['mlp dist es 2 layer'] = P['mlp dist es 1 layer'].copy()
-P['mlp dist 2 layer']['hidden_layer_sizes'] = two_layer
-
-three_layer = Array(init=(100, 100, 100)).set_mutation(sigma=50)
-three_layer = three_layer.set_bounds(lower=1, upper=300).set_integer_casting()
-
-P['mlp dist 3 layer'] = P['mlp dist 1 layer'].copy()
-P['mlp dist 3 layer']['hidden_layer_sizes'] = three_layer
-
-P['mlp dist es 3 layer'] = P['mlp dist es 1 layer'].copy()
-P['mlp dist 3 layer']['hidden_layer_sizes'] = three_layer
 
 P['base linear svc'] = {'max_iter': 100}
 

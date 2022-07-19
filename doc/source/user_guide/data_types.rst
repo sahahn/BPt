@@ -20,10 +20,19 @@ are categorical. By default, if any columns are set to pandas type 'category', e
 
     data['col'] = data['col'].astype('category')
 
-Then this example column, 'col', is already set within BPt as categorical too. You
-may also specify if a column is categorical or not by adding 'category' to that columns
-scope via :func:`add_scope <Dataset.add_scope>`.
+Then this example column, 'col', is already set within BPt as categorical too. 
 For example:
+
+.. warning::
+    
+    In the case where the categorical column is composed of say strings or objects,
+    it is not enough to just cast it as type category for use as input to a machine learning pipeline!
+    In order for it to be valid input, the strings or objects or whatever must be converted to float / int
+    representations, e.g., the best way to do this is ussually :func:`ordinalize <Dataset.ordinalize>`. 
+
+You may also specify if a column is categorical or not by adding 'category' to that columns
+scope via :func:`add_scope <Dataset.add_scope>`. Again though, this should only be done for columns which
+are already ordinally or one-hot encoded.
 
 ::
 

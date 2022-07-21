@@ -9,6 +9,7 @@ import pandas.core.common as com
 from pandas.core.dtypes.generic import ABCMultiIndex
 from pandas.api.types import is_integer_dtype
 from sklearn.utils import check_random_state
+from IPython.core.display import display, HTML
 
 
 _shared_docs = {}
@@ -1863,6 +1864,18 @@ class Dataset(pd.DataFrame):
                              else repr(i) for i in self[col]]
 
     def _repr_html_(self):
+        return self._rep_scopes_html(['input data', 'target', 'non input'], is_role=True)
+
+    def display_scopes(self):
+        '''Display an HTML representation of the Dataset, as split
+        by scope, instead of the default repr html as split by role.'''
+
+        # Get unique scopes
+        u_scopes = set.union(*[self.scopes[r] for r in self.scopes])
+        u_scopes = sorted(list(u_scopes))
+        display(HTML(self._rep_scopes_html(u_scopes, is_role=False)))
+
+    def _rep_scopes_html(self, scopes, is_role=True):
 
         # Checks
         self._check_sr()
@@ -1871,15 +1884,18 @@ class Dataset(pd.DataFrame):
         <h3>{0}</h3>{1}</div>"""
 
         html = ''
-        for scope in ['input data', 'target', 'non input']:
+        for scope in scopes:
             cols = self._get_cols(scope)
 
             # Minor formatting for display of scope name
-            display_scope = ' '.join([s[0].upper() + s[1:] for s in scope.split(' ')])
+            if is_role:
+                display_scope = ' '.join([s[0].upper() + s[1:] for s in scope.split(' ')])
 
-            # Handle if multiple targets
-            if display_scope == 'Target' and len(cols) > 1:
-                display_scope = 'Targets'
+                # Handle if multiple targets
+                if display_scope == 'Target' and len(cols) > 1:
+                    display_scope = 'Targets'
+            else:
+                display_scope = scope
 
             # Only display if any valid
             if len(cols) > 0:
@@ -1891,6 +1907,7 @@ class Dataset(pd.DataFrame):
                 html += '\n'
 
         return html
+
 
     def _base_repr_html_(self):
 

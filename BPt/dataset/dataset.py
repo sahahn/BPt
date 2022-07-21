@@ -9,7 +9,7 @@ import pandas.core.common as com
 from pandas.core.dtypes.generic import ABCMultiIndex
 from pandas.api.types import is_integer_dtype
 from sklearn.utils import check_random_state
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 
 
 _shared_docs = {}

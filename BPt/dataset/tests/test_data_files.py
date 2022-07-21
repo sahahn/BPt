@@ -118,9 +118,6 @@ def test_data_files_consolidate2():
                               scope='data file', cast_to='float64',
                               clear_existing='fail', n_jobs=-1)
 
-
-def test_data_files_integration():
-
     df = setup_datafiles()
 
     assert len(df['data_files']) == 3
@@ -220,7 +217,9 @@ def test_to_data_file_not_inplace():
 def test_update_file_paths():
 
     df = setup_datafiles()
-    df.update_data_file_paths('/tmp/', 'fake_path')
+
+    to_rep = os.path.dirname(df.file_mapping[0].loc)
+    df.update_data_file_paths(to_rep, 'fake_path')
 
     for i in df.file_mapping:
         assert 'fake_path' in df.file_mapping[i].loc
@@ -229,7 +228,9 @@ def test_update_file_paths_nan():
 
     df = setup_datafiles()
     df.loc[0, 'data_files'] = np.nan
-    df.update_data_file_paths('/tmp/', 'fake_path')
+    
+    to_rep = os.path.dirname(df.file_mapping[0].loc)
+    df.update_data_file_paths(to_rep, 'fake_path')
 
     for i in df.file_mapping:
         if np.isnan(i):

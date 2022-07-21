@@ -132,7 +132,7 @@ def _get_top_global(df, top_n, get_abs):
     wide['mean'] = wide['mean'].replace(top.to_dict())
 
     # Normalize to special range if pos and neg
-    p_min, p_max = wide['mean'].min(), wide['mean'].max()
+    p_min, p_max = wide['mean'].min(axis=0), wide['mean'].max(axis=0)
 
     # Small number to add to each side, so that max doesn't plot directly
     # at max colorbar value

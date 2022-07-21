@@ -238,22 +238,30 @@ class Dataset(pd.DataFrame):
         reserved (i.e., cannot be set as a scope) roles,
         these are ::
 
-            ['data', 'target', 'non input']
+            ['input data', 'target', 'non input']
+
+        Where ::
+
+            ['data' and 'input data']
+
+        Can be used in an inter-changeable way
 
         '''
-        return set(['data', 'target', 'non input'])
+        return set(['data', 'input data', 'target', 'non input'])
 
     @property
     def reservered_scopes(self):
         '''There are a number of reserved fixed scopes
         in the Dataset class, these are ::
 
-            ['all', 'float', 'category', 'data float',
+            ['all', 'float', 'category', 'data float', 'input data',
+             'input data float', 'input data category',
              'data', 'data file', 'data category',
              'non input', 'target', 'target category',
              'target float']
         '''
-        return set(['all', 'float', 'category', 'data float',
+        return set(['all', 'float', 'category', 'data float', 
+                    'input data', 'input data float', 'input data category',
                     'data', 'data file', 'data category',
                     'non input', 'target', 'target category',
                     'target float'])
@@ -416,11 +424,17 @@ class Dataset(pd.DataFrame):
 
         if not isinstance(self.roles, dict):
             raise RuntimeError('roles must be a dict.')
-
-        # Fill in any column without a role.
+        
         for col in list(self.columns):
+
+            # Fill in any column without a role.
             if col not in self.roles:
-                self._set_role(col, 'data')
+                self._set_role(col, 'input data')
+
+            # Catch any with data tag
+            elif self.roles[col] == 'data':
+                self.roles[col] = 'input data'
+
 
         # Remove any saved roles that are not
         # in the data any more.
@@ -518,8 +532,9 @@ class Dataset(pd.DataFrame):
         role : :ref:`Role`
             A valid role in which to set all columns
             in the passed scope to. Input must be
-            either 'data', 'target' or 'non input'.
-            Note: by default all columns start with role 'data'.
+            either 'input data' / 'data', 'target' or 'non input'.
+            Note: By default all columns will default to role of 'input data', which
+            can be referenced by reserved keys 'data' or 'input data'.
 
             See :ref:`Role` for more information on how
             each role differs.
@@ -665,10 +680,15 @@ class Dataset(pd.DataFrame):
                 'Passed role "' + str(role) + '" must be one of ' +
                 str(self.reserved_roles))
 
+        # Externally, both allowed, internally, just use input data
+        if role == 'data':
+            role = 'input data'
+
         # Set as role
         self.roles[col] = role
 
         # If role is non input, can't have any NaN
+        # TODO is this a stupid requiriment?
         if role == 'non input':
             self.drop_nan_subjects(scope=col, inplace=True)
 
@@ -854,10 +874,10 @@ class Dataset(pd.DataFrame):
         if scope == 'all':
             return list(columns)
 
-        elif scope == 'data float':
+        elif scope == 'data float' or scope == 'input data float':
             return [col for col in columns if
                     'category' not in self.scopes[col] and
-                    self.roles[col] == 'data']
+                    self.roles[col] == 'input data']
 
         elif scope == 'target float':
             return [col for col in columns if
@@ -872,19 +892,19 @@ class Dataset(pd.DataFrame):
             return [col for col in columns if
                     'category' in self.scopes[col]]
 
-        elif scope == 'data category':
+        elif scope == 'data category' or scope == 'input data category':
             return [col for col in columns if
                     'category' in self.scopes[col] and
-                    self.roles[col] == 'data']
+                    self.roles[col] == 'input data']
 
         elif scope == 'target category':
             return [col for col in columns if
                     'category' in self.scopes[col] and
                     self.roles[col] == 'target']
 
-        elif scope == 'data':
+        elif scope == 'data' or scope == 'input data':
             return [col for col in columns if
-                    self.roles[col] == 'data']
+                    self.roles[col] == 'input data']
 
         elif scope == 'target':
             return [col for col in columns if
@@ -1001,7 +1021,7 @@ class Dataset(pd.DataFrame):
         return self._get_cols(scope=scope, limit_to=limit_to)
 
     def _get_data_cols(self, ps_scope):
-        return self._get_cols('data', limit_to=ps_scope)
+        return self._get_cols('input data', limit_to=ps_scope)
 
     def _get_data_inds(self, ps_scope, scope):
         '''This function always limits first by the data cols,
@@ -1851,18 +1871,18 @@ class Dataset(pd.DataFrame):
         <h3>{0}</h3>{1}</div>"""
 
         html = ''
-        for scope in ['data', 'target', 'non input']:
+        for scope in ['input data', 'target', 'non input']:
             cols = self._get_cols(scope)
 
-            # Minor formatting for display
-            display_scope = scope[0].upper() + scope[1:]
+            # Minor formatting for display of scope name
+            display_scope = ' '.join([s[0].upper() + s[1:] for s in scope.split(' ')])
+
+            # Handle if multiple targets
             if display_scope == 'Target' and len(cols) > 1:
                 display_scope = 'Targets'
-            elif display_scope == 'Non input':
-                display_scope = 'Non Input'
 
+            # Only display if any valid
             if len(cols) > 0:
-
                 display_copy = self[cols].copy()
                 display_copy._replace_datafiles_with_repr_()
 

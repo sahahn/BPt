@@ -885,7 +885,7 @@ class Transformer(Piece):
 
         ::
 
-            default = 'data'
+            default = 'input data'
 
     {cache_loc}
 
@@ -894,7 +894,7 @@ class Transformer(Piece):
 
     _constructor = TransformerConstructor
 
-    def __init__(self, obj, params=0, scope='data', cache_loc=None,
+    def __init__(self, obj, params=0, scope='input data', cache_loc=None,
                  **extra_params):
 
         self.obj = obj

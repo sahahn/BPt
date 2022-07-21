@@ -73,8 +73,8 @@ def _roles_merge(vals, col=None, objs=None, data=None):
         return vals[0]
 
     # Otherwise, prefer order as data, target, non input
-    if 'data' in u_vals:
-        return 'data'
+    if 'data' in u_vals or 'input data' in u_vals:
+        return 'input data'
     return 'target'
 
 def _encoder_merge(vals, col, objs, data):

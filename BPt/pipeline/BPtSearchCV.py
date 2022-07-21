@@ -20,6 +20,9 @@ import pandas as pd
 from .helpers import to_memmap, from_memmap, get_grid_params
 from loky import get_reusable_executor
 
+from sklearn.exceptions import ConvergenceWarning
+
+
 
 class BPtSearchCV(BaseEstimator):
 
@@ -331,22 +334,25 @@ def ng_cv_score(X, y, estimator, scoring, weight_scorer,
             fit_index=cv_subjects[i][0],
             other_params=fit_params)
 
-        # Fit estimator on train
-        estimator.fit(X[tr_inds], y[tr_inds], **deepcopy(f_params))
+        # Fit estimator on train, ignore any convergence warnings here
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=ConvergenceWarning)
 
-        # Get the score, but scoring return high values as better,
-        # so flip sign.
+            estimator.fit(X[tr_inds], y[tr_inds], **deepcopy(f_params))
 
-        # Hack to allow passing info on transform_index.
-        if _needs(estimator, '_needs_transform_index',
-                  'transform_index', 'transform'):
-            score_X = pd.DataFrame(X[test_inds], index=cv_subjects[i][1])
-            score = -scoring(estimator, score_X, y[test_inds])
+            # Get the score, but scoring return high values as better,
+            # so flip sign.
 
-        else:
-            score = -scoring(estimator, X[test_inds], y[test_inds])
+            # Hack to allow passing info on transform_index.
+            if _needs(estimator, '_needs_transform_index',
+                    'transform_index', 'transform'):
+                score_X = pd.DataFrame(X[test_inds], index=cv_subjects[i][1])
+                score = -scoring(estimator, score_X, y[test_inds])
 
-        cv_scores.append(score)
+            else:
+                score = -scoring(estimator, X[test_inds], y[test_inds])
+
+            cv_scores.append(score)
 
     if weight_scorer:
         weights = [len(cv_inds[i][1]) for i

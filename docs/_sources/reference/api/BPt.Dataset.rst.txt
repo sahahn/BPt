@@ -60,6 +60,7 @@ BPt.Dataset
       Dataset.cumsum
       Dataset.describe
       Dataset.diff
+      Dataset.display_scopes
       Dataset.div
       Dataset.divide
       Dataset.dot

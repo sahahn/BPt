@@ -10,7 +10,7 @@ Role
 
 There are three possible roles in the :class:`Dataset` class / BPt. These are
 'data', 'target' and 'non input'. By default, all loaded columns will be treated with
-role 'data' until set differently. Roles are set through
+role 'input data' until set differently. Roles are set through
 methods :func:`set_role <Dataset.set_role>`
 and :func:`set_roles <Dataset.set_roles>`. Or through dedicated
 helper methods :func:`set_target <Dataset.set_target>` and
@@ -18,11 +18,11 @@ helper methods :func:`set_target <Dataset.set_target>` and
 
 The different roles are described below.
 
-- data
-    The default role, data, is used to indicate all columns which might at some point serve as input features for an eventual predictive task.
+- input data
+    The default role, input data, is used to indicate all columns which might at some point serve as input features for an eventual predictive task.
     Data can have any of the :ref:`Data_Types` including :ref:`Data_Files`. NaN's are allowed in data columns. The basic idea is that when
-    passing a :class:`Dataset` to :func:`evaluate`, by default every column with role='data' will be used as input to predict, unless this set
-    of variables is limited in some way by passing a :ref:`scope`.
+    passing a :class:`Dataset` to :func:`evaluate`, by default every column with role='input data' will be used as input to predict, unless this set
+    of variables is limited in some way by passing a :ref:`scope`. Note, you may also access this role with shorted keyword 'data'.
 
 - target
     The role of target is used to indicate columns which are to be predicted, and therefore will not serve as input features for any predictive tasks.

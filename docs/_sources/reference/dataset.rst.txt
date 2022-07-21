@@ -94,6 +94,7 @@ Plotting / Viewing
    Dataset.plot_bivar
    Dataset.nan_info
    Dataset.summary
+   Dataset.display_scopes
 
 
 Train / Test Split

@@ -306,6 +306,7 @@ def testBPtListLoader():
     assert np.array_equal(X_trans[:, 1], np.array([0, 2, 4]))
     assert np.array_equal(X_trans[:, 2], np.array([0, 2, 4]))
     assert np.array_equal(X_trans[:, 3], np.array([0, 2, 4]))
+    assert np.array_equal(X_trans[:, 4], np.array([1, 3, 5]))
 
     assert loader.n_trans_feats_ == 4
     assert len(loader.X_trans_inds_) == 1
@@ -314,3 +315,83 @@ def testBPtListLoader():
     assert loader.inds_ == [0]
     assert m == loader.out_mapping_
     assert m[0] == [0, 1, 2, 3]
+
+
+def test_BPtLoader_NaN():
+
+    mapping = get_fake_mapping(10)
+    X = np.arange(10).reshape((5, 2)).astype('float')
+    X[0][0] = np.nan
+    X[-2][-2] = np.nan
+
+    # Test base behavior
+    loader = BPtLoader(estimator=Identity(),
+                       inds=[0, 1],
+                       file_mapping=mapping,
+                       n_jobs=1,
+                       fix_n_jobs=False,
+                       cache_loc=None)
+    assert loader._n_jobs == 1
+
+    X_trans = loader.fit_transform(X)
+    
+
+    assert X_trans.shape == (5, 8)
+    assert np.isnan(X_trans[0][0])
+    assert np.isnan(X_trans[0][1])
+    assert np.isnan(X_trans[0][2])
+    assert np.isnan(X_trans[0][3])
+    assert X_trans[-1][-1] == 9
+
+    assert np.isnan(X_trans[3][0])
+    assert np.isnan(X_trans[3][3])
+
+
+    # Clean up
+    clean_fake_mapping(10)
+
+
+def testBPtListLoader_NaNs():
+
+    mapping = get_fake_mapping(6)
+
+    loader = BPtListLoader(estimator=IdentityListLoader(),
+                           inds=[0],
+                           file_mapping=mapping,
+                           n_jobs=1,
+                           fix_n_jobs=False,
+                           cache_loc=None)
+
+    m = {0: 0, 1: 1}
+    m_copy = m.copy()
+    X = np.arange(6).reshape((3, 2)).astype('float')
+    X[0][0] = np.nan
+    y = np.array([1, 1, 1])
+
+
+    X_trans = loader.fit_transform(X,  y=y, mapping=m)
+
+    assert X_trans.shape == (3, 5)
+    assert X_trans.dtype == 'float'
+
+    # Make sure base is the same
+    assert np.array_equal(X_trans[1:, 0], np.array([2, 4]))
+    assert np.array_equal(X_trans[1:, 1], np.array([2, 4]))
+    assert np.array_equal(X_trans[1:, 2], np.array([2, 4]))
+    assert np.array_equal(X_trans[1:, 3], np.array([2, 4]))
+    assert np.array_equal(X_trans[:, 4], np.array([1, 3, 5]))
+
+    # And rest of attributes are as expected
+    assert loader.n_trans_feats_ == 4
+    assert len(loader.X_trans_inds_) == 1
+    assert loader.X_trans_inds_[0] == [0, 1, 2, 3]
+    assert loader.mapping_ == m_copy
+    assert loader.inds_ == [0]
+    assert m == loader.out_mapping_
+    assert m[0] == [0, 1, 2, 3]
+
+    # But key part here is to see that the NaN's propegarted
+    assert np.isnan(X_trans[0][0])
+    assert np.isnan(X_trans[0][1])
+    assert np.isnan(X_trans[0][2])
+    assert np.isnan(X_trans[0][3])

@@ -255,7 +255,7 @@ def _base_ps_check(ps, dataset):
     # Replace problem_spec type w/ correct if passed short hands
     pt = ps.problem_type
 
-    if pt == 'default':
+    if pt == 'default' or pt == 'auto':
         pt = dataset._get_problem_type(ps.target)
     elif pt == 'b':
         pt = 'binary'
@@ -495,7 +495,7 @@ def _preproc_pipeline(pipe, ps, dataset):
 
     # Check imputers default case
     # Check if any NaN in data
-    data_cols = dataset._get_cols(scope='data', limit_to=ps.scope)
+    data_cols = dataset._get_cols(scope='input data', limit_to=ps.scope)
 
     is_na = dataset[data_cols].isna().any().any()
     pipe._check_imputers(is_na)

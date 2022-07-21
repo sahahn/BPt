@@ -1,0 +1,31 @@
+.. _whatsnew_226:
+
+.. currentmodule:: BPt
+
+Version 2.2.6
+---------------
+
+- NaN support in :class:`Loader`
+    - Loaders with will now support propegating any found NaN' with the same shape as the rest of the loaded data files.
+    - Will support 'single' and 'all' behavior, tests added to confirm.
+
+- Added :class:`Dataset.display_scopes`
+    - Allows viz HTML repr of dataset by scope instead of default role.
+
+- Cosmetic change from role name 'data' to 'input data'
+    - All methods will still work when passed 'data' indefinetly, but internally, and for display, switch to having the role key as 'input data' instead.
+
+- Fix bug with permutation testing
+    - Block structure and custom scopes will now work together better.
+
+- Fix bug in :func:`Dataset.update_data_file_paths`
+    - Now handles NaN case.
+
+- Tweaks to input parameters
+    - Just allow more options when init'ing :class:`CV`, :class:`ProblemSpec` and :class:`ParamSearch`.
+
+- Removed MLP
+    - Why are you using MLP? Don't, it just isn't good. Sorry, gone, poof.
+
+- New experimental color options
+    - Messing around with option for coloring output for :class:`Compare` summary, but still broken for now.

@@ -34,7 +34,7 @@ def test_get_roles():
     df.set_role('1', 'target', inplace=True)
     roles = df.get_roles()
     assert roles['1'] == 'target'
-    assert roles['2'] == 'data'
+    assert roles['2'] == 'input data'
 
 
 def test_set_role_fail():
@@ -323,6 +323,7 @@ def test_get_cols():
 
     df = get_fake_dataset()
     assert(set(df.get_cols('all')) == set(['1', '2', '3']))
+    assert(set(df.get_cols('input data')) == set(['1', '2', '3']))
     assert(set(df.get_cols('data')) == set(['1', '2', '3']))
     assert(set(df.get_cols('1')) == set(['1']))
     assert(set(df.get_cols('category')) == set(['2']))
@@ -695,8 +696,8 @@ def test_rename_cols_func():
     assert '1' in data.scopes['hi']
     assert '1' in data.scopes['bye']
 
-    assert data.roles['hi'] == 'data'
-    assert data.roles['bye'] == 'data'
+    assert data.roles['hi'] == 'input data'
+    assert data.roles['bye'] == 'input data'
 
 
 def test_rename_index():

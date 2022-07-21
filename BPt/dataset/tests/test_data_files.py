@@ -216,3 +216,22 @@ def test_to_data_file_not_inplace():
     assert len(file_mapping) == 3
     assert 0 in file_mapping
     assert file_mapping[2].loc.endswith('loc3')
+
+def test_update_file_paths():
+
+    df = setup_datafiles()
+    df.update_data_file_paths('/tmp/', 'fake_path')
+
+    for i in df.file_mapping:
+        assert 'fake_path' in df.file_mapping[i].loc
+
+def test_update_file_paths_nan():
+
+    df = setup_datafiles()
+    df.loc[0, 'data_files'] = np.nan
+    df.update_data_file_paths('/tmp/', 'fake_path')
+
+    for i in df.file_mapping:
+        if np.isnan(i):
+            continue
+        assert 'fake_path' in df.file_mapping[i].loc

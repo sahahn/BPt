@@ -26,7 +26,7 @@ def test_add_unique_overlap():
     assert 'category' in df.scopes['combo']
     assert 'q' in df.scopes['combo']
     assert 'b' not in df.scopes['combo']
-    assert df.roles['combo'] == 'data'
+    assert df.roles['combo'] == 'input data'
 
     with pytest.raises(RuntimeError):
         df.add_unique_overlap(cols='1', new_col='combo')

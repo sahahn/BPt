@@ -35,6 +35,30 @@ def get_trans_chunk(transformer, data_files, func):
     return X_trans_chunk
 
 
+def fill_loaded_nans(X_trans_cols, nan_mask):
+
+    # If no NaN's, return as is
+    if np.sum(nan_mask) == 0:
+        return X_trans_cols
+
+    # If passed not as list, convert to list
+    # Where each loaded element is a loaded data point
+    if not isinstance(X_trans_cols, list):
+        X_trans_cols = list(X_trans_cols)
+
+    # They all should have the same shape,
+    # so can find needed shape from just 1st one
+    # to init nans object
+    nans = np.empty(X_trans_cols[0].shape)
+    nans[:] = np.nan
+
+    # And... fill
+    for nan_ind in np.where(nan_mask)[0]:
+        X_trans_cols.insert(nan_ind, nans)
+
+    # Return filled
+    return X_trans_cols
+
 class BPtLoader(ScopeTransformer):
 
     # Override
@@ -94,9 +118,17 @@ class BPtLoader(ScopeTransformer):
         transform
         '''
 
-        # Get the first data point
+        # Select from passed first feature
         first_feat = self.inds_[0]
-        fit_fm_key = X[0, first_feat]
+        
+        # Grab the first non-nan datapoint
+        nan_mask = np.isnan(X[:, first_feat])
+        if np.all(nan_mask):
+            raise ValueError('Error trying to load DataFiles, all NaN in passed column.')
+
+        fit_fm_key = X[~nan_mask, first_feat][0]
+
+        # Load ref data point as fit X
         fit_X = self.file_mapping[int(fit_fm_key)].load()
 
         # Fit + transform the first data point
@@ -166,13 +198,13 @@ class BPtLoader(ScopeTransformer):
         return X_trans
 
     def transform(self, X, transform_index=None):
+        
+        # @ TODO transform index just exists for compat
+        # with loader right now, won't actually propegate.
 
         # Skip if skipped
         if self.estimator_ is None:
             return X
-
-        # @ TODO transform index just exists for compat
-        # with loader right now, won't actually propegate.
 
         # Init lists + mappings
         X_trans, self.X_trans_inds_ = [], []
@@ -182,8 +214,7 @@ class BPtLoader(ScopeTransformer):
         for col in self.inds_:
 
             # Get transformer column
-            fm_keys = [key for key in X[:, col]]
-            X_trans_cols = self._get_trans_col(fm_keys)
+            X_trans_cols = self._get_trans_col(X[:, col])
 
             # Stack + append new features
             X_trans_cols = np.stack(X_trans_cols)
@@ -206,7 +237,7 @@ class BPtLoader(ScopeTransformer):
         # Return stacked X_trans with rest inds
         return np.hstack([X_trans, X[:, self.rest_inds_]])
 
-    def get_chunks(self, data_files):
+    def _get_chunks(self, data_files):
 
         per_chunk = len(data_files) // self._n_jobs
         chunks = [list(range(i * per_chunk, (i+1) * per_chunk))
@@ -217,14 +248,17 @@ class BPtLoader(ScopeTransformer):
         return [[data_files[i] for i in c] for c in chunks]
 
     def _get_trans_col(self, fm_keys):
+        '''Grab all non-nan data files from the file mapping
+        but want to keep track of the index of which were NaN.
+        Then load the requested data files.'''
 
-        # Grab the right data files from the file mapping (casting to int!)
-        try:
-            data_files = [self.file_mapping[int(fm_key)] for fm_key in fm_keys]
+        # Compute and check NaN mask
+        nan_mask = np.isnan(fm_keys)
+        if np.all(nan_mask):
+            raise ValueError('Error trying to load DataFiles, all NaN in passed column.')
 
-        # Add error about if NaN found
-        except ValueError:
-            raise ValueError('NaN error trying to load DataFile, make sure no missing DataFiles!')
+        # Grab just non-NaN data files from file mapping
+        data_files = [self.file_mapping[int(fm_key)] for fm_key in fm_keys[~nan_mask]]
 
         # Clone the base loader
         cloned_estimator = clone(self.estimator)
@@ -236,11 +270,12 @@ class BPtLoader(ScopeTransformer):
         else:
             load_and_trans_c = load_and_trans
 
+        # Load chunks w/ either 1 job or multi-processed
         if self._n_jobs == 1:
             X_trans_cols = get_trans_chunk(cloned_estimator,
                                            data_files, load_and_trans_c)
         else:
-            chunks = self.get_chunks(data_files)
+            chunks = self._get_chunks(data_files)
 
             X_trans_chunks =\
                 Parallel(n_jobs=self._n_jobs)(
@@ -254,7 +289,12 @@ class BPtLoader(ScopeTransformer):
             for chunk in X_trans_chunks:
                 X_trans_cols += chunk
 
-        return X_trans_cols
+        # X_trans_cols is now list, where each element of the list
+        # is a loaded data point.
+
+        # Need to fill in any missing with NaN's, if any, with
+        # the same shape. Will return as is, if None
+        return fill_loaded_nans(X_trans_cols, nan_mask)
 
     def transform_df(self, df, base_name='loader', encoders=None):
 
@@ -405,16 +445,16 @@ class CompatArray(list):
 
     def load(self, ind, file_mapping):
 
-        # Could store file mapping in object / make load specific to
-        # to ind ?
-
         # Skip if already loaded
         if self.loaded:
             return
 
+        # Compute NaN mask
+        self.nan_mask = np.isnan(self[ind])
+
         # Load col
         col_loaded = []
-        for key in self[ind]:
+        for key in self[ind][~self.nan_mask]:
             data_file = file_mapping[int(key)]
             data = data_file.load()
             col_loaded.append(data)
@@ -496,7 +536,6 @@ class BPtListLoader(BPtLoader):
                 print(f'Error loading from fit_cache, skipping load cache.', flush=True)
 
         return None
-
 
     def _cache_fit(self):
         '''Cache fitted estimator'''
@@ -594,10 +633,23 @@ class BPtListLoader(BPtLoader):
         X.load(ind=self.inds_[0], file_mapping=self.file_mapping)
 
         if self.verbose:
-            print('Loaded files for load ind:', self.inds_[0], flush=True)
+            print('Loaded files for load ind:', self.inds_[0],
+                  X.nan_mask, flush=True)
 
-        # Then fit
-        self.estimator_.fit(X[self.inds_[0]], y=y, **fit_params)
+        # Then fit, but with the added piece
+        # that in the case of any NaN's, and y is not None,
+        # we want to only fit w/ non-NaN y's
+        if y is not None:
+            fit_y = y[~X.nan_mask]
+        else:
+            fit_y = None
+
+        # TODO may need to check to see if any fit params need to
+        # be modified to temporarily not include any NaNs
+        if len(fit_params) > 1 and np.sum(X.nan_mask) > 0:
+            raise RuntimeWarning('Fit params:', fit_params, 'may not work correctly.')
+
+        self.estimator_.fit(X[self.inds_[0]], y=fit_y, **fit_params)
 
         # Try cache
         self._cache_fit()
@@ -612,7 +664,7 @@ class BPtListLoader(BPtLoader):
         if self.estimator_ is None:
             return X
 
-        # If X not compat array, set
+        # If X not already compat array, we need it to be
         if not isinstance(X, CompatArray):
             X = CompatArray(X)
 
@@ -635,6 +687,11 @@ class BPtListLoader(BPtLoader):
             X.load(ind=self.inds_[0], file_mapping=self.file_mapping)
             X_trans = self.estimator_.transform(X[self.inds_[0]], **trans_params)
 
+            # Before saving X_trans / passing on to next step
+            # we want to add back in any NaN's (if any)
+            # Note: if NaN's will cast to list, so just make sure array
+            X_trans = np.array(fill_loaded_nans(X_trans, X.nan_mask))
+
             # Try to save newly transformed
             self._cache_transform(X_trans)
 
@@ -652,3 +709,5 @@ class BPtListLoader(BPtLoader):
             print(f'Final return transform shape: {ret_X_trans.shape}')
 
         return ret_X_trans
+
+

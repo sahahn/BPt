@@ -885,7 +885,7 @@ class Transformer(Piece):
 
         ::
 
-            default = 'data'
+            default = 'input data'
 
     {cache_loc}
 
@@ -894,7 +894,7 @@ class Transformer(Piece):
 
     _constructor = TransformerConstructor
 
-    def __init__(self, obj, params=0, scope='data', cache_loc=None,
+    def __init__(self, obj, params=0, scope='input data', cache_loc=None,
                  **extra_params):
 
         self.obj = obj
@@ -1286,7 +1286,7 @@ class ParamSearch(Params):
 
             default = 'RandomSearch'
 
-    cv : :class:`CV` or 'default', optional
+    cv : :class:`CV`, 'default' or splits valid arg, optional
         | The hyper-parameter search works by internally
             evaluating each combination of parameters. In
             order to internally evaluate a set of parameters,
@@ -1301,6 +1301,10 @@ class ParamSearch(Params):
             :class:`CV` object will be initialized and used
             with just the default parameters
             (which is a once repeated 3-fold cross-validation).
+
+        | Lastly, you may also pass to cv any argument that would
+          be valid to the `splits` parameter of the :class:`CV` object.
+          For example, int 3, would indicate a 3-fold CV.
 
         ::
 
@@ -1547,11 +1551,16 @@ class ParamSearch(Params):
                  mp_context='loky', n_jobs='default',
                  random_state='default',
                  dask_ip=None, memmap_X=False,
-                 search_only_params=None, verbose=0, progress_loc=None):
+                 search_only_params=None, verbose=0,
+                 progress_loc=None):
+
         self.search_type = search_type
 
+        # Default or if not passed CV, pass along to split
         if cv == 'default':
             cv = CV()
+        elif not isinstance(cv, CV):
+            cv = CV(splits=cv)
         self.cv = cv
 
         # @TODO allow passing single arguments, e.g. splits

@@ -29,15 +29,15 @@ def test_concat_scopes1():
 
 def test_concat_roles1():
 
-    x = Dataset([0], columns=['1'], roles={'1': 'data'})
-    y = Dataset([1], columns=['2'], roles={'2': 'data'})
+    x = Dataset([0], columns=['1'], roles={'1': 'input data'})
+    y = Dataset([1], columns=['2'], roles={'2': 'input data'})
 
     data = concat([x, y], axis=0)
     assert data.shape == (2, 2)
 
     assert len(data.get_roles()) == 2
-    assert data.get_roles()['1'] == 'data'
-    assert data.get_roles()['2'] == 'data'
+    assert data.get_roles()['1'] == 'input data'
+    assert data.get_roles()['2'] == 'input data'
 
 
 def test_concat_roles2():
@@ -49,8 +49,8 @@ def test_concat_roles2():
     assert data.shape == (6, 2)
 
     assert len(data.get_roles()) == 2
-    assert data.get_roles()['1'] == 'data'
-    assert data.get_roles()['2'] == 'data'
+    assert data.get_roles()['1'] == 'input data'
+    assert data.get_roles()['2'] == 'input data'
 
 def test_concat_roles3():
 
@@ -61,7 +61,7 @@ def test_concat_roles3():
     assert data.shape == (6, 2)
 
     assert len(data.get_roles()) == 2
-    assert data.get_roles()['1'] == 'data'
+    assert data.get_roles()['1'] == 'input data'
     assert data.get_roles()['2'] == 'target'
 
 def test_concat_roles4():
@@ -73,7 +73,7 @@ def test_concat_roles4():
     assert data.shape == (6, 2)
 
     assert len(data.get_roles()) == 2
-    assert data.get_roles()['1'] == 'data'
+    assert data.get_roles()['1'] == 'input data'
     assert data.get_roles()['2'] == 'target'
 
 def test_concat_roles5():
@@ -85,7 +85,7 @@ def test_concat_roles5():
     assert data.shape == (6, 2)
 
     assert len(data.get_roles()) == 2
-    assert data.get_roles()['1'] == 'data'
+    assert data.get_roles()['1'] == 'input data'
     assert data.get_roles()['2'] == 'non input'
 
 def test_concat_encoders1():

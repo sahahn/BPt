@@ -39,7 +39,6 @@ def get_grid_params(params):
     # Set grid params
     grid_params = {}
     for p in params:
-
         if hasattr(params[p], 'to_grid'):
             grid_params[p] = params[p].to_grid()
         elif is_ng(params[p]):
@@ -416,7 +415,8 @@ def list_loader_hash(X_col, file_mapping, y, estimator,
                      extra_params=None):
 
     # Convert X_col to data files,  then str, then hash
-    as_data_files_str = [file_mapping[int(key)].quick_hash_repr() for key in X_col]
+    as_data_files_str = [file_mapping[int(key)].quick_hash_repr() 
+                         if not np.isnan(key) else 'nan' for key in X_col]
     hash_str1 = joblib_hash(as_data_files_str, hash_name='md5')
 
     # Hash y

@@ -38,16 +38,33 @@ def add_scores(cols, evaluator, attr_name):
 
     if not hasattr(evaluator, attr_name):
         return
+    
+    new_col_names = []
 
     attr = getattr(evaluator, attr_name)
     for key in attr:
         val = attr[key]
 
-        try:
-            cols[attr_name + '_' + key].append(val)
-        except KeyError:
-            cols[attr_name + '_' + key] = [val]
+        new_col_name = attr_name + '_' + key
+        new_col_names.append(new_col_name)
 
+        try:
+            cols[new_col_name].append(val)
+        except KeyError:
+            cols[new_col_name] = [val]
+
+    return new_col_names
+
+
+def make_summary_pretty(styler, mean_score_cols):
+
+    styler.set_caption("Evaluate Compare Summary")
+    styler.background_gradient(axis=0, cmap="bwr", subset='mean_scores_sr')
+    
+    styler.background_gradient(axis=0, cmap="bwr",
+                               subset=mean_score_cols,
+                               low=.5, high=.5)
+    return styler
 
 class Option(BPtInputMixIn):
     '''This is a special BPt input class designed
@@ -477,6 +494,9 @@ class CompareDict(dict):
         show_std = True
         if 'show_std' in kwargs:
             show_std = kwargs['show_std']
+        color = False
+        if 'color' in kwargs:
+            color = kwargs['color']
 
         # Setup
         keys = list(self.keys())
@@ -487,6 +507,11 @@ class CompareDict(dict):
         # Get flags for extra to show
         flags = self._check_evaluator_difs()
 
+        # Keep track of mean score cols
+        mean_score_cols = []
+        std_score_cols = []
+        timing_score_cols = []
+
         # Go through each evaluator in self
         for key in list(self.keys()):
 
@@ -495,13 +520,13 @@ class CompareDict(dict):
 
             # Add values
             evaluator = self[key]
-            add_scores(cols, evaluator, attr_name='mean_scores')
+            mean_score_cols += add_scores(cols, evaluator, attr_name='mean_scores')
 
             if show_std:
-                add_scores(cols, evaluator, attr_name='std_scores')
+                std_score_cols += add_scores(cols, evaluator, attr_name='std_scores')
 
             if show_timing:
-                add_scores(cols, evaluator, attr_name='mean_timing')
+                timing_score_cols += add_scores(cols, evaluator, attr_name='mean_timing')
 
             # Add any extra in flags
             for attr in flags:
@@ -511,7 +536,11 @@ class CompareDict(dict):
                     cols[attr] = [getattr(evaluator, attr)]
 
         summary = pd.DataFrame.from_dict(cols)
-        summary = summary.set_index(option_keys)
+        summary = summary.set_index(option_keys).sort_index()
+
+        # Optionally color
+        if color:
+            summary = summary.style.pipe(make_summary_pretty, mean_score_cols)
 
         return summary
 

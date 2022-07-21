@@ -4,6 +4,7 @@ from ..helpers import proc_type_dep_str
 from ...util import conv_to_list
 from joblib import wrap_non_picklable_objects
 
+
 AVAILABLE = {
     'binary': {
         'accuracy': 'accuracy',

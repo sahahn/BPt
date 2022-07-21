@@ -477,8 +477,15 @@ def update_data_file_paths(self, old, new):
     self._check_file_mapping()
 
     for file_ind in self.file_mapping:
+
+        # Skip if NaN
+        original = self.file_mapping[file_ind]
+        if pd.isnull(original):
+            continue
+        
+        # Otherwise replace
         self.file_mapping[file_ind].loc =\
-            self.file_mapping[file_ind].loc.replace(old, new)
+            original.loc.replace(old, new)
 
 
 def _get_next_ind(self):

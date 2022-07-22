@@ -1,7 +1,7 @@
 from sklearn.base import BaseEstimator
 from .base import _get_est_fit_params, _needs, _get_est_trans_params
 from sklearn.model_selection import GridSearchCV
-from sklearn.utils.metaestimators import if_delegate_has_method
+from sklearn.utils.metaestimators import available_if
 import warnings
 from os.path import dirname, abspath, exists
 
@@ -22,7 +22,20 @@ from loky import get_reusable_executor
 
 from sklearn.exceptions import ConvergenceWarning
 
+def _estimator_has(attr):
+    """Check if we can delegate a method to the underlying estimator.
+    """
 
+    def check(self):
+        if hasattr(self, "best_estimator_"):
+            # raise an AttributeError if `attr` does not exist
+            getattr(self.best_estimator_, attr)
+            return True
+        # raise an AttributeError if `attr` does not exist
+        getattr(self.estimator, attr)
+        return True
+
+    return check
 
 class BPtSearchCV(BaseEstimator):
 
@@ -128,23 +141,23 @@ class BPtSearchCV(BaseEstimator):
             return self.best_estimator_._final_estimator
         return None
 
-    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    @available_if(_estimator_has("predict"))
     def predict(self, X):
         return self.best_estimator_.predict(X)
 
-    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    @available_if(_estimator_has("predict_log_proba"))
     def predict_log_proba(self, X):
         return self.best_estimator_.predict_log_proba(X)
 
-    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    @available_if(_estimator_has("predict_proba"))
     def predict_proba(self, X):
         return self.best_estimator_.predict_proba(X)
 
-    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    @available_if(_estimator_has("decision_function"))
     def decision_function(self, X):
         return self.best_estimator_.decision_function(X)
 
-    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    @available_if(_estimator_has("transform"))
     def transform(self, X, transform_index=None, nested_model=False):
 
         trans_params = _get_est_trans_params(
@@ -154,26 +167,26 @@ class BPtSearchCV(BaseEstimator):
 
         return self.best_estimator_.transform(X, **trans_params)
 
-    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    @available_if(_estimator_has("inverse_transform"))
     def inverse_transform(self, Xt):
         return self.best_estimator_.inverse_transform(Xt)
 
-    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    @available_if(_estimator_has("score"))
     def score(self, X, y=None, sample_weight=None):
         return self.best_estimator_.score(X=X, y=y,
                                           sample_weight=sample_weight)
 
-    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    @available_if(_estimator_has("transform_df"))
     def transform_df(self, X_df, encoders=None):
         return self.best_estimator_.transform_df(X_df, encoders=encoders)
 
-    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    @available_if(_estimator_has("transform_feat_names"))
     def transform_feat_names(self, X_df, encoders=None, nested_model=False):
         return self.best_estimator_.transform_feat_names(X_df,
                                                          encoders=encoders,
                                                          nested_model=nested_model)
 
-    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    @available_if(_estimator_has("inverse_transform_fis"))
     def inverse_transform_fis(self, fis):
         return self.best_estimator_.inverse_transform_fis(fis)
 

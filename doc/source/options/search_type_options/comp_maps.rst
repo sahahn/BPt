@@ -8,14 +8,15 @@ Competence Maps essentially just automatically select an algorithm based on the 
 passed, the number of workers, the budget, ect...
 
 
-
 'NGO'
 =========================
 Nevergrad optimizer by competence map., Based on One-Shot options
 
+
 'NGOpt'
 =========================
 Nevergrad optimizer by competence map.
+
 
 'CM'
 =========================

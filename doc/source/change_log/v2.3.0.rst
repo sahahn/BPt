@@ -1,9 +1,15 @@
-.. _whatsnew_226:
+.. _whatsnew_230:
 
 .. currentmodule:: BPt
 
-Version 2.2.6
+Version 2.3.0
 ---------------
+
+- Change in library support
+    - Dis-continue python 3.7 support, but add 3.10 support.   
+    - Updated scikit-learn requiriment to >= 1.1.0, requiring the above change
+    - Bump the nevergrad version to more stable 5.0
+    - Require threadpoolctl>=3
 
 - NaN support in :class:`Loader`
     - Loaders with will now support propegating any found NaN' with the same shape as the rest of the loaded data files.

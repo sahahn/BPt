@@ -16,11 +16,21 @@ from ..main.CV import BPtCV
 
 from sklearn.utils.validation import check_is_fitted
 from sklearn.utils.multiclass import check_classification_targets
-from sklearn.utils.metaestimators import available_if, if_delegate_has_method
+from sklearn.utils.metaestimators import available_if
 from sklearn.preprocessing import LabelEncoder
 from .helpers import (get_mean_fis, get_concat_fis, get_concat_fis_len,
                       check_for_nested_loader, get_nested_final_estimator)
 
+def _estimator_has(attr):
+    """Check if we can delegate a method to the underlying estimator.
+    First, we check the first fitted final estimator if available, otherwise we
+    check the unfitted final estimator.
+    """
+    return lambda self: (
+        hasattr(self.final_estimator_, attr)
+        if hasattr(self, "final_estimator_")
+        else hasattr(self.final_estimator, attr)
+    )
 
 def _fit_all_estimators(self, X, y, sample_weight=None, mapping=None,
                         fit_index=None):
@@ -540,7 +550,7 @@ class BPtStackingClassifier(StackingClassifier):
 
         return self.ensemble_transform(X)
 
-    @if_delegate_has_method(delegate="final_estimator_")
+    @available_if(_estimator_has("predict"))
     def predict(self, X, **predict_params):
 
         # Base case
@@ -550,7 +560,7 @@ class BPtStackingClassifier(StackingClassifier):
         # Other case
         return self._stacked_classifier_predict(X, method='predict', **predict_params)
 
-    @if_delegate_has_method(delegate="final_estimator_")
+    @available_if(_estimator_has("predict_proba"))
     def predict_proba(self, X):
 
         # Base case
@@ -560,7 +570,7 @@ class BPtStackingClassifier(StackingClassifier):
         # Other case
         return self._stacked_classifier_predict(X, method='predict_proba')
 
-    @if_delegate_has_method(delegate="final_estimator_")
+    @available_if(_estimator_has("decision_function"))
     def decision_function(self, X):
 
         # Base case

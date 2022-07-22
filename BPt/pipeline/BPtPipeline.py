@@ -3,13 +3,24 @@ import numpy as np
 from .helpers import pipe_hash, get_nested_final_estimator
 from joblib import load, dump
 import pandas as pd
-from sklearn.utils.metaestimators import if_delegate_has_method
+from sklearn.utils.metaestimators import available_if
 import os
 from sklearn.utils import _print_elapsed_time
 from sklearn.base import clone
 from .base import (_get_est_fit_params, _get_est_trans_params,
                    _needs)
 
+
+def _final_estimator_has(attr):
+    """Check that final_estimator has `attr`.
+    Used together with `avaliable_if` in `Pipeline`."""
+
+    def check(self):
+        # raise original `AttributeError` if `attr` does not exist
+        getattr(self._final_estimator, attr)
+        return True
+
+    return check
 
 
 # @TODO add docstrings here - and add to docs?
@@ -386,7 +397,7 @@ class BPtPipeline(Pipeline):
 
         return fis
 
-    @if_delegate_has_method(delegate='_final_estimator')
+    @available_if(_final_estimator_has("predict"))
     def predict(self, X, **predict_params):
 
         # Transform X
@@ -396,39 +407,39 @@ class BPtPipeline(Pipeline):
         # on the transformed data
         return self.steps[-1][-1].predict(Xt, **predict_params)
 
-    @if_delegate_has_method(delegate='_final_estimator')
+    @available_if(_final_estimator_has("fit_predict"))
     def fit_predict(self, X, y=None, **fit_params):
         raise RuntimeError('Not Implemented')
 
-    @if_delegate_has_method(delegate='_final_estimator')
+    @available_if(_final_estimator_has("predict_proba"))
     def predict_proba(self, X):
 
         # Transform X and predict
         Xt = self.transform(X)
         return self.steps[-1][-1].predict_proba(Xt)
 
-    @if_delegate_has_method(delegate='_final_estimator')
+    @available_if(_final_estimator_has("decision_function"))
     def decision_function(self, X):
 
         # Transform X and predict
         Xt = self.transform(X)
         return self.steps[-1][-1].decision_function(Xt)
 
-    @if_delegate_has_method(delegate='_final_estimator')
+    @available_if(_final_estimator_has("score_samples"))
     def score_samples(self, X):
 
         # Transform X and score samples
         Xt = self.transform(X)
         return self.steps[-1][-1].score_samples(Xt)
 
-    @if_delegate_has_method(delegate='_final_estimator')
+    @available_if(_final_estimator_has("predict_log_proba"))
     def predict_log_proba(self, X):
 
         # Transform X and predict
         Xt = self.transform(X)
         return self.steps[-1][-1].predict_log_proba(Xt)
 
-    @if_delegate_has_method(delegate='_final_estimator')
+    @available_if(_final_estimator_has("score"))
     def score(self, X, y=None, sample_weight=None):
 
         # Transform X

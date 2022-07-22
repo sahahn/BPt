@@ -1,9 +1,11 @@
-from sklearn.metrics import SCORERS
+from sklearn.metrics import get_scorer_names, get_scorer
+
 import sklearn.metrics as M
 from ..helpers import proc_type_dep_str
 from ...util import conv_to_list
 from joblib import wrap_non_picklable_objects
 
+SCORERS = {s: get_scorer(s) for s in get_scorer_names()}
 
 AVAILABLE = {
     'binary': {

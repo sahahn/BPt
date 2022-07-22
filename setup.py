@@ -19,7 +19,7 @@ setup(name='brain-pred-toolbox',
       packages=find_packages(),
       python_requires=">=3.7",
       install_requires=[
-          'scikit-learn>=1.0.0',
+          'scikit-learn>=1.1.0',
           'numpy>=1.21',
           'scipy>=1.2',
           'pandas>=1.1.5',
@@ -31,6 +31,7 @@ setup(name='brain-pred-toolbox',
           'Ipython',
           'joblib>=1',
           'loky',
+          'threadpoolctl>=3'
       ],
       extras_require={
           'extra': ['lightgbm>=3.3.0',

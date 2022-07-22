@@ -1,8 +1,12 @@
-from sklearn.utils.metaestimators import _BaseComposition
-from sklearn.utils.metaestimators import if_delegate_has_method
+from sklearn.utils.metaestimators import _BaseComposition, available_if
 from ..default.params.Params import Dict, Choice
 from .base import _get_est_fit_params, _get_est_trans_params
 
+def _ex_estimator_has(attr):
+    return lambda self: (hasattr(self.example_estimator_, attr))
+
+def _estimator_has(attr):
+    return lambda self: (hasattr(self.estimator_, attr))
 
 class Selector(_BaseComposition):
 
@@ -30,7 +34,7 @@ class Selector(_BaseComposition):
         self._set_params('estimators', **select)
         return self
 
-    @if_delegate_has_method(delegate='example_estimator_')
+    @available_if(_ex_estimator_has("fit"))
     def fit(self, *args, **kwargs):
 
         # Select correct estimator
@@ -45,13 +49,13 @@ class Selector(_BaseComposition):
 
         return self
 
-    @if_delegate_has_method(delegate='example_estimator_')
+    @available_if(_ex_estimator_has("fit_transform"))
     def fit_transform(self, *args, **kwargs):
 
         self.estimator_ = self.estimators[self.to_use][1]
         return self.estimator_.fit_transform(*args, **kwargs)
 
-    @if_delegate_has_method(delegate='example_estimator_')
+    @available_if(_ex_estimator_has("transform"))
     def transform(self, *args, **kwargs):
 
         if 'transform_index' in kwargs:
@@ -64,45 +68,45 @@ class Selector(_BaseComposition):
 
         return self.estimator_.transform(*args, **tranform_params)
 
-    @if_delegate_has_method(delegate='example_estimator_')
+    @available_if(_ex_estimator_has("fit_resample"))
     def fit_resample(self, *args, **kwargs):
         self.estimator_ = self.estimators[self.to_use][1]
         return self.estimator_.fit_resample(*args, **kwargs)
 
-    @if_delegate_has_method(delegate='example_estimator_')
+    @available_if(_ex_estimator_has("fit_predict"))
     def fit_predict(self, *args, **kwargs):
         self.estimator_ = self.estimators[self.to_use][1]
         return self.estimator_.fit_predict(*args, **kwargs)
 
-    @if_delegate_has_method(delegate='estimator_')
+    @available_if(_estimator_has("predict"))
     def predict(self, *args, **kwargs):
         return self.estimator_.predict(*args, **kwargs)
 
-    @if_delegate_has_method(delegate='estimator_')
+    @available_if(_estimator_has("predict_proba"))
     def predict_proba(self, *args, **kwargs):
         return self.estimator_.predict_proba(*args, **kwargs)
 
-    @if_delegate_has_method(delegate='estimator_')
+    @available_if(_estimator_has("decision_function"))
     def decision_function(self, *args, **kwargs):
         return self.estimator_.decision_function(*args, **kwargs)
 
-    @if_delegate_has_method(delegate='estimator_')
+    @available_if(_estimator_has("predict_log_proba"))
     def predict_log_proba(self, *args, **kwargs):
         return self.estimator_.predict_log_proba(*args, **kwargs)
 
-    @if_delegate_has_method(delegate='estimator_')
+    @available_if(_estimator_has("score"))
     def score(self, *args, **kwargs):
         return self.estimator_.score(*args, **kwargs)
 
-    @if_delegate_has_method(delegate='estimator_')
+    @available_if(_estimator_has("inverse_transform"))
     def inverse_transform(self, *args, **kwargs):
         return self.estimator_.inverse_transform(*args, **kwargs)
 
-    @if_delegate_has_method(delegate='estimator_')
+    @available_if(_estimator_has("transform_df"))
     def transform_df(self, *args, **kwargs):
         return self.estimator_.transform_df(*args, **kwargs)
 
-    @if_delegate_has_method(delegate='estimator_')
+    @available_if(_estimator_has("_proc_new_names"))
     def _proc_new_names(self, *args, **kwargs):
         return self.estimator_._proc_new_names(*args, **kwargs)
 

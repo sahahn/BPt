@@ -1,6 +1,10 @@
 from .ScopeObjs import ScopeObj
-from sklearn.utils.metaestimators import if_delegate_has_method
+from sklearn.utils.metaestimators import available_if
 from .base import _get_est_trans_params
+
+
+def _estimator_has(attr):
+    return lambda self: (hasattr(self.estimator_, attr))
 
 
 class BPtModel(ScopeObj):
@@ -33,35 +37,35 @@ class BPtModel(ScopeObj):
     def predict(self, X, *args, **kwargs):
         return self.estimator_.predict(X[:, self.inds_], *args, **kwargs)
 
-    @if_delegate_has_method(delegate='estimator_')
+    @available_if(_estimator_has("predict_proba"))
     def predict_proba(self, X, *args, **kwargs):
         return self.estimator_.predict_proba(X[:, self.inds_], *args, **kwargs)
 
-    @if_delegate_has_method(delegate='estimator_')
+    @available_if(_estimator_has("decision_function"))
     def decision_function(self, X, *args, **kwargs):
         return self.estimator_.decision_function(X[:, self.inds_],
                                                  *args, **kwargs)
 
-    @if_delegate_has_method(delegate='estimator_')
+    @available_if(_estimator_has("predict_log_proba"))
     def predict_log_proba(self, X, *args, **kwargs):
         return self.estimator_.predict_log_proba(X[:, self.inds_],
                                                  *args, **kwargs)
 
-    @if_delegate_has_method(delegate='estimator_')
+    @available_if(_estimator_has("score"))
     def score(self, X, *args, **kwargs):
         return self.estimator_.score(X[:, self.inds_], *args, **kwargs)
 
-    @if_delegate_has_method(delegate='estimator_')
+    @available_if(_estimator_has("transform_feat_names"))
     def transform_feat_names(self, X_df, encoders=None, nested_model=False):
         return self.estimator_.transform_feat_names(X_df=X_df,
                                                     encoders=encoders,
                                                     nested_model=nested_model)
 
-    @if_delegate_has_method(delegate='estimator_')
+    @available_if(_estimator_has("inverse_transform_fis"))
     def inverse_transform_fis(self, fis):
         return self.estimator_.inverse_transform_fis(fis)
 
-    @if_delegate_has_method(delegate='estimator_')
+    @available_if(_estimator_has("transform"))
     def transform(self, X, transform_index=None, nested_model=False):
 
         trans_params = _get_est_trans_params(self.estimator_,

@@ -11,6 +11,10 @@ Version 2.3.0
     - Bump the nevergrad version to more stable 5.0
     - Require threadpoolctl>=3
 
+- Update model param defaults
+    - Updated the default regression pre-set model params for ridge regression, random forest and lgbm.
+    - These new params are based off extensive benchmarking.
+
 - NaN support in :class:`Loader`
     - Loaders with will now support propegating any found NaN' with the same shape as the rest of the loaded data files.
     - Will support 'single' and 'all' behavior, tests added to confirm.

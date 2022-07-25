@@ -204,7 +204,7 @@ P['lgbm dist3'] = {'silent': True,
 P['lgbm classifier dist1'] = P['lgbm dist1'].copy()
 P['lgbm classifier dist1']['class_weight'] = cls_weight
 
-P['lgbm classifier dist2'] = P['lgbm dist2'].copy()
+P['lgbm classifier dist2'] = P['lgbm dist best'].copy()
 P['lgbm classifier dist2']['class_weight'] = cls_weight
 
 P['lgbm classifier dist3'] = P['lgbm dist3'].copy()

@@ -309,7 +309,12 @@ binary
 
 		n_estimators: 100
 
-	1. "rf classifier dist" ::
+	1. "rf classifier dist best" ::
+
+		n_estimators: Scalar(init=100, lower=10, upper=200).set_mutation(sigma=31.666666666666668).set_bounds(full_range_sampling=False, lower=10, upper=200).set_integer_casting()
+		class_weight: TransitionChoice([None, 'balanced'])
+
+	2. "rf classifier dist" ::
 
 		n_estimators: Scalar(init=100, lower=3, upper=500).set_mutation(sigma=82.83333333333333).set_bounds(full_range_sampling=False, lower=3, upper=500).set_integer_casting()
 		max_depth: TransitionChoice([None, Scalar(init=25, lower=2, upper=200).set_mutation(sigma=33.0).set_bounds(full_range_sampling=False, lower=2, upper=200).set_integer_casting()])
@@ -625,7 +630,19 @@ regression
 
 		silent: True
 
-	1. "lgbm dist1" ::
+	1. "lgbm dist best" ::
+
+		silent: True
+		lambda_l2: 0.001
+		boosting_type: TransitionChoice(['gbdt', 'dart'])
+		min_child_samples: TransitionChoice([1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000])
+		num_leaves: TransitionChoice([2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250])
+		colsample_bytree: TransitionChoice([0.7, 0.9, 1.0])
+		subsample: Scalar(lower=0.3, upper=1).set_mutation(sigma=0.11666666666666665).set_bounds(full_range_sampling=True, lower=0.3, upper=1)
+		learning_rate: TransitionChoice([0.01, 0.05, 0.1])
+		n_estimators: TransitionChoice([5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])
+
+	2. "lgbm dist1" ::
 
 		silent: True
 		boosting_type: TransitionChoice(['gbdt', 'dart', 'goss'])
@@ -637,18 +654,6 @@ regression
 		colsample_bytree: Scalar(lower=0.3, upper=0.95).set_mutation(sigma=0.10833333333333332).set_bounds(full_range_sampling=True, lower=0.3, upper=0.95)
 		reg_alpha: TransitionChoice([0, Log(lower=1e-05, upper=1)])
 		reg_lambda: TransitionChoice([0, Log(lower=1e-05, upper=1)])
-
-	2. "lgbm dist2" ::
-
-		silent: True
-		lambda_l2: 0.001
-		boosting_type: TransitionChoice(['gbdt', 'dart'])
-		min_child_samples: TransitionChoice([1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000])
-		num_leaves: TransitionChoice([2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250])
-		colsample_bytree: TransitionChoice([0.7, 0.9, 1.0])
-		subsample: Scalar(lower=0.3, upper=1).set_mutation(sigma=0.11666666666666665).set_bounds(full_range_sampling=True, lower=0.3, upper=1)
-		learning_rate: TransitionChoice([0.01, 0.05, 0.1])
-		n_estimators: TransitionChoice([5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])
 
 	3. "lgbm dist3" ::
 
@@ -705,7 +710,11 @@ regression
 
 		n_estimators: 100
 
-	1. "rf dist" ::
+	1. "rf dist best" ::
+
+		n_estimators: Scalar(init=100, lower=10, upper=200).set_mutation(sigma=31.666666666666668).set_bounds(full_range_sampling=False, lower=10, upper=200).set_integer_casting()
+
+	2. "rf dist" ::
 
 		n_estimators: Scalar(init=100, lower=3, upper=500).set_mutation(sigma=82.83333333333333).set_bounds(full_range_sampling=False, lower=3, upper=500).set_integer_casting()
 		max_depth: TransitionChoice([None, Scalar(init=25, lower=2, upper=200).set_mutation(sigma=33.0).set_bounds(full_range_sampling=False, lower=2, upper=200).set_integer_casting()])
@@ -726,7 +735,13 @@ regression
 		max_iter: 100
 		solver: 'lsqr'
 
-	1. "ridge regressor dist" ::
+	1. "ridge regressor best" ::
+
+		max_iter: 1000
+		solver: 'lsqr'
+		alpha: Log(lower=0.001, upper=1000000.0)
+
+	2. "ridge regressor dist" ::
 
 		max_iter: 100
 		solver: 'lsqr'
@@ -1111,7 +1126,12 @@ categorical
 
 		n_estimators: 100
 
-	1. "rf classifier dist" ::
+	1. "rf classifier dist best" ::
+
+		n_estimators: Scalar(init=100, lower=10, upper=200).set_mutation(sigma=31.666666666666668).set_bounds(full_range_sampling=False, lower=10, upper=200).set_integer_casting()
+		class_weight: TransitionChoice([None, 'balanced'])
+
+	2. "rf classifier dist" ::
 
 		n_estimators: Scalar(init=100, lower=3, upper=500).set_mutation(sigma=82.83333333333333).set_bounds(full_range_sampling=False, lower=3, upper=500).set_integer_casting()
 		max_depth: TransitionChoice([None, Scalar(init=25, lower=2, upper=200).set_mutation(sigma=33.0).set_bounds(full_range_sampling=False, lower=2, upper=200).set_integer_casting()])

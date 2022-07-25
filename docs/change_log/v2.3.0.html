@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Version 2.2.6 &#8212; BPt 2.2.6 documentation</title>
+    <title>Version 2.3.0 &#8212; BPt 2.3.0 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -167,7 +167,7 @@
     <ul class="current nav bd-sidenav">
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
-   Version 2.2.6
+   Version 2.3.0
   </a>
  </li>
  <li class="toctree-l1">
@@ -325,9 +325,27 @@
               
               <article class="bd-article" role="main">
                 
-  <section id="version-2-2-6">
-<span id="whatsnew-226"></span><h1>Version 2.2.6<a class="headerlink" href="#version-2-2-6" title="Permalink to this headline">#</a></h1>
+  <section id="version-2-3-0">
+<span id="whatsnew-230"></span><h1>Version 2.3.0<a class="headerlink" href="#version-2-3-0" title="Permalink to this headline">#</a></h1>
 <ul class="simple">
+<li><dl class="simple">
+<dt>Change in library support</dt><dd><ul>
+<li><p>Dis-continue python 3.7 support, but add 3.10 support.</p></li>
+<li><p>Updated scikit-learn requiriment to &gt;= 1.1.0, requiring the above change</p></li>
+<li><p>Bump the nevergrad version to more stable 5.0</p></li>
+<li><p>Require threadpoolctl&gt;=3</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Update model param defaults</dt><dd><ul>
+<li><p>Updated the default regression pre-set model params for ridge regression, random forest and lgbm.</p></li>
+<li><p>These new params are based off extensive benchmarking.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
 <li><dl class="simple">
 <dt>NaN support in <a class="reference internal" href="../reference/api/BPt.Loader.html#BPt.Loader" title="BPt.Loader"><code class="xref py py-class docutils literal notranslate"><span class="pre">Loader</span></code></a></dt><dd><ul>
 <li><p>Loaders with will now support propegating any found NaN’ with the same shape as the rest of the loaded data files.</p></li>

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Default Pipelines &#8212; BPt 2.2.6 documentation</title>
+    <title>Default Pipelines &#8212; BPt 2.3.0 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -335,6 +335,7 @@ be accessed though BPt.default.pipelines.</p>
 <span class="go"> &#39;svm_pipe&#39;,</span>
 <span class="go"> &#39;svm_fs_pipe&#39;,</span>
 <span class="go"> &#39;stacking_pipe&#39;,</span>
+<span class="go"> &#39;voting_pipe&#39;,</span>
 <span class="go"> &#39;compare_pipe&#39;]</span>
 </pre></div>
 </div>
@@ -347,8 +348,10 @@ be accessed though BPt.default.pipelines.</p>
 <span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
 <span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
 <span class="go">                Model(obj=&#39;elastic&#39;,</span>
-<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
-<span class="go">                                               n_iter=60),</span>
+<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(),</span>
+<span class="go">                                                     splits=5),</span>
+<span class="go">                                               n_iter=60,</span>
+<span class="go">                                               search_type=&#39;HammersleySearch&#39;),</span>
 <span class="go">                      params=1)])</span>
 </pre></div>
 </div>
@@ -362,47 +365,59 @@ be accessed though BPt.default.pipelines.</p>
 <span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
 <span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
 <span class="go">                Model(obj=&#39;elastic&#39;,</span>
-<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
-<span class="go">                                               n_iter=60),</span>
+<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(),</span>
+<span class="go">                                                     splits=5),</span>
+<span class="go">                                               n_iter=60,</span>
+<span class="go">                                               search_type=&#39;HammersleySearch&#39;),</span>
 <span class="go">                      params=1)])</span>
 <span class="go">ridge_pipe</span>
 <span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
 <span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
 <span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
 <span class="go">                Model(obj=&#39;ridge&#39;,</span>
-<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
-<span class="go">                                               n_iter=60),</span>
+<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(),</span>
+<span class="go">                                                     splits=5),</span>
+<span class="go">                                               n_iter=60,</span>
+<span class="go">                                               search_type=&#39;HammersleySearch&#39;),</span>
 <span class="go">                      params=1)])</span>
 <span class="go">rf_pipe</span>
 <span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
 <span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
 <span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
 <span class="go">                Model(obj=&#39;rf&#39;,</span>
-<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
-<span class="go">                                               n_iter=60),</span>
+<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(),</span>
+<span class="go">                                                     splits=5),</span>
+<span class="go">                                               n_iter=60,</span>
+<span class="go">                                               search_type=&#39;HammersleySearch&#39;),</span>
 <span class="go">                      params=1)])</span>
 <span class="go">gb_pipe</span>
 <span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
 <span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
 <span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
 <span class="go">                Model(obj=&#39;hgb&#39;,</span>
-<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
-<span class="go">                                               n_iter=60),</span>
+<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(),</span>
+<span class="go">                                                     splits=5),</span>
+<span class="go">                                               n_iter=60,</span>
+<span class="go">                                               search_type=&#39;HammersleySearch&#39;),</span>
 <span class="go">                      params=1)])</span>
 <span class="go">svm_pipe</span>
 <span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
 <span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
 <span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
 <span class="go">                Model(obj=&#39;svm&#39;,</span>
-<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
-<span class="go">                                               n_iter=60),</span>
+<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(),</span>
+<span class="go">                                                     splits=5),</span>
+<span class="go">                                               n_iter=60,</span>
+<span class="go">                                               search_type=&#39;HammersleySearch&#39;),</span>
 <span class="go">                      params=1)])</span>
 <span class="go">svm_fs_pipe</span>
 <span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
 <span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
 <span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
-<span class="go">                Model(obj=Pipeline(param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
-<span class="go">                                                            n_iter=60),</span>
+<span class="go">                Model(obj=Pipeline(param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(),</span>
+<span class="go">                                                                  splits=5),</span>
+<span class="go">                                                            n_iter=60,</span>
+<span class="go">                                                            search_type=&#39;HammersleySearch&#39;),</span>
 <span class="go">                                   steps=[FeatSelector(obj=&#39;univariate &#39;</span>
 <span class="go">                                                           &#39;selection&#39;,</span>
 <span class="go">                                                       params=2),</span>
@@ -412,26 +427,57 @@ be accessed though BPt.default.pipelines.</p>
 <span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
 <span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
 <span class="go">                Ensemble(base_model=Model(obj=&#39;ridge&#39;,</span>
-<span class="go">                                          param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
-<span class="go">                                                                   n_iter=60),</span>
+<span class="go">                                          param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(),</span>
+<span class="go">                                                                         splits=5),</span>
+<span class="go">                                                                   n_iter=60,</span>
+<span class="go">                                                                   search_type=&#39;HammersleySearch&#39;),</span>
 <span class="go">                                          params=1),</span>
 <span class="go">                         models=[Model(obj=&#39;elastic&#39;,</span>
-<span class="go">                                       param_search=ParamSearch(cv=CV(cv_strategy=CVS...</span>
-<span class="go">                                       param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
-<span class="go">                                                                n_iter=60),</span>
-<span class="go">                                       params=1),</span>
-<span class="go">                                 Model(obj=Pipeline(param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
-<span class="go">                                                                             n_iter=60),</span>
+<span class="go">                                       param_...</span>
+<span class="go">                                 Model(obj=Pipeline(param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(),</span>
+<span class="go">                                                                                   splits=5),</span>
+<span class="go">                                                                             n_iter=60,</span>
+<span class="go">                                                                             search_type=&#39;HammersleySearch&#39;),</span>
 <span class="go">                                                    steps=[FeatSelector(obj=&#39;univariate &#39;</span>
 <span class="go">                                                                            &#39;selection&#39;,</span>
 <span class="go">                                                                        params=2),</span>
 <span class="go">                                                           Model(obj=&#39;svm&#39;,</span>
 <span class="go">                                                                 params=1)])),</span>
 <span class="go">                                 Model(obj=&#39;hgb&#39;,</span>
-<span class="go">                                       param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
-<span class="go">                                                                n_iter=60),</span>
+<span class="go">                                       param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(),</span>
+<span class="go">                                                                      splits=5),</span>
+<span class="go">                                                                n_iter=60,</span>
+<span class="go">                                                                search_type=&#39;HammersleySearch&#39;),</span>
 <span class="go">                                       params=1)],</span>
 <span class="go">                         n_jobs_type=&#39;models&#39;, obj=&#39;stacking&#39;)])</span>
+<span class="go">voting_pipe</span>
+<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
+<span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
+<span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
+<span class="go">                Ensemble(models=[Model(obj=&#39;elastic&#39;,</span>
+<span class="go">                                       param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(),</span>
+<span class="go">                                                                      splits=5),</span>
+<span class="go">                                                                n_iter=60,</span>
+<span class="go">                                                                search_type=&#39;HammersleySearch&#39;),</span>
+<span class="go">                                       params=1),</span>
+<span class="go">                                 Model(obj=&#39;ridge&#39;,</span>
+<span class="go">                                       param_search=Para...</span>
+<span class="go">                                 Model(obj=Pipeline(param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(),</span>
+<span class="go">                                                                                   splits=5),</span>
+<span class="go">                                                                             n_iter=60,</span>
+<span class="go">                                                                             search_type=&#39;HammersleySearch&#39;),</span>
+<span class="go">                                                    steps=[FeatSelector(obj=&#39;univariate &#39;</span>
+<span class="go">                                                                            &#39;selection&#39;,</span>
+<span class="go">                                                                        params=2),</span>
+<span class="go">                                                           Model(obj=&#39;svm&#39;,</span>
+<span class="go">                                                                 params=1)])),</span>
+<span class="go">                                 Model(obj=&#39;hgb&#39;,</span>
+<span class="go">                                       param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(),</span>
+<span class="go">                                                                      splits=5),</span>
+<span class="go">                                                                n_iter=60,</span>
+<span class="go">                                                                search_type=&#39;HammersleySearch&#39;),</span>
+<span class="go">                                       params=1)],</span>
+<span class="go">                         n_jobs_type=&#39;models&#39;, obj=&#39;voting&#39;)])</span>
 <span class="go">compare_pipe</span>
 <span class="go">CompareDict([elastic, ridge, svm_fs, gb])</span>
 </pre></div>
@@ -446,6 +492,7 @@ be accessed though BPt.default.pipelines.</p>
 <span class="go"> &#39;r_scaler&#39;,</span>
 <span class="go"> &#39;ohe&#39;,</span>
 <span class="go"> &#39;random_search&#39;,</span>
+<span class="go"> &#39;hs_search&#39;,</span>
 <span class="go"> &#39;elastic_search&#39;,</span>
 <span class="go"> &#39;rf_search&#39;,</span>
 <span class="go"> &#39;gb_search&#39;,</span>
@@ -454,7 +501,8 @@ be accessed though BPt.default.pipelines.</p>
 <span class="go"> &#39;svm&#39;,</span>
 <span class="go"> &#39;svm_search_pipe&#39;,</span>
 <span class="go"> &#39;ridge_search&#39;,</span>
-<span class="go"> &#39;stacking&#39;]</span>
+<span class="go"> &#39;stacking&#39;,</span>
+<span class="go"> &#39;voting&#39;]</span>
 
 <span class="go"># Look at some</span>
 <span class="gp">In [9]: </span><span class="n">bp</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">pipelines</span><span class="o">.</span><span class="n">u_feat</span>

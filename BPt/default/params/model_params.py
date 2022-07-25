@@ -37,6 +37,11 @@ P['base ridge regressor'] = {'max_iter': 100,
 P['ridge regressor dist'] = P['base ridge regressor'].copy()
 P['ridge regressor dist']['alpha'] = Log(lower=1e-3, upper=1e5)
 
+# from bench
+P['ridge regressor best'] = {'max_iter': 1000, 
+                             'solver': 'lsqr',
+                             'alpha': Log(lower=1e-3, upper=1e6)}
+
 # Lasso regressor
 P['base lasso regressor'] = {'max_iter': 100}
 P['lasso regressor dist'] = P['base lasso regressor'].copy()
@@ -123,8 +128,14 @@ P['rf dist'] = {'n_estimators': n_estimators,
                 'min_samples_split': Scalar(lower=.1, upper=1.0),
                 'bootstrap': True}
 
+P['rf dist best'] = {'n_estimators': Scalar(init=100, lower=10, upper=200).set_integer_casting()}
+
+
 P['rf classifier dist'] = P['rf dist'].copy()
 P['rf classifier dist']['class_weight'] = cls_weight
+
+P['rf classifier dist best'] = P['rf dist best'].copy()
+P['rf classifier dist best']['class_weight'] = cls_weight
 
 # Hist gradient boosting params
 P['hgb dist1'] =\
@@ -156,7 +167,7 @@ P['lgbm dist1'] =\
          'reg_alpha': TransitionChoice([0, Log(lower=1e-5, upper=1)]),
          'reg_lambda': TransitionChoice([0, Log(lower=1e-5, upper=1)])}
 
-P['lgbm dist2'] =\
+P['lgbm dist best'] =\
     {'silent': True,
      'lambda_l2': 0.001,
      'boosting_type': TransitionChoice(['gbdt', 'dart']),
@@ -174,6 +185,7 @@ P['lgbm dist2'] =\
          'n_estimators':
          TransitionChoice([5, 20, 35, 50, 75, 100, 150,
                            200, 350, 500, 750, 1000])}
+
 
 P['lgbm dist3'] = {'silent': True,
                    'n_estimators': 1000,

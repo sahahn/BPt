@@ -94,6 +94,7 @@ MODELS = {
                                            'elastic regression extra']),
 
     'ridge regressor': (Ridge, ['base ridge regressor',
+                                'ridge regressor best',
                                 'ridge regressor dist']),
     'lasso regressor': (Lasso, ['base lasso regressor',
                                 'lasso regressor dist']),
@@ -112,9 +113,9 @@ MODELS = {
 
     'linear regressor': (LinearRegression, ['base linear']),
 
-    'random forest regressor': (RandomForestRegressor, ['base rf', 'rf dist']),
+    'random forest regressor': (RandomForestRegressor, ['base rf', 'rf dist best', 'rf dist']),
     'random forest classifier': (RandomForestClassifier,
-                                 ['base rf regressor', 'rf classifier dist']),
+                                 ['base rf regressor', 'rf classifier dist best', 'rf classifier dist']),
 
     'gp regressor': (GaussianProcessRegressor, ['base gp regressor']),
     'gp classifier': (GaussianProcessClassifier,  ['base gp classifier']),
@@ -179,8 +180,8 @@ try:
     AVAILABLE['regression']['lgbm'] = 'light gbm regressor'
 
     MODELS['light gbm regressor'] = (BPtLGBMRegressor, ['base lgbm',
+                                                        'lgbm dist best',
                                                         'lgbm dist1',
-                                                        'lgbm dist2',
                                                         'lgbm dist3'])
     MODELS['light gbm classifier'] = (BPtLGBMClassifier,
                                       ['base lgbm',

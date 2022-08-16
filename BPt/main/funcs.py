@@ -1,14 +1,14 @@
 import warnings
-from .input import Model, ModelPipeline, Pipeline, ProblemSpec, CV, Custom
 from copy import deepcopy
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import check_cv
+from pandas.util._decorators import doc
+from .input import Model, ModelPipeline, Pipeline, ProblemSpec, CV, Custom
 from ..pipeline.BPtPipelineConstructor import get_pipe
 from ..default.options.scorers import process_scorers
 from .eval import EvalResults, _refresh_bar
-from sklearn.model_selection import check_cv
 from .input_operations import Intersection
-from pandas.util._decorators import doc
 from .CV import inds_from_names
 from ..shared_docs import _shared_docs
 from .compare import (_compare_check, CompareDict, _merge_compare, Compare)
@@ -584,10 +584,10 @@ def nested_cv_check(obj, dataset):
     _nested_cv_check(obj)
 
 
-def _preproc_param_search(object, ps):
+def _preproc_param_search(obj, ps):
 
     # Get param search
-    param_search = getattr(object, 'param_search')
+    param_search = getattr(obj, 'param_search')
 
     # If None, return False and do nothing
     if param_search is None:
@@ -601,7 +601,7 @@ def _preproc_param_search(object, ps):
     as_dict = param_search._as_dict(ps=ps)
 
     # Set new proc'ed
-    setattr(object, 'param_search', as_dict)
+    setattr(obj, 'param_search', as_dict)
 
     return True
 

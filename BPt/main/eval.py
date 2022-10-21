@@ -704,8 +704,9 @@ class EvalResults():
             _refresh_bar(progress_bars[1])
 
         # Refresh label on folds
-        progress_bars[0].desc = 'Folds'
-        _refresh_bar(progress_bars[0])
+        if len(progress_bars) > 0:
+            progress_bars[0].desc = 'Folds'
+            _refresh_bar(progress_bars[0])
 
         # Close progress bars
         if self.compare_bars is None:

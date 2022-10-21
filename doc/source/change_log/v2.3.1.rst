@@ -4,3 +4,7 @@
 
 Version 2.3.1
 ---------------
+
+- Updated progress bars
+    - Progress bars now can display incremental progress.
+    - Progress bars will be display by default for nested searches now.

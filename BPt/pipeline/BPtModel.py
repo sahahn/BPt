@@ -8,6 +8,7 @@ def _estimator_has(attr):
 
 
 class BPtModel(ScopeObj):
+    '''Base model class within the BPt Pipeline'''
 
     _needs_transform_nested_model = True
 
@@ -81,5 +82,3 @@ class BPtModel(ScopeObj):
 
         # Otherwise, return None
         return None
-        
-     

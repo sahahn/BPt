@@ -40,6 +40,3 @@ class BPtSampler(ScopeTransformer):
 
         # Otherwise, return as is
         return transformed
-        
-        
-

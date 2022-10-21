@@ -60,6 +60,7 @@ BPt.Dataset
       Dataset.cumsum
       Dataset.describe
       Dataset.diff
+      Dataset.display_scopes
       Dataset.div
       Dataset.divide
       Dataset.dot
@@ -99,6 +100,7 @@ BPt.Dataset
       Dataset.get_file_mapping
       Dataset.get_nan_subjects
       Dataset.get_non_nan_subjects
+      Dataset.get_permuted_Xy
       Dataset.get_roles
       Dataset.get_scopes
       Dataset.get_subjects
@@ -159,6 +161,7 @@ BPt.Dataset
       Dataset.pivot_table
       Dataset.plot
       Dataset.plot_bivar
+      Dataset.plots
       Dataset.pop
       Dataset.pow
       Dataset.prod
@@ -204,6 +207,7 @@ BPt.Dataset
       Dataset.slice_shift
       Dataset.sort_index
       Dataset.sort_values
+      Dataset.split_by
       Dataset.squeeze
       Dataset.stack
       Dataset.std

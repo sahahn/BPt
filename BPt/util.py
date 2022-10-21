@@ -1,6 +1,9 @@
 import os
 import numpy as np
-
+from matplotlib import cm
+from matplotlib import colors
+from tqdm import tqdm
+from tqdm.notebook import tqdm as tqdm_notebook
 
 class BPtInputMixIn():
     pass
@@ -205,3 +208,66 @@ def get_unique_str_markers(strs, template=None,
         unique_strs.append(piece)
 
     return unique_strs
+
+
+def _refresh_bar(colorbar, n=None):
+
+    # Allow passing list of colorbars
+    if isinstance(colorbar, list):
+        for bar in colorbar:
+            _refresh_bar(bar, n=n)
+        return
+
+    # Can optionally set n through this function
+    if n is not None:
+        colorbar.n = n
+
+    # Get the current fraction of completed
+    frac = colorbar.n / colorbar.total
+    c = cm.get_cmap('BuGn')
+
+    # Scale from 0-1 to modified range
+    t_min, t_max = .25, .8
+    frac_scale = frac * (t_max - t_min) + t_min
+
+    # Update color in bar
+    colorbar.colour = colors.rgb2hex(c(frac_scale))
+
+    # Lastly, call refresh
+    colorbar.refresh()
+
+
+def _is_notebook():
+
+    try:
+        from IPython import get_ipython
+        shell = get_ipython().__class__.__name__
+        if shell == 'ZMQInteractiveShell':
+            return True
+    except NameError:
+        pass
+
+    # Check google collab
+    try:
+        import google.colab
+        return True
+    except:
+        ModuleNotFoundError
+
+    return False
+
+
+def get_progress_bar(progress_bar):
+    '''Get progress bar based on passed arg + environment'''
+
+    if progress_bar is None:
+        return None
+
+    if not progress_bar:
+        return None
+
+    elif _is_notebook():
+        return tqdm_notebook
+
+    # Lastly return base
+    return tqdm

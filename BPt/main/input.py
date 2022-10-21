@@ -1535,6 +1535,19 @@ class ParamSearch(Params):
 
             default = 0
 
+    progress_bar : bool or 'default', optional
+        Include a seperate progress bar to
+        track progress of parameter search.
+
+        Default behavior is to set to whatever
+        value progress bar is set to when
+        calling :func:`evaluate`, otherwise
+        set to False.
+
+        ::
+
+            default = 'default'
+
     progress_loc : None or str, optional
         This is an optional parameter. If set
         to non-None, then it should be passed a
@@ -1552,6 +1565,7 @@ class ParamSearch(Params):
                  random_state='default',
                  dask_ip=None, memmap_X=False,
                  search_only_params=None, verbose=0,
+                 progress_bar='default',
                  progress_loc=None):
 
         self.search_type = search_type
@@ -1575,6 +1589,7 @@ class ParamSearch(Params):
         self.dask_ip = dask_ip
         self.memmap_X = memmap_X
         self.verbose = verbose
+        self.progress_bar = progress_bar
         self.progress_loc = progress_loc
         self.search_only_params = search_only_params
 
@@ -1589,6 +1604,9 @@ class ParamSearch(Params):
 
         if self.n_jobs == 'default':
             params['n_jobs'] = ps.n_jobs
+
+        if self.progress_bar == 'default':
+            params['progress_bar'] = ps._progress_bar
 
         params['scorer'] = process_scorer(self.scorer,
                                           ps.problem_type)
@@ -2738,6 +2756,7 @@ class ProblemSpec(Params):
         self.base_dtype = base_dtype
 
         self._checked = False
+        self._progress_bar = False
 
         self._proc_checks()
 

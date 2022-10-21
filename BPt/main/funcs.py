@@ -195,7 +195,7 @@ def _problem_spec_target_check(ps, dataset):
 
 
 def problem_spec_check(problem_spec, dataset, error_if_compare=True,
-                       **extra_params):
+                       progress_bar=False, **extra_params):
 
     # If problem spec is already a CompareDict.
     # Return as is
@@ -236,14 +236,15 @@ def problem_spec_check(problem_spec, dataset, error_if_compare=True,
         if error_if_compare:
             raise RuntimeError("This function can't accept Compare arguments!")
 
-        return CompareDict({key: _base_ps_check(ps[key], dataset)
+        return CompareDict({key: _base_ps_check(ps[key], dataset,
+                                                progress_bar=progress_bar)
                             for key in ps})
 
     # Otherwise perform base check as usual
-    return _base_ps_check(ps, dataset)
+    return _base_ps_check(ps, dataset, progress_bar=progress_bar)
 
 
-def _base_ps_check(ps, dataset):
+def _base_ps_check(ps, dataset, progress_bar=False):
 
     # Proc params
     ps._proc_checks()
@@ -270,6 +271,8 @@ def _base_ps_check(ps, dataset):
     ps.scorer =\
         process_scorers(ps.scorer,
                         problem_type=ps.problem_type)
+
+    ps._progress_bar = progress_bar
 
     # Set checked flag in ps
     setattr(ps, '_checked', True)
@@ -367,6 +370,7 @@ def get_estimator(pipeline, dataset='default',
     # Use initial prep
     estimator_ps = _initial_prep(pipeline, dataset, problem_spec,
                                  error_if_compare=(True, False),
+                                 progress_bar=False,
                                  **extra_params)
 
     # Reduce estimator_ps to just estimator related
@@ -584,7 +588,7 @@ def nested_cv_check(obj, dataset):
     _nested_cv_check(obj)
 
 
-def _preproc_param_search(obj, ps):
+def _preproc_param_search(obj, p_spec):
 
     # Get param search
     param_search = getattr(obj, 'param_search')
@@ -598,7 +602,7 @@ def _preproc_param_search(obj, ps):
         return True
 
     # If a param search, apply ps and dataset + convert to dict
-    as_dict = param_search._as_dict(ps=ps)
+    as_dict = param_search._as_dict(ps=p_spec)
 
     # Set new proc'ed
     setattr(obj, 'param_search', as_dict)
@@ -607,7 +611,8 @@ def _preproc_param_search(obj, ps):
 
 
 def _initial_prep(pipeline, dataset, problem_spec,
-                  error_if_compare=True, **extra_params):
+                  error_if_compare=True, progress_bar=False,
+                  **extra_params):
 
     # Get set of all possible params that extra params could refer to
     possible_params = set(ProblemSpec._get_param_names())
@@ -629,7 +634,8 @@ def _initial_prep(pipeline, dataset, problem_spec,
     # Get proc'ed problem spec, w/ possibility that it is
     # returned as a CompareDict.
     ps = problem_spec_check(problem_spec=problem_spec, dataset=dataset,
-                            error_if_compare=eic_ps, **extra_params)
+                            error_if_compare=eic_ps, progress_bar=progress_bar,
+                            **extra_params)
 
     # Want to get pipe, with possibility that returned pipe is CompareDict
     pipe = pipeline_check(pipeline, error_if_compare=eic_pipe,
@@ -689,7 +695,7 @@ def _sk_prep(pipeline, dataset, problem_spec='default',
              cv=5, **extra_params):
 
     estimator, ps = _initial_prep(pipeline, dataset, problem_spec,
-                                  error_if_compare=True,
+                                  error_if_compare=True, progress_bar=False,
                                   **extra_params)
 
     return _eval_prep(estimator, ps, dataset, cv)
@@ -1161,7 +1167,8 @@ def evaluate(pipeline, dataset,
     # value as a CompareDict
     estimator_ps =\
         _initial_prep(pipeline, dataset, problem_spec,
-                      error_if_compare=False, **extra_params)
+                      error_if_compare=False, progress_bar=progress_bar,
+                      **extra_params)
 
     # Base case
     if not isinstance(estimator_ps, CompareDict):
@@ -1224,9 +1231,9 @@ def _evaluate(estimator, dataset, ps, cv,
 
     # Init evaluator
     evaluator = EvalResults(estimator=estimator, ps=ps,
-                             encoders=encoders,
-                             compare_bars=compare_bars,
-                             **verbose_args)
+                            encoders=encoders,
+                            compare_bars=compare_bars,
+                            **verbose_args)
 
     # Call eval on the evaluator
     evaluator._eval(X, y, sk_cv, dataset)

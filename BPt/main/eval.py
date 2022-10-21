@@ -1,7 +1,5 @@
 import pandas as pd
 import numpy as np
-from tqdm import tqdm
-from tqdm.notebook import tqdm as tqdm_notebook
 from sklearn.base import clone
 import time
 import warnings
@@ -23,6 +21,8 @@ from numpy.random import default_rng
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+from ..util import _refresh_bar, get_progress_bar
+
 from sklearn.metrics._scorer import _MultimetricScorer
 
 _base_docs = {}
@@ -38,32 +38,6 @@ _base_docs['dataset'] = """dataset : :class:`Dataset`
 
     """
 
-def _refresh_bar(colorbar, n=None):
-
-    # Allow passing list of colorbars
-    if isinstance(colorbar, list):
-        for bar in colorbar:
-            _refresh_bar(bar, n=n)
-        return
-
-    # Can optionally set n through this function
-    if n is not None:
-        colorbar.n = n
-
-    # Get the current fraction of completed
-    frac = colorbar.n / colorbar.total 
-    c = cm.get_cmap('BuGn')
-
-    # Scale from 0-1 to modified range
-    t_min, t_max = .25, .8
-    frac_scale = frac * (t_max - t_min) + t_min
-
-    # Update color in bar
-    colorbar.colour = colors.rgb2hex(c(frac_scale))
-
-    # Lastly, call refresh
-    colorbar.refresh()
-
 
 def score_rep(score):
 
@@ -77,27 +51,6 @@ def score_rep(score):
 
     # Last case is between 1 and -1
     return f'{score:.4f}'
-
-
-def is_notebook():
-
-    try:
-        from IPython import get_ipython
-        shell = get_ipython().__class__.__name__
-        if shell == 'ZMQInteractiveShell':
-            return True
-    except NameError:
-        pass
-
-    # Check google collab
-    try:
-        import google.colab
-        return True
-    except:
-        ModuleNotFoundError
-
-
-    return False
 
 
 # @TODO
@@ -312,8 +265,11 @@ class EvalResults():
         multiple scorers).
         '''
 
-        first_scorer = list(self.mean_scores)[0]
-        return self.mean_scores[first_scorer]
+        first_scorer = list(self.scores)[0]
+        if len(self.scores[first_scorer]) == 0:
+            return None
+
+        return np.mean(self.scores[first_scorer])
 
     @property
     def ps(self):
@@ -546,13 +502,9 @@ class EvalResults():
         self._cv = cv
 
     def _set_progress_bar(self, progress_bar):
+        '''Sets correct bar type based on if in notebook or not.'''
 
-        if not progress_bar:
-            self.progress_bar = None
-        elif is_notebook():
-            self.progress_bar = tqdm_notebook
-        else:
-            self.progress_bar = tqdm
+        self.progress_bar = get_progress_bar(progress_bar)
 
     def _eval(self, X, y, cv, dataset=None):
 
@@ -626,6 +578,7 @@ class EvalResults():
 
             # Increment progress bars
             progress_bars = self._incr_progress_bars(progress_bars)
+            self._incr_compare_bar()
 
         # Clean up progress bars
         self._finish_progress_bars(progress_bars)
@@ -657,7 +610,7 @@ class EvalResults():
 
             # Init and set as new
             compare_bar = self.progress_bar(total=self.compare_bars,
-                                            desc='Compare')
+                                            desc='Compare', dynamic_ncols=True)
             self.compare_bars = [compare_bar]
 
         # If already init'ed
@@ -670,14 +623,16 @@ class EvalResults():
 
         # If 1 repeat, then just folds progress bar
         if self.n_repeats_ == 1:
-            folds_bar = self.progress_bar(total=self.n_splits_, desc='Folds')
+            folds_bar = self.progress_bar(total=self.n_splits_, desc='Folds',
+                                          dynamic_ncols=True)
             bars = [folds_bar]
 
         # Otherwise folds and repeats bars - init repeats bar first, so on top
         else:
             repeats_bar = self.progress_bar(total=self.n_repeats_,
-                                            desc='Repeats')
-            folds_bar = self.progress_bar(total=self.n_splits_, desc='Folds')
+                                            desc='Repeats', dynamic_ncols=True)
+            folds_bar = self.progress_bar(total=self.n_splits_, desc='Folds',
+                                          dynamic_ncols=True)
             bars = [folds_bar, repeats_bar]
 
         # If compare bars was init'ed this run
@@ -696,16 +651,30 @@ class EvalResults():
         folds_bar = progress_bars[0]
         folds_bar.n += 1
 
+        # Calculate estimate for this fold so far, and set
+        first_scorer = list(self.scores)[0]
+        fold_mean = np.mean(self.scores[first_scorer][-folds_bar.n:])
+        folds_bar.desc = f'Folds ({score_rep(fold_mean)})'
+
         # If just folds bar update and return
         if len(progress_bars) == 1:
             _refresh_bar(folds_bar)
             return [folds_bar]
 
-        # If both, check to see if n_repeats increments
+        # Increment partially repeats bar
         repeats_bar = progress_bars[1]
+        repeats_bar.n += (1 / self.n_splits_)
+        repeats_bar.n = round(repeats_bar.n, 2)
+
+        # Set estimate score from all avaliable
+        repeats_bar.desc = f'Repeats ({score_rep(self.score)})'
+
+        # If both, check to see if n_repeats should be
+        # rounded, and folds bar reset to 0, and reset descr
         if folds_bar.n == self.n_splits_:
             folds_bar.n = 0
-            repeats_bar.n += 1
+            folds_bar.desc = 'Folds'
+            repeats_bar.n = round(repeats_bar.n)
 
             # If end, set to full
             if repeats_bar.n == self.n_repeats_:
@@ -715,20 +684,41 @@ class EvalResults():
         _refresh_bar([folds_bar, repeats_bar])
         return [folds_bar, repeats_bar]
 
+    def _incr_compare_bar(self):
+
+        if self.compare_bars is None:
+            return
+
+        amt = 1 / (self.n_repeats_ * self.n_splits_)
+
+        self.compare_bars[-1].n += amt
+        self.compare_bars[-1].n = round(self.compare_bars[-1].n, 2)
+
+        _refresh_bar(self.compare_bars[-1])
+
     def _finish_progress_bars(self, progress_bars):
+
+        # Refresh label on repeats (if any)
+        if len(progress_bars) == 2:
+            progress_bars[1].desc = 'Repeats'
+            _refresh_bar(progress_bars[1])
+
+        # Refresh label on folds
+        progress_bars[0].desc = 'Folds'
+        _refresh_bar(progress_bars[0])
 
         # Close progress bars
         if self.compare_bars is None:
-            for bar in progress_bars:
-                bar.close()
+            for p_bar in progress_bars:
+                p_bar.close()
 
             return
 
         # Otherwise compare bars case, reset
         _refresh_bar(progress_bars, n=0)
 
-        # Increment and refresh compare
-        self.compare_bars[-1].n += 1
+        # Increment w/ round and refresh compare
+        self.compare_bars[-1].n = round(self.compare_bars[-1].n)
         _refresh_bar(self.compare_bars[-1])
 
         return
@@ -802,7 +792,6 @@ class EvalResults():
 
     def _score_estimator(self, estimator_, X_val, y_val):
         
-
         # Use multi-metric scorer here - handles not repeating calls to
         # predict / predict proba, ect... - can safely wrap even single metrics
         scorers = _MultimetricScorer(**self.ps.scorer)
@@ -2102,15 +2091,15 @@ class EvalResults():
                         metric = list(p_scores)[col + (row * n_cols)]
                     except IndexError:
                         continue
-                    
+
                     # Base hist
                     sns.histplot(p_scores[metric], ax=a, kde=True,
                                  label=f'Null Dist. (Mean): {null_dist_means[metric]:.3f}')
-                    
+
                     # Add vert line
                     a.axvline(self.mean_scores[metric], color='Red', linewidth=6,
                               label=f'Baseline: {self.mean_scores[metric]:.3f} (pval={p_values[metric]:.3f})')
-                    
+
                     # Add legend + title
                     a.legend()
                     a.set_title(metric)
@@ -2237,6 +2226,7 @@ class EvalResultsSubset(EvalResults):
                 score *= scorer._sign
                 self.scores[scorer_str].append(score)
 
+
 # TODO - 
 class EvalResultsFold():
 
@@ -2247,3 +2237,4 @@ class EvalResultsFold():
 
         # self.scores =
         # self.feat_names =
+

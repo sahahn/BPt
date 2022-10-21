@@ -2,16 +2,11 @@ from .test_evaluate import get_fake_dataset
 from ..input import Model, Pipeline, Scaler, CV
 from ...dataset.dataset import Dataset
 from ..funcs import evaluate
-from ..eval import is_notebook
 import pytest
 import numpy as np
 from tempfile import gettempdir
 import os
 import pickle as pkl
-
-
-def test_is_notebook():
-    assert not is_notebook()
 
 
 def test_bpt_evaluator_neg_verbose():

@@ -192,11 +192,3 @@ def get_loader_pipe(parc, pipe='elastic_pipe', obj_params=None, **loader_params)
     pipe.steps = [loader] + pipe.steps
 
     return pipe
-
-    
-
-    
-
-    
-
-

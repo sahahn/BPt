@@ -552,7 +552,7 @@ class CompareDict(dict):
 
         # Go through all
         for key in list(self.keys()):
-            
+
             # Add each value
             for attr in attrs:
                 attr_values[attr].append(getattr(self[key], attr))

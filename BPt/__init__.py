@@ -12,8 +12,8 @@ from .main.funcs import (get_estimator, cross_validate,
 
 from .main.input_operations import (Select, Duplicate, Pipe, ValueSubset,
                                     Intersection)
-from .main.compare import (Compare, Option, CompareDict,
-                           compare_dict_from_existing)
+from .main.compare import (Compare, CompareSubset, Option,
+                           CompareDict, compare_dict_from_existing)
 from .main.eval import EvalResults, EvalResultsSubset
 from . import p
 from .main.plotting import plot_roc
@@ -27,7 +27,7 @@ __all__ = ["Dataset", "Loader",
            "FeatSelector", "Model",
            "Ensemble", "Param_Search", "ParamSearch",
            "Model_Pipeline", "Problem_Spec", "ProblemSpec", "Select",
-           "Duplicate", "Pipe", "ValueSubset",
+           "Duplicate", "Pipe", "ValueSubset", "CompareSubset",
            "CV", "CVStrategy", "Intersection", "Sampler",
            "cross_validate", "cross_val_score", "evaluate",
            'p', "Feat_Selector", 'ModelPipeline', 'Pipeline',

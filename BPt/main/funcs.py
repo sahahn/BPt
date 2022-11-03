@@ -11,7 +11,8 @@ from .eval import EvalResults, _refresh_bar
 from .input_operations import Intersection
 from .CV import inds_from_names
 from ..shared_docs import _shared_docs
-from .compare import (_compare_check, CompareDict, _merge_compare, Compare)
+from .compare import (_compare_check, CompareDict, _merge_compare,
+                      Compare, CompareSubset)
 from ..default.pipelines import pipelines as default_pipelines
 from ..dataset.fake_dataset import FakeDataset
 
@@ -183,10 +184,10 @@ def _problem_spec_target_check(ps, dataset):
     if isinstance(ps.target, int):
         try:
             ps.target = targets[ps.target]
-        except IndexError:
+        except IndexError as exc:
             raise IndexError('target index: ' + repr(ps.target) +
                              ' is out of range, only ' + repr(len(targets)) +
-                             ' targets are defined.')
+                             ' targets are defined.') from exc
 
     # If not int, then raise error if invalid or keep as is
     if ps.target not in targets:
@@ -203,11 +204,11 @@ def problem_spec_check(problem_spec, dataset, error_if_compare=True,
         return problem_spec
 
     # Set ps to copy of problem spec
-    ps = deepcopy(problem_spec)
+    p_spec = deepcopy(problem_spec)
 
     # Check if problem_spec is left as default
-    if ps == 'default':
-        ps = ProblemSpec()
+    if p_spec == 'default':
+        p_spec = ProblemSpec()
 
     # Check for any override params
     possible_params = ProblemSpec._get_param_names()
@@ -216,32 +217,38 @@ def problem_spec_check(problem_spec, dataset, error_if_compare=True,
 
     # If any override params - reset checked
     if len(valid_params) > 0:
-        ps._checked = False
+        p_spec._checked = False
 
     # If attr checked, then means the passed
     # problem_spec has already been checked and is already
     # a proc'ed and ready copy.
-    if hasattr(ps, '_checked') and getattr(ps, '_checked'):
-        return ps
+    if hasattr(p_spec, '_checked') and getattr(p_spec, '_checked'):
+        return p_spec
 
     # Set any overlap params
-    ps.set_params(**valid_params)
+    p_spec.set_params(**valid_params)
+
+    # If subjects passed as str and valid column within dataset
+    # replace with special Compare object. Note: This needs to
+    # happen before the compare check
+    if isinstance(p_spec.subjects, str) and p_spec.subjects in dataset:
+        p_spec.subjects = CompareSubset(p_spec.subjects, dataset)
 
     # Check for any Compare
-    ps = _compare_check(ps)
+    p_spec = _compare_check(p_spec)
 
-    # If ps is now a dict, it means there was atleast one Compare
-    if isinstance(ps, CompareDict):
+    # If p_spec is now a dict, it means there was atleast one Compare
+    if isinstance(p_spec, CompareDict):
 
         if error_if_compare:
             raise RuntimeError("This function can't accept Compare arguments!")
 
-        return CompareDict({key: _base_ps_check(ps[key], dataset,
+        return CompareDict({key: _base_ps_check(p_spec[key], dataset,
                                                 progress_bar=progress_bar)
-                            for key in ps})
+                            for key in p_spec})
 
     # Otherwise perform base check as usual
-    return _base_ps_check(ps, dataset, progress_bar=progress_bar)
+    return _base_ps_check(p_spec, dataset, progress_bar=progress_bar)
 
 
 def _base_ps_check(ps, dataset, progress_bar=False):

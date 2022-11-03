@@ -285,7 +285,7 @@ class ValueSubset(BPtInputMixIn):
 
     ::
 
-        subjects = Values_Subset(name='site', values=[0, 1, 5])
+        subjects = ValuesSubset(name='site', values=[0, 1, 5])
 
     Would select the subset of subjects from sites 0, 1 and 5.
 
@@ -324,6 +324,7 @@ class ValueSubset(BPtInputMixIn):
 
     def __str__(self):
         return self.__repr__()
+
 
 
 class Intersection(list, BPtInputMixIn):

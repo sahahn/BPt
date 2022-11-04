@@ -1311,7 +1311,8 @@ class EvalResults():
     def permutation_importance(self, dataset=None,
                                n_repeats=10, scorer='default',
                                just_model=True, nested_model=True,
-                               return_as='dfs', n_jobs=1, random_state='default'):
+                               return_as='dfs', n_jobs=1,
+                               random_state='default'):
         '''This function computes the permutation feature importances
         from the base scikit-learn function
         :func:`sklearn.inspection.permutation_importance`
@@ -1884,9 +1885,9 @@ class EvalResults():
         '''Compute signifigance values for the original results according to
         a permutation test scheme. In this setup, we estimate the null model
         by randomly permuting the target variable, and re-evaluating the same
-        pipeline according to the same CV. In this manner, a null distribution of
-        size `n_perm` is generated in which we can compare the real, unpermuted results
-        to. 
+        pipeline according to the same CV. In this manner,
+        a null distribution of size `n_perm` is generated in which
+        we can compare the real, unpermuted results to.
 
         Note: If using a custom scorer, w/ no sign_ attribute, this method
         will assume that higher values for metrics are better.
@@ -1904,7 +1905,8 @@ class EvalResults():
 
             | If left as default=None, then will try to use
               a shallow copy of the dataset passed to the original
-              evaluate call (assuming evaluate was run with store_data_ref=True).
+              evaluate call (assuming evaluate was run
+              with store_data_ref=True).
 
             ::
 
@@ -1920,19 +1922,23 @@ class EvalResults():
                 default = None
 
         blocks : None, array, pd.Series or pd.DataFrame, optional
-            This parameter is only available when the neurotool library is installed.
+            This parameter is only available when the neurotools
+            library is installed.
             See: https://github.com/sahahn/neurotools
 
             This parameter represents the underlying exchangability-block
-            structure of the data passed. It is also used to constrain the possible
+            structure of the data passed. It is also used to
+            constrain the possible
             permutations in some way.
 
-            See PALM's documentation for an introduction on how to format ExchangeabilityBlocks:
+            See PALM's documentation for an introduction
+            on how to format ExchangeabilityBlocks:
             https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/PALM/ExchangeabilityBlocks
 
-            This parameter accepts the same style input as PALM, except it is passed
-            here as an array or DataFrame instead of as a file. The main requirement 
-            is that the shape of the structure match the number of subjects / data points
+            This parameter accepts the same style input as PALM,
+            except it is passed here as an array or DataFrame instead
+            of as a file. The main requirement is that the shape of
+            the structure match the number of subjects / data points
             in the first dimension.
 
             ::
@@ -1940,11 +1946,16 @@ class EvalResults():
                 default = None
 
         within_grp : bool, optional
-            This parameter is only relevant when a permutation structure / blocks is passed, in that
-            case it describes how the left-most exchanability / permutation structure column should act.
-            Specifically, if True, then it specifies that the left-most column should be treated as groups
-            to act in a within group swap only manner. If False, then it will consider the left-most column
-            groups to only be able to swap at the group level with other groups of the same size.
+            This parameter is only relevant when a permutation
+            structure / blocks is passed, in that
+            case it describes how the left-most exchanability /
+            permutation structure column should act.
+            Specifically, if True, then it specifies that the
+            left-most column should be treated as groups
+            to act in a within group swap only manner. If False,
+            then it will consider the left-most column
+            groups to only be able to swap at the group level
+            with other groups of the same size.
 
             ::
 
@@ -1975,7 +1986,8 @@ class EvalResults():
 
         # Make sure cv is saved
         if self.cv is None:
-            raise RuntimeError('The original call to evaluate must have had store_cv set to True to use this method.')
+            raise RuntimeError('The original call to evaluate must have had '
+                               'store_cv set to True to use this method.')
 
         # Init rng
         rng = default_rng(random_state)
@@ -1996,9 +2008,10 @@ class EvalResults():
                     raise RuntimeError('length of blocks and data do not match.')
 
         # TODO add option to multi-process here
+        # TODO add verbose / progress bar
         p_scores = {}
         for _ in range(n_perm):
-            
+
             # Get the random seed for this permutation
             try:
                 rng_integers = rng.integers
@@ -2008,7 +2021,8 @@ class EvalResults():
 
             # Get permuted y
             y_perm = dataset._get_permuted_y(self.ps, random_state=rs,
-                                             blocks=blocks, within_grp=within_grp)
+                                             blocks=blocks,
+                                             within_grp=within_grp)
 
             # Init silent copy to eval with
             p_eval = EvalResults(estimator=self.estimator,
@@ -2025,25 +2039,25 @@ class EvalResults():
                                  mute_warnings=False,
                                  compare_bars=None)
 
-            # Evaluate
+            # Evaluate - with internal eval method
             p_eval._eval(X, y_perm, cv=deepcopy(self.cv))
 
             # Extract scores and add to baseline
-            for metric in p_eval.mean_scores:
+            for metric, score in p_eval.mean_scores.items():
                 try:
-                    p_scores[metric].append(p_eval.mean_scores[metric])
+                    p_scores[metric].append(score)
                 except KeyError:
-                    p_scores[metric] = [p_eval.mean_scores[metric]]
+                    p_scores[metric] = [score]
 
         # Convert to p-values
         p_values, null_dist_means, null_dist_stds = {}, {}, {}
-        for metric in p_scores:
+        for metric, scores in p_scores.items():
 
             # Sort actual w/ null dist
             actual = self.mean_scores[metric]
-            base = np.vstack(p_scores[metric] + [actual])
+            base = np.vstack(scores + [actual])
             sorted_base = np.sort(base, axis=0)
-            
+
             # Get ind in sorted
             ind = np.where(sorted_base == actual)[0][0]
 
@@ -2060,8 +2074,8 @@ class EvalResults():
                 p_values[metric] = (ind + 1) / (n_perm + 1)
 
             # Add means and stds
-            null_dist_means[metric] = np.mean(p_scores[metric])
-            null_dist_stds[metric] = np.std(p_scores[metric])
+            null_dist_means[metric] = np.mean(scores)
+            null_dist_stds[metric] = np.std(scores)
 
         # Optionally make plot
         if plot:
@@ -2094,12 +2108,15 @@ class EvalResults():
                         continue
 
                     # Base hist
+                    hist_label = f'Null Dist. (Mean): {null_dist_means[metric]:.3f}'
                     sns.histplot(p_scores[metric], ax=a, kde=True,
-                                 label=f'Null Dist. (Mean): {null_dist_means[metric]:.3f}')
+                                 label=hist_label)
 
                     # Add vert line
-                    a.axvline(self.mean_scores[metric], color='Red', linewidth=6,
-                              label=f'Baseline: {self.mean_scores[metric]:.3f} (pval={p_values[metric]:.3f})')
+                    a.axvline(self.mean_scores[metric], 
+                              linewidth=6, color='Red',
+                              label=f'Baseline: {self.mean_scores[metric]:.3f}'
+                                    f' (pval={p_values[metric]:.3f})')
 
                     # Add legend + title
                     a.legend()

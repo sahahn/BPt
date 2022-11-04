@@ -4,6 +4,7 @@ from ..main.compare import Compare, Option
 
 
 # Pieces
+# TODO add identity loader to default pipelines?
 m_imputer = Imputer('mean', scope='float')
 c_imputer = Imputer('median', scope='category')
 r_scaler = Scaler('robust', scope='float')
@@ -35,7 +36,7 @@ voting = Ensemble('voting', models=[elastic_search,
                                     ridge_search,
                                     svm_fs_search,
                                     gb_search],
-                                    n_jobs_type='models')
+                  n_jobs_type='models')
 
 # Pre-defined pipelines
 _base_steps = [m_imputer, c_imputer, r_scaler, ohe]
@@ -68,7 +69,7 @@ pieces = {'m_imputer': m_imputer,
           'u_feat': u_feat,
           'svm': svm,
           'svm_search_pipe': svm_fs_search_pipe,
-          'svm_search': svm_fs_search,
+          'svm_fs_search': svm_fs_search,
           'ridge_search': ridge_search,
           'stacking': stacking,
           'voting': voting}

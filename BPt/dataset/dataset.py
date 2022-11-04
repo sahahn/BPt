@@ -1825,13 +1825,12 @@ class Dataset(pd.DataFrame):
         splits : dict of :class:`Dataset`
             Returned from this method is a dictionary of
             splits from the original Dataset, where each element
-            is index'ed by the unique value.
-                
+            is index'ed by the unique value.    
         '''
 
         # Get the passed columns
         split_cols = self.get_cols(scope)
-        
+
         # If just one, get vals
         if len(split_cols) == 1:
             split_series = self._get_values(split_cols[0], dropna=False,
@@ -1839,7 +1838,8 @@ class Dataset(pd.DataFrame):
 
         # Otherwise get combo 
         else:
-            split_series = self._get_combo_col(split_cols, decode_values=decode_values)
+            split_series = self._get_combo_col(split_cols,
+                                               decode_values=decode_values)
 
         # Gen dict of splits
         splits = {}
@@ -2038,6 +2038,7 @@ class Dataset(pd.DataFrame):
                              drop_cols_by_unique_val,
                              drop_cols_by_nan)
 
+
 def cat_to_equiv_check(values):
 
     # Check if categorical, if not return as isCheck for categorical case:
@@ -2053,6 +2054,7 @@ def cat_to_equiv_check(values):
 
     return values.astype(cat_dtype)
 
+
 def _permute_y(y, random_state, blocks, within_grp):
 
     # Base case, no block structure passed
@@ -2067,10 +2069,11 @@ def _permute_y(y, random_state, blocks, within_grp):
 
         # Permute y according to passed blocks + other params
         y = block_permutation(y, blocks=blocks, 
-                                random_state=random_state,
-                                within_grp=within_grp)
+                              random_state=random_state,
+                              within_grp=within_grp)
 
-    except ImportError:
-        raise ImportError('In order to use block constrained permutations, you must have neurotools installed.')
+    except ImportError as exc:
+        raise ImportError('In order to use block constrained permutations,'
+                          'you must have neurotools installed.') from exc
 
     return y

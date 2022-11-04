@@ -104,8 +104,8 @@ def mp_single_load(files, reduce_func):
     proxy = np.zeros(shape=(len(files)))
 
     # Get reduced from each file
-    for f in range(len(files)):
-        proxy[f] = files[f].reduce(reduce_func)
+    for f, file in enumerate(files):
+        proxy[f] = file.reduce(reduce_func)
 
     return proxy
 

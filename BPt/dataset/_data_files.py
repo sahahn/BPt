@@ -87,8 +87,9 @@ def add_data_files(self, files, file_to_subject='auto',
           to see that all index names were inferred correctly. Also note
           that already having a column of reference index names loaded can
           help the program figure out what kind of index to put, e.g.,
-          if your desired index names are 'subj_1', 'subj_2', unless you already
-          have an example column loaded, this method will likely just set the index
+          if your desired index names are 'subj_1', 'subj_2',
+          unless you already have an example column loaded,
+          this method will likely just set the index
           as '1' and '2'.
 
         | In the case that the underlying index is a MultiIndex, this

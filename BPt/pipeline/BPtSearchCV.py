@@ -22,6 +22,8 @@ from loky import get_reusable_executor
 
 from sklearn.exceptions import ConvergenceWarning
 
+from ..util import get_progress_bar, _refresh_bar
+
 def _estimator_has(attr):
     """Check if we can delegate a method to the underlying estimator.
     """
@@ -36,6 +38,7 @@ def _estimator_has(attr):
         return True
 
     return check
+
 
 class BPtSearchCV(BaseEstimator):
 
@@ -283,26 +286,58 @@ class BPtGridSearchCV(BPtSearchCV):
 
     @property
     def n_features_in_(self):
+        '''Defined based on the base search object'''
         return self.search_obj_.n_features_in_
 
     @property
     def classes_(self):
+        '''Defined based on the base search object'''
         return self.search_obj_.classes_
 
     @property
     def best_estimator_(self):
+        '''Defined based on the base search object'''
         return self.search_obj_.best_estimator_
 
     @property
     def best_score_(self):
+        '''Defined based on the base search object'''
         return self.search_obj_.best_score_
 
     @property
     def best_params_(self):
+        '''Defined based on the base search object'''
         return self.search_obj_.best_params_
 
 
+class ProgressBar():
+
+    def __init__(self, n_iter):
+
+        bar_func = get_progress_bar(True)
+        self.base_desc = 'Search Progress'
+        self.p_bar = bar_func(total=n_iter, desc=self.base_desc,
+                              leave=False, dynamic_ncols=True)
+        self.highest = None
+
+    def __call__(self, optimizer=None, candidate=None, value=None):
+
+        neg_value = value * -1
+        if self.highest is None:
+            self.highest = neg_value
+        elif neg_value > self.highest:
+            self.highest = neg_value
+
+        self.p_bar.desc = self.base_desc + f' ({self.highest:.3f})'
+
+        self.p_bar.n += 1
+        _refresh_bar(self.p_bar)
+
+        if self.p_bar.n == self.p_bar.total:
+            self.p_bar.close()
+
 class ProgressLogger():
+    '''Optionally log progress'''
 
     def __init__(self, loc):
         self.loc = loc
@@ -313,8 +348,8 @@ class ProgressLogger():
         if not exists(dirname(abspath(self.loc))):
             raise SystemExit('Folder where progress is stored was removed!')
 
-        with open(self.loc, 'a') as f:
-            f.write('params,')
+        with open(self.loc, 'a') as file:
+            file.write('params,')
 
 
 def ng_cv_score(X, y, estimator, scoring, weight_scorer,
@@ -376,6 +411,7 @@ def ng_cv_score(X, y, estimator, scoring, weight_scorer,
 
 
 class NevergradSearchCV(BPtSearchCV):
+    '''Nevergrad version of base search CV.'''
 
     # @TODO add more info from verbose!
     # @TODO add cv_results_, best_index_
@@ -459,18 +495,24 @@ class NevergradSearchCV(BPtSearchCV):
             optimizer.parametrization.random_state =\
                 self.random_state
 
+        if self.ps['progress_bar']:
+
+            progress_callback = ProgressBar(self.ps['n_iter'])
+            optimizer.register_callback('tell', progress_callback)
+
         if self.ps['progress_loc'] is not None:
 
-            pl = self.ps['progress_loc']
-            logger = ProgressLogger(pl)
+            progress_loc = self.ps['progress_loc']
+            logger = ProgressLogger(progress_loc)
             optimizer.register_callback('tell', logger)
 
             if self.ps['verbose'] >= 2:
-                print(f'Storing SearchCV progress logs at: {pl}')
+                print(f'Storing SearchCV progress logs at: {progress_loc}')
 
         return optimizer
 
     def run_search(self, optimizer, client):
+        '''Start the search'''
 
         if self.ps['verbose'] >= 1:
             print('Starting nevergrad hyper-parameter search.', flush=True)

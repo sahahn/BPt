@@ -1,6 +1,5 @@
-from numpy.lib.shape_base import split
 from .eval import EvalResults
-from .input_operations import BPtInputMixIn
+from .input_operations import BPtInputMixIn, ValueSubset
 from copy import deepcopy, copy
 import pandas as pd
 from .stats_helpers import compute_corrected_ttest
@@ -14,10 +13,11 @@ from ..util import get_unique_str_markers
 
 
 def str_to_option(option):
+    '''Convert str option to Option class'''
 
     key, name = option.split('=')
-    o = Option(value=None, name=name, key=key)
-    return o
+    opt = Option(value=None, name=name, key=key)
+    return opt
 
 
 def str_to_options(option):
@@ -35,10 +35,11 @@ def str_to_options(option):
 
 
 def add_scores(cols, evaluator, attr_name):
+    '''Function helper for adding scores to summary.'''
 
     if not hasattr(evaluator, attr_name):
         return
-    
+
     new_col_names = []
 
     attr = getattr(evaluator, attr_name)
@@ -60,11 +61,12 @@ def make_summary_pretty(styler, mean_score_cols):
 
     styler.set_caption("Evaluate Compare Summary")
     styler.background_gradient(axis=0, cmap="bwr", subset='mean_scores_sr')
-    
+
     styler.background_gradient(axis=0, cmap="bwr",
                                subset=mean_score_cols,
                                low=.5, high=.5)
     return styler
+
 
 class Option(BPtInputMixIn):
     '''This is a special BPt input class designed
@@ -258,10 +260,102 @@ class Compare(BPtInputMixIn):
         return iter(self.options)
 
     def __repr__(self):
-        return 'CompareDict(' + repr(self.options) + ')'
+        return 'Compare(' + repr(self.options) + ')'
+
+    def __add__(self, other):
+
+        if not isinstance(other, Compare):
+            raise RuntimeError('Both objects must be Compare objects.')
+
+        return Compare(self.options + other.options)
+
+    def __iadd__(self, other):
+
+        if not isinstance(other, Compare):
+            raise RuntimeError('Both objects must be Compare objects.')
+
+        self.options += other.options
+
+        return self
+
+
+class CompareSubset(Compare):
+    '''BPt input class designed to combine functionality from
+    :class:`BPt.Compare` and :class:`ValueSubset`, for running
+    compare across different sets of :ref:`Subjects`. Note:
+    This class can only be used with :func:`Evaluate` where
+    :class:`Compare` is supported.
+
+    Parameters
+    ------------
+    name : str
+        The name of the loaded column in :class:`Dataset`
+        in which to evaluate according to each unique value from.
+
+    data : :class:`Dataset`
+        The reference :class:`Dataset` to base the
+        unique values of column "name" from.
+
+    decode_values : bool, optional
+        This parameter is boolean flag which represents if encoded
+        values should be used or not when getting the unique
+        values from. This will mostly just determine the naming
+        of each seperate scope.
+
+        ::
+
+            default = True
+
+    include_all : bool, optional
+        If set to True, then also include in the generated
+        :class:`Compare` an entry with 'all', for running
+        the experiment also with all avaliable subjects.
+
+        ::
+
+            default = False
+    '''
+
+    def __init__(self, name, data,
+                 decode_values=True,
+                 include_all=False):
+
+        # Save for repr
+        self.name = name
+        self.decode_values = decode_values
+
+        # Use dataset to generate the correct options
+        if name not in data:
+            raise RuntimeError(f'{name} not found in passed dataset.')
+
+        # Get the relevant series - skip NaN's
+        values = data.get_values(name, dropna=True,
+                                 decode_values=decode_values)
+
+        # Get unique values, and sort them
+        u_values = sorted(values.unique())
+
+        # Generate as options
+        options = []
+        for u_value in u_values:
+            val_subset = ValueSubset(name=name, values=u_value,
+                                     decode_values=decode_values)
+            options.append(Option(val_subset, name=f'{name}: {u_value}'))
+
+        # Optionally, inlude all
+        if include_all:
+            options.append(Option('all'))
+
+        # Init parent class
+        super().__init__(options)
+
+    def __repr__(self):
+        return 'CompareSubset(name=' + str(self.name) + \
+               ', n_options=' + str(len(self.options)) + ')'
 
 
 class Options():
+    '''Base class representing options'''
 
     def __init__(self, *args, **kwargs):
 
@@ -337,7 +431,7 @@ class Options():
         return sorted(self.options) == sorted(other.options)
 
     def __ne__(self, other):
-        return not(self == other)
+        return not (self == other)
 
     def is_subset(self, other):
 
@@ -347,6 +441,7 @@ class Options():
         return len(in_other) == len(self.options)
 
     def is_just_name_subset(self, other):
+        '''Checks if subset is a name'''
 
         if len(self.options) > 1:
             return False
@@ -373,10 +468,10 @@ class CompareDict(dict):
             return None
 
         if not isinstance(k, Options):
-            
+
             # Cast w/ clean str if numeric
             if isinstance(k, (int, float)):
-               k = clean_str(k)
+                k = clean_str(k)
 
             # To options
             k = Options(k)
@@ -439,7 +534,8 @@ class CompareDict(dict):
         # if Evaluation results
         if isinstance(ex, EvalResults):
             if self._check_multiple_problem_types():
-                return self._split_evaluator_summary(by='problem_type', **kwargs)
+                return self._split_evaluator_summary(by='problem_type',
+                                                     **kwargs)
             return self._evaluator_summary(**kwargs)
 
         # @TODO add more options
@@ -515,18 +611,21 @@ class CompareDict(dict):
         # Go through each evaluator in self
         for key in list(self.keys()):
 
-            for o in key.options:
-                cols[o.key].append(o.name)
+            for option in key.options:
+                cols[option.key].append(option.name)
 
             # Add values
             evaluator = self[key]
-            mean_score_cols += add_scores(cols, evaluator, attr_name='mean_scores')
+            mean_score_cols += add_scores(cols, evaluator,
+                                          attr_name='mean_scores')
 
             if show_std:
-                std_score_cols += add_scores(cols, evaluator, attr_name='std_scores')
+                std_score_cols += add_scores(cols, evaluator,
+                                             attr_name='std_scores')
 
             if show_timing:
-                timing_score_cols += add_scores(cols, evaluator, attr_name='mean_timing')
+                timing_score_cols += add_scores(cols, evaluator,
+                                                attr_name='mean_timing')
 
             # Add any extra in flags
             for attr in flags:
@@ -552,7 +651,7 @@ class CompareDict(dict):
 
         # Go through all
         for key in list(self.keys()):
-            
+
             # Add each value
             for attr in attrs:
                 attr_values[attr].append(getattr(self[key], attr))
@@ -562,7 +661,7 @@ class CompareDict(dict):
         for attr in attr_values:
             if len(set(attr_values[attr])) > 1:
                 flags.append(attr)
-        
+
         return flags
 
 

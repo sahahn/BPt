@@ -33,6 +33,7 @@ doc/user_guide/fake_surf_data
 doc/user_guide/fake_time_data
 doc/user_guide/fake_time_data/*
 doc/user_guide/fake_surf_data/*
+doc/source/_build/*
 
 # C extensions
 *.so

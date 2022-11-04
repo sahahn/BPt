@@ -620,14 +620,15 @@ class BPtListLoader(BPtLoader):
 
         # Check fit cache
         estimator = self._check_fit_cache(X, y=y, **fit_params)
-        
+
         # If found, set and end
         if estimator is not None:
             self.estimator_ = estimator            
             return self
 
         if self.verbose:
-            print(f'Fit shape: {X.shape}, with load ind: {self.inds_[0]}', flush=True)
+            print(f'Fit shape: {X.shape}, with load ind: {self.inds_[0]}',
+                  flush=True)
 
         # Only load if not cached
         X.load(ind=self.inds_[0], file_mapping=self.file_mapping)
@@ -647,7 +648,8 @@ class BPtListLoader(BPtLoader):
         # TODO may need to check to see if any fit params need to
         # be modified to temporarily not include any NaNs
         if len(fit_params) > 1 and np.sum(X.nan_mask) > 0:
-            raise RuntimeWarning('Fit params:', fit_params, 'may not work correctly.')
+            raise RuntimeWarning('Fit params:', fit_params,
+                                 'may not work correctly.')
 
         self.estimator_.fit(X[self.inds_[0]], y=fit_y, **fit_params)
 
@@ -685,7 +687,8 @@ class BPtListLoader(BPtLoader):
 
             # Can just call loaded again to make sure loaded
             X.load(ind=self.inds_[0], file_mapping=self.file_mapping)
-            X_trans = self.estimator_.transform(X[self.inds_[0]], **trans_params)
+            X_trans = self.estimator_.transform(X[self.inds_[0]],
+                                                **trans_params)
 
             # Before saving X_trans / passing on to next step
             # we want to add back in any NaN's (if any)
@@ -709,5 +712,3 @@ class BPtListLoader(BPtLoader):
             print(f'Final return transform shape: {ret_X_trans.shape}')
 
         return ret_X_trans
-
-

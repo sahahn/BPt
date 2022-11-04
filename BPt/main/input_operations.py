@@ -246,12 +246,10 @@ class ValueSubset(BPtInputMixIn):
 
     decode_values : bool, optional
         This parameter is boolean flag which represents if encoded
-        values should be
-        used or not. What this asks is that should the actual
-        ordinal post encoded
-        value be specified, or the should the value be
-        set based on the original
-        encoded name.
+        values should be used or not.
+        What this asks is that should the actual ordinal
+        post encoded value be specified, or the should the value be
+        set based on the original encoded name.
 
         This parameter is only relevant assuming the underlying
         name column was encoding using an encoding method
@@ -285,7 +283,7 @@ class ValueSubset(BPtInputMixIn):
 
     ::
 
-        subjects = Values_Subset(name='site', values=[0, 1, 5])
+        subjects = ValuesSubset(name='site', values=[0, 1, 5])
 
     Would select the subset of subjects from sites 0, 1 and 5.
 

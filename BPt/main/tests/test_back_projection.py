@@ -229,10 +229,12 @@ def test_voting_elastic_b_roc_auc():
                        ensemble='voting', scorer='roc_auc')
     voting_base_check(results)
 
+
 def test_voting_rf_r():
 
     results = run_eval(pipe='rf_pipe', target='r', ensemble='voting')
     voting_base_check(results)
+
 
 def test_voting_rf_b():
 
@@ -344,5 +346,3 @@ def test_stacking_permutation_svm_b_roc_auc():
     results = run_eval(pipe='svm_pipe', target='b',
                        ensemble='stacking', scorer='roc_auc')
     voting_permutation_check(results)
-
-

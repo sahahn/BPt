@@ -1,5 +1,7 @@
-from ..compare import (Option, CompareDict, MultipleSummary,
+from ..compare import (Option, Compare, CompareSubset,
+                       CompareDict, MultipleSummary,
                        compare_dict_from_existing)
+from ..input_operations import ValueSubset
 from ...dataset.dataset import Dataset
 from ..funcs import evaluate
 import numpy as np
@@ -9,7 +11,7 @@ import os
 import shutil
 import random
 from copy import deepcopy
-
+import pytest
 
 def test_option_compares():
 
@@ -190,3 +192,71 @@ def test_compare_dict_summary_df_cv_dif2():
     assert 'n_folds' in cd._check_evaluator_difs()
     assert 'n_subjects' in cd._check_evaluator_difs()
     assert cd.summary(show_timing=True).shape == (2, 8)
+
+
+def test_add_compares():
+
+    c1 = Compare(['1', '2', '3'])
+    c2 = Compare(['4', '5'])
+
+    c3 = c1 + c2
+    assert isinstance(c3, Compare)
+    assert len(c3.options) == 5
+
+def test_iadd_compares():
+
+    c1 = Compare(['1', '2', '3'])
+    c2 = Compare(['4', '5'])
+
+    c1 += c2
+
+    assert isinstance(c1, Compare)
+    assert len(c1.options) == 5
+
+
+def test_iadd_compares_fail():
+
+    c1 = Compare([1, 2])
+
+    with pytest.raises(RuntimeError):
+        c1 += [1, 2, 3]
+        
+
+
+def test_base_compare_subset():
+
+    fake = Dataset()
+    fake['1'] = np.ones((10)) * 2
+    fake['1'][:5] = 0
+    fake = fake.ordinalize('1')
+
+    cs = CompareSubset(name='1', data=fake, decode_values=True)
+    assert len(cs.options) == 2
+
+    names = []
+    for option in cs.options:
+        assert isinstance(option.value, ValueSubset)
+        names.append(option.name)
+
+    assert '1: 0.0' in names or '1: 0' in names
+    assert '1: 2.0' in names or '1: 2' in names
+
+def test_no_decode_compare_subset():
+
+    fake = Dataset()
+    fake['1'] = np.ones((10)) * 2
+    fake['1'][:5] = 0
+    fake = fake.ordinalize('1')
+
+    cs = CompareSubset(name='1', data=fake, decode_values=False)
+    assert len(cs.options) == 2
+
+    names = []
+    for option in cs.options:
+        assert isinstance(option.value, ValueSubset)
+        names.append(option.name)
+
+    assert '1: 0' in names or '1: 0.0' in names
+    assert '1: 1' in names or '1: 1.0' in names
+    
+

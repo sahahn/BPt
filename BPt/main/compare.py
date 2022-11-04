@@ -35,10 +35,11 @@ def str_to_options(option):
 
 
 def add_scores(cols, evaluator, attr_name):
+    '''Function helper for adding scores to summary.'''
 
     if not hasattr(evaluator, attr_name):
         return
-    
+
     new_col_names = []
 
     attr = getattr(evaluator, attr_name)
@@ -259,14 +260,64 @@ class Compare(BPtInputMixIn):
         return iter(self.options)
 
     def __repr__(self):
-        return 'CompareDict(' + repr(self.options) + ')'
+        return 'Compare(' + repr(self.options) + ')'
+
+    def __add__(self, other):
+
+        if not isinstance(other, Compare):
+            raise RuntimeError('Both objects must be Compare objects.')
+
+        return Compare(self.options + other.options)
+
+    def __iadd__(self, other):
+
+        if not isinstance(other, Compare):
+            raise RuntimeError('Both objects must be Compare objects.')
+
+        self.options += other.options
+
+        return self
 
 
 class CompareSubset(Compare):
-    '''Special class used to compare across different sets of subjects.'''
-    # TODO add documentation and tests
+    '''BPt input class designed to combine functionality from
+    :class:`BPt.Compare` and :class:`ValueSubset`, for running
+    compare across different sets of :ref:`Subjects`. Note:
+    This class can only be used with :func:`Evaluate` where
+    :class:`Compare` is supported.
+
+    Parameters
+    ------------
+    name : str
+        The name of the loaded column in :class:`Dataset`
+        in which to evaluate according to each unique value from.
+
+    data : :class:`Dataset`
+        The reference :class:`Dataset` to base the
+        unique values of column "name" from.
+
+    decode_values : bool, optional
+        This parameter is boolean flag which represents if encoded
+        values should be used or not when getting the unique
+        values from. This will mostly just determine the naming
+        of each seperate scope.
+
+        ::
+
+            default = True
+
+    include_all : bool, optional
+        If set to True, then also include in the generated
+        :class:`Compare` an entry with 'all', for running
+        the experiment also with all avaliable subjects.
+
+        ::
+
+            default = False
+    '''
+
     def __init__(self, name, data,
-                 decode_values=False,
+                 decode_values=True,
                  include_all=False):
 
         # Save for repr
@@ -304,6 +355,7 @@ class CompareSubset(Compare):
 
 
 class Options():
+    '''Base class representing options'''
 
     def __init__(self, *args, **kwargs):
 

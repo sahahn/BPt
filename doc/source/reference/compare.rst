@@ -14,4 +14,5 @@ Compare
    Compare
    Option
    CompareDict
+   CompareSubset
    compare_dict_from_existing

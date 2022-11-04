@@ -1232,3 +1232,27 @@ def test_empty_loader():
              cv=cv,
              progress_bar=False,
              problem_type='binary')
+
+
+def test_evaluate_special_subjects_compare():
+
+    fake = Dataset()
+
+    fake['1'] = np.ones(50)
+    fake['1'][:20] = 0
+    fake['2'] = np.random.random(50)
+    fake['3'] = np.random.random(50)
+    fake = fake.set_role('3', 'target')
+    
+
+    results = evaluate(pipeline='ridge_pipe',
+                       dataset=fake,
+                       subjects='1',
+                       cv=2,
+                       progress_bar=False,
+                       problem_type='regression')
+
+    assert isinstance(results, CompareDict)
+    assert(results['subject=1: 0.0'].n_subjects == 20)
+    assert(results['subject=1: 1.0'].n_subjects == 30)
+

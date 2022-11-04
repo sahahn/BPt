@@ -246,12 +246,10 @@ class ValueSubset(BPtInputMixIn):
 
     decode_values : bool, optional
         This parameter is boolean flag which represents if encoded
-        values should be
-        used or not. What this asks is that should the actual
-        ordinal post encoded
-        value be specified, or the should the value be
-        set based on the original
-        encoded name.
+        values should be used or not.
+        What this asks is that should the actual ordinal
+        post encoded value be specified, or the should the value be
+        set based on the original encoded name.
 
         This parameter is only relevant assuming the underlying
         name column was encoding using an encoding method
@@ -324,7 +322,6 @@ class ValueSubset(BPtInputMixIn):
 
     def __str__(self):
         return self.__repr__()
-
 
 
 class Intersection(list, BPtInputMixIn):

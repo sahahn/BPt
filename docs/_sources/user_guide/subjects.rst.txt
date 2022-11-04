@@ -154,6 +154,23 @@ In this case, the subjects to select would be loaded from
 'subjects.txt' and the corresponding eventnames from
 'events.txt'.
 
+7. name of column
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This option only works in the context of the function :class:`evaluate`, where you may
+pass the name of a loaded column, and have the argument converted intenerally to a 
+special :class:`Compare` style object, :class:`CompareSubset`, where subsets of 
+of subjects would be defined for each unique value in the name of the column passed.
+
+For example:
+
+::
+
+  subjects='sex'
+
+Where 'sex' is a loaded column in a dataset, and would then define a :class:`Compare` object
+with seperate options for each unique value of 'sex'.
+
+
 Examples
 ~~~~~~~~~~~
 

@@ -1,0 +1,6 @@
+BPt.Dataset.isetitem
+====================
+
+.. currentmodule:: BPt
+
+.. automethod:: Dataset.isetitem

@@ -238,8 +238,8 @@ def test_base_compare_subset():
         assert isinstance(option.value, ValueSubset)
         names.append(option.name)
 
-    assert '1: 0.0' in names
-    assert '1: 2.0' in names
+    assert '1: 0.0' in names or '1: 0' in names
+    assert '1: 2.0' in names or '1: 2' in names
 
 def test_no_decode_compare_subset():
 
@@ -256,7 +256,7 @@ def test_no_decode_compare_subset():
         assert isinstance(option.value, ValueSubset)
         names.append(option.name)
 
-    assert '1: 0' in names
-    assert '1: 1' in names
+    assert '1: 0' in names or '1: 0.0' in names
+    assert '1: 1' in names or '1: 1.0' in names
     
 

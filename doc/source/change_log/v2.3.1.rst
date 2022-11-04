@@ -10,5 +10,5 @@ Version 2.3.1
     - Progress bars will be display by default for nested searches now.
 
 - General refactoring
-    - Code is slowly being better formatted
-    - Some examples fixed
+    - Code formatting
+    - A few broken examples fixed

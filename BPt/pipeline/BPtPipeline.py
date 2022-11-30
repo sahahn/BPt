@@ -358,7 +358,7 @@ class BPtPipeline(Pipeline):
         # Get as two lists - all steps but last
         ordered_objs, ordered_base_names =\
             self._get_ordered_objs_and_names()
-        
+
         # Apply proc new names to each
         feat_names = list(X_df)
         for obj, base_name in zip(ordered_objs, ordered_base_names):
@@ -370,7 +370,8 @@ class BPtPipeline(Pipeline):
         if nested_model:
             model = self.steps[-1][1]
             if hasattr(model, 'transform_feat_names'):
-                feat_names = model.transform_feat_names(feat_names, encoders=encoders,
+                feat_names = model.transform_feat_names(feat_names,
+                                                        encoders=encoders,
                                                         nested_model=nested_model)
 
         return feat_names

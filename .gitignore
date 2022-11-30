@@ -34,6 +34,7 @@ doc/user_guide/fake_time_data
 doc/user_guide/fake_time_data/*
 doc/user_guide/fake_surf_data/*
 doc/source/_build/*
+doc/data/fake_surface/*
 
 # C extensions
 *.so
@@ -147,3 +148,5 @@ install.sh
 
 # Ignore these
 BPt/dataset/experimental
+doc/data/fake_surface/0.npy
+doc/data/fake_surface/*.npy

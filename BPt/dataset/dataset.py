@@ -1696,17 +1696,17 @@ class Dataset(pd.DataFrame):
             | If left as 'default', then will initialize a
               ProblemSpec with default params.
 
-            
             | See :class:`ProblemSpec` for more information
               and for how to create an instance of this object.
-              
+
             ::
 
                 default = 'default'
 
         random_state : None, int, optional
-            You may optionally specify that the permutation be conducted according
-            to a fixed random state. By default a new random seed which
+            You may optionally specify that the permutation be
+            conducted according to a fixed random state.
+            By default a new random seed which
             be used each time, if this is left as None.
 
             ::
@@ -1714,19 +1714,25 @@ class Dataset(pd.DataFrame):
                 default = None
 
         blocks : None, array, pd.Series or pd.DataFrame, optional
-            This parameter is only available when the neurotool library is installed.
+            This parameter is only available when the neurotools
+            library is installed.
             See:  https://github.com/sahahn/neurotools
 
             This parameter represents the underlying exchangability-block
-            structure of the data passed. It is also used to constrain the possible
+            structure of the data passed.
+            It is also used to constrain the possible
             permutations in some way.
 
-            See PALM's documentation for an introduction on how to format ExchangeabilityBlocks:
+            See PALM's documentation for an introduction on how to format
+            ExchangeabilityBlocks:
             https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/PALM/ExchangeabilityBlocks
 
-            This parameter accepts the same style input as PALM, except it is passed
-            here as an array or DataFrame instead of as a file. The main requirement 
-            is that the shape of the structure match the number of subjects / data points
+            This parameter accepts the same style input as PALM,
+            except it is passed
+            here as an array or DataFrame instead of as a file.
+            The main requirement 
+            is that the shape of the structure match the
+            number of subjects / data points
             in the first dimension.
 
             ::
@@ -1734,11 +1740,16 @@ class Dataset(pd.DataFrame):
                 default = None
 
         within_grp : bool, optional
-            This parameter is only relevant when a permutation structure / blocks is passed, in that
-            case it describes how the left-most exchanability / permutation structure column should act.
-            Specifically, if True, then it specifies that the left-most column should be treated as groups
-            to act in a within group swap only manner. If False, then it will consider the left-most column
-            groups to only be able to swap at the group level with other groups of the same size.
+            This parameter is only relevant when a permutation
+            structure / blocks is passed, in that
+            case it describes how the left-most exchanability
+            / permutation structure column should act.
+            Specifically, if True, then it specifies that the left-most
+            column should be treated as groups
+            to act in a within group swap only manner. If False,
+            then it will consider the left-most column
+            groups to only be able to swap at the group level with
+            other groups of the same size.
 
             ::
 
@@ -1767,7 +1778,7 @@ class Dataset(pd.DataFrame):
             by the passed problem_spec. Note: the index will be sorted in
             identicially between X and y.
         '''
-        
+
         # Call base first
         X, y = self.get_Xy(problem_spec=problem_spec, **problem_spec_params)
 
@@ -1780,13 +1791,14 @@ class Dataset(pd.DataFrame):
 
     def _get_y(self, ps):
         '''Must be already checked problem spec'''
-        
+
         # Get sorted subjects from problem spec
         subjects = self.get_subjects(ps.subjects, return_as='index')
 
         return pd.Series(self.loc[subjects, ps.target].astype('float64'))
 
-    def _get_permuted_y(self, ps, random_state=None, blocks=None, within_grp=True):
+    def _get_permuted_y(self, ps, random_state=None,
+                        blocks=None, within_grp=True):
 
         # Get just y
         y = self._get_y(ps)
@@ -1825,7 +1837,7 @@ class Dataset(pd.DataFrame):
         splits : dict of :class:`Dataset`
             Returned from this method is a dictionary of
             splits from the original Dataset, where each element
-            is index'ed by the unique value.    
+            is index'ed by the unique value.
         '''
 
         # Get the passed columns

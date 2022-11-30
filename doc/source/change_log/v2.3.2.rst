@@ -1,0 +1,10 @@
+.. _whatsnew_232:
+
+.. currentmodule:: BPt
+
+Version 2.3.2
+---------------
+
+- Final version for forseeable future
+    - Due to the realities of academic software, this package will enter a sort of legacy mode.
+    - This means dependencies have been changed to be must more specific.

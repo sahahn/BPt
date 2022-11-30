@@ -15,8 +15,6 @@ from .helpers import clean_str
 from copy import deepcopy
 import pickle as pkl
 
-from matplotlib import cm
-from matplotlib import colors
 from numpy.random import default_rng
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -172,7 +170,6 @@ class EvalResults():
         self.verbose = eval_verbose
         self.mute_warnings = mute_warnings
         self.compare_bars = compare_bars
-
     @property
     def estimator(self):
         '''This parameter stores the passed saved, unfitted estimator

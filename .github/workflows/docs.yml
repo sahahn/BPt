@@ -37,7 +37,7 @@ jobs:
         pip install sphinx==4.2.0
         pip install numpydoc==1.1.0
         pip install nbsphinx
-        pip install pydata_sphinx_theme
+        pip install pydata_sphinx_theme=0.11.0
         cd doc
         python make.py clean
         python make.py html
